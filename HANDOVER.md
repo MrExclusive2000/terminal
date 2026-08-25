@@ -24,7 +24,9 @@ State of this repo as of 2026-08-25. Written so someone else can pick it up.
 - **Claude analyst** (`src/argus/ai/analyst.py`) — written, never called. Needs
   `ANTHROPIC_API_KEY`. Uses `claude-opus-5`, adaptive thinking, cached prefix.
 - **Auto-updater** — not built. Was next.
-- **Equities / insiders** — planned in detail (`docs/plan/`), not built. This was
+- **Equities / insiders** — the engine is now **built and tested** against live
+  EDGAR (`src/argus/insider/`, `insider.py`, 85 offline checks). The WPF shell
+  is not built: no .NET SDK on this platform. Originally this was
   in the original brief and should not have been cut.
 - **Stocks** — same.
 

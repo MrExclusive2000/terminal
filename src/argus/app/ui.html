@@ -35,16 +35,40 @@ tr.sel td{background:rgba(53,181,168,.10);box-shadow:inset 2px 0 0 var(--acc)}
 .note.ai{border-left-color:var(--ai);background:rgba(180,155,232,.07)}
 #ai{white-space:pre-wrap;line-height:1.6;font-size:13px}
 .big{font-family:var(--sans);font-size:2rem;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:0;margin-left:6px}
+.tab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;
+cursor:pointer;color:var(--fg3);border:1px solid transparent;border-radius:2px;background:none;width:auto}
+.tab.on{color:var(--fg);background:var(--p2);border-color:var(--l2);box-shadow:inset 0 -2px 0 var(--acc)}
+.grid.ins{grid-template-columns:1fr 420px}
+@media(max-width:1100px){.grid.ins{grid-template-columns:1fr}}
+.ev{border-bottom:1px solid var(--l);padding:8px 10px}
+.ev:hover{background:rgba(255,255,255,.02)}
+.ev-h{display:flex;align-items:baseline;gap:8px;font-family:var(--mono);font-size:12px}
+.sc{font-family:var(--sans);font-weight:600;font-size:16px;min-width:38px;font-variant-numeric:tabular-nums}
+.tkr{font-weight:600;letter-spacing:.03em;min-width:64px}
+.pill{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;
+border-radius:2px;border:1px solid currentColor}
+.fac{font-family:var(--mono);font-size:10.5px;color:var(--fg3);margin-top:5px;line-height:1.55}
+.fac b{color:var(--fg2);font-weight:500}
+.cl{border-left:2px solid var(--acc);background:rgba(53,181,168,.06);padding:7px 9px;margin-bottom:7px;font-size:12px}
+.cl.sell{border-left-color:var(--dn);background:rgba(224,145,63,.06)}
+.stat{display:flex;gap:18px;padding:9px 10px;border-bottom:1px solid var(--l);font-family:var(--mono);font-size:11px}
+.stat div span{display:block;color:var(--fg3);font-size:9px;letter-spacing:.07em;text-transform:uppercase}
+.stat div b{font-size:17px;font-family:var(--sans);font-variant-numeric:tabular-nums}
 </style></head><body>
 <div class="top">
   <b>Argus</b>
+  <div class="tabs">
+    <button class="tab on" id="tabTrade">Trade</button>
+    <button class="tab" id="tabIns">Insiders</button>
+  </div>
   <span id="stMt5"><span class="dot wn"></span>MT5 …</span>
   <span id="stCot"><span class="dot wn"></span>COT …</span>
   <span id="stMac"><span class="dot wn"></span>Macro …</span>
   <span class="m" style="margin-left:auto" id="clock">—</span>
 </div>
 
-<div class="grid">
+<div class="grid" id="viewTrade">
   <div class="pane">
     <div class="hd"><b>Trade</b><span class="r" id="src">—</span></div>
     <div class="bd">
@@ -90,6 +114,48 @@ tr.sel td{background:rgba(53,181,168,.10);box-shadow:inset 2px 0 0 var(--acc)}
         <textarea id="q" rows="2">Long or short here, and why? Be specific about entry timing.</textarea></div></div>
       <div class="row"><button id="ask">ASK CLAUDE</button><button class="ghost" id="clr">CLEAR</button></div>
       <div id="ai" class="m" style="margin-top:10px">Fill the card, then ask. Claude sees only the numbers on this screen.</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="grid ins" id="viewIns" style="display:none">
+  <div class="pane">
+    <div class="hd"><b>Insider tape</b><span class="r" id="insAge">not loaded</span></div>
+    <div class="stat">
+      <div><span>Filings</span><b id="sFil">—</b></div>
+      <div><span>Rows</span><b id="sRow">—</b></div>
+      <div><span>Non-discretionary</span><b id="sMech" class="w">—</b></div>
+      <div><span>Ranked</span><b id="sEv" class="a">—</b></div>
+      <div style="margin-left:auto;align-self:center">
+        <button class="ghost" id="insGo" style="width:auto;padding:5px 14px">REFRESH</button>
+      </div>
+    </div>
+    <div class="bd" id="insList" style="padding:0">
+      <div class="m" style="padding:14px">
+        Press REFRESH to pull the newest Form 4 filings from SEC EDGAR.
+        Rows whose timing the filer did not choose are decoded and excluded from
+        the ranking rather than padded into it.
+      </div>
+    </div>
+  </div>
+  <div class="pane">
+    <div class="hd"><b>Clusters</b><span class="r">separate filers · one issuer · same direction</span></div>
+    <div class="bd" id="insClusters"><div class="m">—</div></div>
+    <div class="hd"><b>How this is scored</b></div>
+    <div class="bd" style="flex:0 0 auto;max-height:250px">
+      <div class="fac" style="margin:0">
+        <b>Roughly two thirds of Form 4 rows are not decisions.</b> Tax withholding (F),
+        grants (A) and option mechanics (M) are payroll, and score exactly zero here —
+        not a low score, zero, with the reason attached.<br><br>
+        <b>The 10b5-1 flag is decisive.</b> A sale under a flagged plan was scheduled
+        when the plan was adopted, so its timing carries no information.<br><br>
+        <b>Buying and selling are not symmetric.</b> Open-market purchases (code P) are
+        the best-documented effect in this literature. Sales are capped well below
+        purchases because liquidity, tax and diversification explain most of them.<br><br>
+        <b>Every score decomposes.</b> Each factor below a row shows what it added and
+        why. Nothing here is a number you have to take on trust.
+      </div>
     </div>
   </div>
 </div>
@@ -175,6 +241,77 @@ $("ask").onclick=async()=>{
 $("clr").onclick=()=>{$("ai").textContent="";$("cost").textContent="—"};
 $("go").onclick=()=>{PICK=0;card();quote()};
 $("sym").onchange=()=>{PICK=0;positioning();card();quote()};
+function money(v){return v==null?"<span class='m'>no price</span>":"$"+Math.round(v).toLocaleString()}
+
+function evRow(e){
+  const buy = e.direction==="buy";
+  const tint = buy?"u":"d";
+  const flags = [];
+  if(e.plan_flagged) flags.push('<span class="pill w">10b5-1</span>');
+  if(e.amendment)   flags.push('<span class="pill m">amended</span>');
+  const facs = e.factors.map(f=>
+    `<div><b>${f.points>=0?"+":""}${f.points.toFixed(1)}</b> ${f.name} — ${f.why}</div>`).join("");
+  const caveats = (e.caveats||[]).map(c=>`<div class="w">note — ${c}</div>`).join("");
+  return `<div class="ev">
+    <div class="ev-h">
+      <span class="sc ${tint}">${e.score.toFixed(0)}</span>
+      <span class="pill ${tint}">${e.direction}</span>
+      <span class="tkr">${e.ticker||"—"}</span>
+      <span>${e.person||""}</span>
+      <span class="m">${e.role||""}</span>
+      ${flags.join("")}
+      <span class="m" style="margin-left:auto">${e.date||""} · ${money(e.value)}</span>
+    </div>
+    <div class="fac"><b>${e.code}</b> ${e.code_label}${facs}${caveats}</div>
+  </div>`;
+}
+
+async function insider(){
+  const list=$("insList"), cl=$("insClusters");
+  list.innerHTML='<div class="m" style="padding:14px">Pulling EDGAR — rate-limited to stay inside SEC fair access, so this takes a few seconds…</div>';
+  $("insAge").textContent="loading";
+  let d;
+  try{ d=await j("/api/insider?limit=40"); }
+  catch(err){ list.innerHTML=`<div class="note bad" style="margin:10px">Could not reach the pipeline: ${err}</div>`; $("insAge").textContent="failed"; return; }
+
+  if(d.error){
+    list.innerHTML=`<div class="note bad" style="margin:10px"><b>Provider down.</b> ${d.error}<br>
+      Nothing is shown rather than an empty table, because an empty table reads as
+      &ldquo;no insider activity&rdquo; and that is a different statement.</div>`;
+    $("insAge").textContent="provider error"; return;
+  }
+
+  $("sFil").textContent=d.filings;
+  $("sRow").textContent=d.rows;
+  $("sMech").textContent=d.mechanical_share==null?"—":Math.round(d.mechanical_share*100)+"%";
+  $("sEv").textContent=(d.events||[]).length;
+  $("insAge").textContent="as of "+new Date(d.fetched_at).toLocaleTimeString();
+
+  list.innerHTML = (d.events||[]).length
+    ? d.events.map(evRow).join("")
+    : `<div class="m" style="padding:14px">No discretionary rows in this window.
+       That is an answer, not an empty screen — every row pulled was mechanical.</div>`;
+
+  cl.innerHTML = (d.clusters||[]).length
+    ? d.clusters.map(c=>`<div class="cl ${c.direction}">
+        <b>${c.ticker||c.issuer}</b> — ${c.people} ${c.people===1?"party":"separate parties"} ${c.direction}ing over ${c.span_days}d
+        <div class="m" style="font-family:var(--mono);font-size:11px;margin-top:4px">
+        ${c.members.map(m=>`${m.date} · ${m.person} · ${m.role} · ${money(m.value)}`).join("<br>")}</div>
+      </div>`).join("")
+    : '<div class="m">No clusters. One insider filing repeatedly is an execution schedule, not a cluster.</div>';
+}
+
+function view(which){
+  const t = which==="trade";
+  $("viewTrade").style.display = t?"grid":"none";
+  $("viewIns").style.display   = t?"none":"grid";
+  $("tabTrade").classList.toggle("on",t);
+  $("tabIns").classList.toggle("on",!t);
+}
+$("tabTrade").onclick=()=>view("trade");
+$("tabIns").onclick=()=>{view("ins"); if(!$("insList").dataset.done){$("insList").dataset.done="1"; insider();}};
+$("insGo").onclick=insider;
+
 async function boot(){await status();positioning();macro();quote();card();}
 boot(); setInterval(()=>{status();quote()},15000); setInterval(()=>{positioning();macro()},600000);
 </script></body></html>

@@ -176,6 +176,41 @@ def ep_card(q: dict[str, list[str]]) -> dict[str, Any]:
             "atr": round(a, inst.digits), "source": source, "currency": ccy, "stops": rows}
 
 
+def ep_insider(q: dict[str, list[str]]) -> dict[str, Any]:
+    """Scored Form 4 feed.
+
+    Cached hard: a full pull is a few dozen rate-limited SEC round trips, and
+    the underlying feed only moves as filings arrive. Polling this endpoint must
+    never turn into polling EDGAR.
+    """
+    from argus.insider.pipeline import run
+
+    limit = 40
+    try:
+        limit = max(1, min(40, int((q.get("limit") or ["40"])[0])))
+    except ValueError:
+        pass
+    contact = (q.get("contact") or [""])[0].strip()
+
+    def pull() -> dict[str, Any]:
+        from argus.data.edgar import ContactNotConfigured
+        try:
+            return run(limit=limit, contact=contact or None).as_dict()
+        except ContactNotConfigured as exc:
+            # A configuration problem, not an outage. Said plainly, with the fix,
+            # because "HTTP 403" sends you debugging the wrong thing.
+            return {"error": str(exc), "needs_contact": True, "events": [],
+                    "clusters": [], "filings": 0, "rows": 0}
+        except Exception as exc:  # noqa: BLE001
+            # Surface the failure as data so the panel can render a real
+            # provider-down state instead of an empty table that reads as
+            # "no insider activity".
+            return {"error": f"{type(exc).__name__}: {exc}", "events": [],
+                    "clusters": [], "filings": 0, "rows": 0}
+
+    return cached(f"insider:{limit}", 300.0, pull)
+
+
 def ep_analyse(body: dict[str, Any]) -> dict[str, Any]:
     from argus.ai.analyst import AnalysisRequest, analyse
     try:
@@ -197,6 +232,7 @@ ROUTES: dict[str, Callable[[dict[str, list[str]]], Any]] = {
     "/api/macro": lambda q: ep_macro(),
     "/api/quote": lambda q: ep_quote((q.get("symbol") or ["XAUUSD"])[0]),
     "/api/card": ep_card,
+    "/api/insider": ep_insider,
 }
 
 
