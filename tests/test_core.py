@@ -95,5 +95,97 @@ def main() -> int:
     return 0 if ok else 1
 
 
+def trade_tests() -> bool:
+    """Sizing and stop-placement arithmetic. Money bugs live here."""
+    from argus.trade.levels import (Bar, atr, cost_of_entry, stop_candidates,
+                                    swing_high, swing_low, true_range)
+    from argus.trade.sizing import INSTRUMENTS, SizingError, size_position
+
+    ok = True
+    GBP = 0.79
+    print("\n[sizing] hand-checkable arithmetic")
+    t = size_position(instrument=INSTRUMENTS["XAUUSD"], entry=3962.40, stop=3944.00,
+                      account_balance=25_000, risk_pct=1.0, account_currency="GBP",
+                      quote_to_account=GBP)
+    ok &= check("XAUUSD 18.4pt stop, £25k, 1% -> 0.17 lots", t.lots == 0.17)
+    ok &= check("realised risk <= target", t.risk_actual <= t.risk_target)
+    ok &= check("2R target computes correctly", t.reward_at(3999.20) == 2.0)
+
+    print("\n[sizing] quantisation never overshoots risk")
+    worst = True
+    for pts in range(5, 400):
+        s = size_position(instrument=INSTRUMENTS["XAUUSD"], entry=3962.40,
+                          stop=3962.40 - pts * 0.1, account_balance=25_000,
+                          risk_pct=1.0, account_currency="GBP", quote_to_account=GBP)
+        if s.lots and s.risk_actual > s.risk_target + 1e-6:
+            worst = False
+            break
+    ok &= check("395 stop distances: risk never exceeds target", worst)
+
+    print("\n[sizing] refuses rather than silently over-risking")
+    s = size_position(instrument=INSTRUMENTS["XAUUSD"], entry=3962.40, stop=3762.40,
+                      account_balance=500, risk_pct=0.5, account_currency="GBP",
+                      quote_to_account=GBP)
+    ok &= check("below broker minimum -> 0 lots + warning", s.lots == 0.0 and bool(s.warnings))
+
+    s2 = size_position(instrument=INSTRUMENTS["EURUSD"], entry=1.09146, stop=1.08900,
+                       account_balance=25_000, risk_pct=1.0, account_currency="GBP")
+    ok &= check("missing FX conversion warns", bool(s2.warnings))
+
+    s3 = size_position(instrument=INSTRUMENTS["USDJPY"], entry=154.28, stop=154.90,
+                       account_balance=25_000, risk_pct=1.0, account_currency="GBP",
+                       quote_to_account=0.0051)
+    ok &= check("stop above entry -> short inferred", s3.direction == "short")
+
+    for why, kw in [("stop == entry", dict(entry=100.0, stop=100.0, risk_pct=1)),
+                    ("zero risk", dict(entry=100.0, stop=99.0, risk_pct=0)),
+                    ("risk > 100%", dict(entry=100.0, stop=99.0, risk_pct=101))]:
+        try:
+            size_position(instrument=INSTRUMENTS["XAUUSD"], account_balance=1000, **kw)
+            ok &= check(f"rejects {why}", False)
+        except SizingError:
+            ok &= check(f"rejects {why}", True)
+
+    print("\n[levels] volatility maths")
+    flat = [Bar(f"t{i}", 100, 105, 95, 100) for i in range(40)]
+    ok &= check("constant 10pt ranges -> ATR 10.0", abs(atr(flat, 14) - 10.0) < 1e-9)
+    ok &= check("true range includes gaps",
+                true_range(80, Bar("x", 100, 105, 95, 100)) == 25)
+    ok &= check("too few bars -> None, not a wrong number", atr(flat[:5], 14) is None)
+
+    print("\n[levels] pivots respect the reference price")
+    seq = [100, 101, 102, 101, 100, 98, 96, 98, 100, 102,
+           104, 103, 102, 104, 106, 105, 104, 106, 108, 107]
+    sw = [Bar(f"t{i}", v, v + 1, v - 1, v) for i, v in enumerate(seq)]
+    ok &= check("swing low below reference", swing_low(sw, below=100) < 100)
+    ok &= check("swing high above reference", swing_high(sw, above=106) > 106)
+
+    print("\n[levels] stops land on the correct side of entry")
+    long_side = all(c.price < 120.0 for c in
+                    stop_candidates(bars=sw, entry=120.0, direction="long", spread=0.1))
+    short_side = all(c.price > 80.0 for c in
+                     stop_candidates(bars=sw, entry=80.0, direction="short", spread=0.1))
+    ok &= check("breakout long: every stop below entry", long_side)
+    ok &= check("breakdown short: every stop above entry", short_side)
+
+    print("\n[levels] entry cost relative to risk")
+    ok &= check("4pt spread on 20pt stop -> 20% of risk",
+                cost_of_entry(spread=4.0, stop_distance=20.0).spread_pct_of_risk == 20.0)
+    ok &= check("prohibitive verdict at >=25%",
+                "prohibitive" in cost_of_entry(spread=5.0, stop_distance=20.0).verdict)
+    ok &= check("cheap verdict at <5%",
+                cost_of_entry(spread=0.35, stop_distance=20.0).verdict == "cheap")
+
+    tight = stop_candidates(bars=flat, entry=100.0, direction="long",
+                            spread=0.0, atr_mult=0.3)
+    ok &= check("sub-ATR stop flagged as inside noise",
+                any(c.inside_noise for c in tight))
+    return ok
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    core_ok = main() == 0
+    trade_ok = trade_tests()
+    print("\n" + ("=" * 40))
+    print("ALL SUITES PASSED" if (core_ok and trade_ok) else "FAILURES PRESENT")
+    raise SystemExit(0 if (core_ok and trade_ok) else 1)
