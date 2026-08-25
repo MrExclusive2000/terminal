@@ -3,9 +3,10 @@
 Design plan for a single-user Windows trading terminal — **equities and forex**,
 information only, no order execution and no broker connectivity.
 
-**Status: plan complete (v2). The insider & incentives engine is built,
-tested and running against live SEC EDGAR — see [The insider engine](#the-insider-engine-built).
-The WPF shell in the plan is not built.**
+**Status: plan complete (v2). The insider & incentives engine is built and
+running against live SEC EDGAR, packaged as an installable Windows desktop app.**
+Built in Python rather than the WPF stack the plan specifies — see
+[Why Python, not WPF](#why-python-not-wpf).
 
 The organising lens is **incentives**: insider transactions, ownership,
 compensation structure and cohort positioning treated as the primary surface
@@ -51,13 +52,26 @@ person shown is a record of an actual transaction.
 Phase 1 of the plan — the flagship — is implemented and runs against live SEC
 EDGAR. It is the piece the plan argues nobody else sells.
 
+### Install on Windows
+
+Download the installer from [Releases](https://github.com/MrExclusive2000/terminal/releases)
+and run it. No administrator rights, no Python, no command line. It installs
+per-user and puts Argus on your desktop and Start menu.
+
+On first launch it asks for one thing: **a name and an email address**. The SEC
+refuses anonymous traffic to EDGAR outright — a 403 on every request — so this
+is required rather than optional. Nothing else needs configuring.
+
+### Run from source
+
 ```bash
-export ARGUS_SEC_CONTACT="Your Name you@example.com"   # SEC returns 403 without this
-python3 insider.py --limit 40 --min-score 25           # ranked feed
-python3 insider.py --file some-form4.xml               # score one filing offline
-python3 insider.py --json                              # machine-readable
-python3 run.py                                         # local app, INSIDERS tab
+python3 run.py                                # the app
+python3 insider.py --limit 40 --min-score 25  # ranked feed on the command line
+python3 insider.py --file some-form4.xml      # score one filing, offline
+python3 insider.py --json                     # machine-readable
 ```
+
+The CLI takes `--contact` or `$ARGUS_SEC_CONTACT`; the app stores it in settings.
 
 ### What it actually does
 
@@ -99,13 +113,56 @@ python3 tests/test_insider.py    # 85 checks, offline, real SEC fixtures
 python3 tests/test_core.py       # the pre-existing suite
 ```
 
+## The desktop app
+
+| Piece | What it does |
+|---|---|
+| `run.py` | Native window via pywebview, single-instance lock, window geometry remembered. |
+| `src/argus/config.py` | Settings in `%LOCALAPPDATA%\Argus`, written atomically, tolerant of a corrupt file. |
+| `src/argus/update.py` | Checks GitHub Releases and **tells you**. Never downloads or runs anything. |
+| `packaging/argus.spec` | PyInstaller, onedir, no console window. |
+| `packaging/make_icon.py` | Generates the 7-size ICO from `zlib` and `struct` — no image library. |
+| `packaging/argus.iss` | Per-user Inno Setup installer. No admin prompt. |
+| `.github/workflows/build-windows.yml` | Tests on Linux, builds the exe and installer on Windows. |
+
+### Two deliberate refusals
+
+**Secrets are not stored in settings.** That file is plaintext JSON in a
+user-readable directory. The plan requires OS-level key isolation (CNG/TPM with
+a passphrase) before a key touches disk, and is explicit that DPAPI alone is not
+protection against the realistic adversary. Until that exists, the Claude API
+key is read from `ANTHROPIC_API_KEY` at the moment it is used and never
+persisted. POSTing a key to the settings endpoint is *refused with an
+explanation*, not silently dropped.
+
+**The updater does not update.** It checks for a newer release and links to it.
+There is no code signing yet, so nothing could verify a downloaded binary — and
+an updater that cannot verify what it fetched is a remote code execution path,
+not a feature. When signing exists this becomes verify-then-apply.
+
+## Why Python, not WPF
+
+The plan specifies .NET 10 + WPF, and that remains the right answer for a native
+Windows terminal — real docking, tear-off, and a mature charting ecosystem.
+
+It was not built that way because this was developed on Linux, where WPF cannot
+be compiled or run. Writing several thousand lines of C# that had never once
+executed would have produced an impressive diff and an unverifiable product,
+in a plan whose own UX section insists keyboard operation is *"audited as a
+release gate, not asserted."*
+
+So the engine — the hard, portable, differentiating part — is Python, and the
+shell is a local web UI in a native window. The trade is real: no native
+docking, no tear-off to a second monitor, no SciChart. The engine is a clean
+HTTP API, so a WPF front end over it remains open.
+
 ### Known limits — stated, not hidden
 
-- **This is not the WPF app the plan specifies.** No .NET SDK exists on Linux
-  and WPF cannot be built or verified here, so shipping unrun C# would have
-  been unverifiable by construction. The engine is the hard, portable part;
-  the Windows shell is a presentation layer over this API and needs a Windows
-  machine.
+- **The Windows build is produced by CI, not on this machine.** PyInstaller
+  cannot cross-compile. The `.exe` and installer are built and smoke-tested on
+  a `windows-latest` runner.
+- **No code signing.** Windows SmartScreen will warn on first run, and the
+  updater is check-only for exactly this reason.
 - **Multiple purchases by one filer occupy several ranked rows** rather than
   aggregating into a single position-building event. Each row is a genuine
   distinct transaction, but aggregating per party would rank better.
