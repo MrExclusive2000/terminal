@@ -1,0 +1,113 @@
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">?</span><span class="ui-cmd-txt">why are insiders buying CRSP into a 52-week low</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">&gt; command&nbsp; @symbol&nbsp; #screen&nbsp; ?ask</span>
+    </div>
+    <div class="ui-status">
+      <span class="acc">KP v2026.08.24</span><span><span class="ui-dot ok"></span>verified Ed25519</span>
+      <span class="mut">$3.71 today</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:1fr 400px;height:560px;">
+
+    <!-- assistant -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>ANALYST</b><span class="mut">read-only · no write tools</span><span class="r">Opus · 14.2s · 31K cached</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal;line-height:1.6">
+
+        <div style="border-left:2px solid var(--ui-fg3);padding:5px 9px;margin-bottom:10px">
+          <span class="b b-fact">FACT</span>&nbsp;<span class="mut">deterministic pipeline · no model in path</span>
+          <table class="ui-t" style="margin-top:6px">
+            <tbody>
+              <tr><td>Open-market buys, 14d</td><td class="n up">4 filers · $3.07M</td><td><span class="ui-cite">Form 4 ×4</span></td></tr>
+              <tr><td>All discretionary</td><td class="n">aff10b5One = false</td><td><span class="ui-cite">doc flag</span></td></tr>
+              <tr><td>Price vs 52w</td><td class="n dn">−61.2%</td><td><span class="ui-cite">Massive EOD</span></td></tr>
+              <tr><td>Short interest</td><td class="n crit">18.4%</td><td><span class="ui-cite">FINRA 08-15</span></td></tr>
+              <tr><td>Cash runway</td><td class="n warn">6.7 qtrs</td><td><span class="ui-cite">10-Q Q2 XBRL</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui-note" style="margin-bottom:10px">
+          <span class="b b-ai">INFERENCE</span>&nbsp;<span class="mut">model-generated · every number cited or struck</span>
+          <p style="margin:7px 0 0">
+            Three readings fit the facts, and they are not equally likely.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>1. Genuine conviction.</b> Four filers, none on a plan, none of whom bought in August in the prior three
+            years — the <em>opportunistic</em> profile that carries roughly
+            <span class="ui-cite">82bp/month abnormal return</span> in Cohen–Malloy–Pomorski, against ~0 for routine filers.
+            The CFO's purchase is <span class="ui-cite">7.4× base salary</span>, which is not a gesture.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>2. Signalling into a financing.</b> The FY25 10-K <span class="ui-cite">dropped its 24-month capital-sufficiency
+            language</span> and a <span class="ui-cite">lock-up expires 2026-09-18</span>. Insider buying ahead of a raise is a
+            known way to support a price. This is the reading the bull case must survive.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>3. Squeeze positioning.</b> 18.4% short with a 14.2% borrow fee. Cheap to buy, expensive to be short.
+          </p>
+          <p style="margin:9px 0 0" class="mut2">
+            What would separate them: an 8-K or 424B in the next six weeks favours (2). Continued buying
+            <em>after</em> the lock-up date favours (1). I have set a watch on both.
+          </p>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-crit);padding:5px 9px;background:rgba(224,112,126,.07)">
+          <span class="b b-crit">WITHHELD</span>&nbsp;<span class="mut2">2 sentences removed — numeric claims with no retrievable source.
+          <span class="acc" style="border-bottom:1px dotted">show what was cut</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- knowledge pack -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>KNOWLEDGE PACK</b><span class="mut">what your terminal learned</span><span class="r">03:14 ET</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal">
+        <dl class="ui-kv" style="margin-bottom:9px">
+          <dt>Version</dt><dd>2026.08.24 <span class="mut">← 2026.08.17</span></dd>
+          <dt>Signature</dt><dd class="acc">Ed25519 ✓</dd>
+          <dt>Claims changed</dt><dd>34 <span class="up">+21</span> <span class="dn">−6</span> <span class="warn">~7</span></dd>
+          <dt>Approval</dt><dd class="warn">awaiting review</dd>
+        </dl>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>CLAIM DIFF</b><span class="r">every claim cited</span></div>
+
+        <div style="border-left:2px solid var(--ui-up);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-p">ADDED</span> <span class="mut">gene-editing / financing-risk</span>
+          <div style="margin-top:4px">Clinical-stage biotechs with &lt;8 quarters runway historically raise within 2 quarters of dropping capital-sufficiency language.</div>
+          <div class="mut" style="margin-top:4px">conf <b>0.62</b> · decays 2027-02 · <span class="ui-cite">3 sources</span></div>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-warn);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-stale">REVISED</span> <span class="mut">us-regulatory/short-reporting</span>
+          <div style="margin-top:4px">
+            <span class="dn" style="text-decoration:line-through">Form SHO short-position data available from 2026.</span><br>
+            <span class="up">SEC exemption extended to 2 Jan 2028; first filings ~Feb 2028. Do not architect around it.</span>
+          </div>
+          <div class="mut" style="margin-top:4px">conf <b>0.94</b> · <span class="ui-cite">SEC release</span></div>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-crit);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-crit">RETIRED</span> <span class="mut">eu-regulatory/mar-19</span>
+          <div style="margin-top:4px"><span class="dn" style="text-decoration:line-through">PDMR notification threshold is €5,000 across the EU.</span></div>
+          <div class="mut" style="margin-top:4px">DE/FR/IT/DK raised to €50,000 on 2026-01-01 — creates a volume discontinuity in any cross-year comparison.</div>
+        </div>
+
+        <div class="mut" style="border-top:1px solid var(--ui-line);padding-top:7px;margin-top:9px">
+          Packs are authored on a schedule, signed with a key that never ships in the binary, and verified before load.
+          Rejecting a pack rolls back to the previous version; nothing auto-applies without this review.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>03 · Analyst &amp; Knowledge Pack</b> — facts and inference are structurally separate surfaces, not tone differences. Uncited numeric claims are struck before render.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>

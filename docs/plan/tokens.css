@@ -1,0 +1,124 @@
+/* ============================================================
+   ARGUS TERMINAL — design plan document
+   Design system tokens. Light is the base; dark redefines tokens
+   only, guarded so an explicit theme choice always wins.
+   ============================================================ */
+
+:root {
+  /* -- ground & surfaces (warm-neutral, faintly green-biased) -- */
+  --ground:       #FAFAF8;
+  --surface:      #FFFFFF;
+  --surface-2:    #F2F3F0;
+  --surface-3:    #EDEEEA;
+  --hairline:     #DADDD6;
+  --hairline-str: #C2C7BE;
+
+  /* -- ink -- */
+  --text:         #161C1B;
+  --text-2:       #414A48;
+  --text-3:       #57615D;
+  --text-4:       #626C67;
+
+  /* -- accent: deep teal. the single bold spend. -- */
+  --accent:       #13766E;
+  --accent-2:     #0E5F58;
+  --accent-soft:  #DCEEEB;
+  --accent-line:  #9CCCC5;
+
+  /* -- semantic: CVD-safe blue/orange pair (NOT the accent) -- */
+  --up:           #2D6ABC;
+  --up-soft:      #E2ECF9;
+  --down:         #A2591A;
+  --down-soft:    #FAEBDA;
+  --warn:         #89600F;
+  --warn-soft:    #FBF0D6;
+  --crit:         #A33A46;
+  --crit-soft:    #FAE4E6;
+  --info:         #4A5B8C;
+
+  /* -- type -- */
+  --f-display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+  --f-body:    "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono:    "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --t-xs:   0.6875rem;
+  --t-sm:   0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md:   1.0625rem;
+  --t-lg:   1.375rem;
+  --t-xl:   1.875rem;
+  --t-2xl:  2.5rem;
+  --t-3xl:  3.5rem;
+
+  /* -- space -- */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px; --s9: 96px;
+
+  --radius: 3px;
+  --shadow: 0 1px 2px rgba(16,24,22,.06), 0 8px 24px -12px rgba(16,24,22,.18);
+  --rail-w: 232px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:       #0C1013;
+    --surface:      #12181A;
+    --surface-2:    #182022;
+    --surface-3:    #1A2325;
+    --hairline:     #263134;
+    --hairline-str: #354448;
+
+    --text:         #DFE6E4;
+    --text-2:       #AEBAB7;
+    --text-3:       #8B9996;
+    --text-4:       #7E8C89;
+
+    --accent:       #35B5A8;
+    --accent-2:     #5FD3C7;
+    --accent-soft:  #0E2A29;
+    --accent-line:  #1E5F58;
+
+    --up:           #5B9DEA;
+    --up-soft:      #14243A;
+    --down:         #E0913F;
+    --down-soft:    #2E2011;
+    --warn:         #E0A44B;
+    --warn-soft:    #2C2312;
+    --crit:         #E0707E;
+    --crit-soft:    #33161A;
+    --info:         #8FA0D0;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:       #0C1013;
+  --surface:      #12181A;
+  --surface-2:    #182022;
+  --surface-3:    #1A2325;
+  --hairline:     #263134;
+  --hairline-str: #354448;
+
+  --text:         #DFE6E4;
+  --text-2:       #AEBAB7;
+  --text-3:       #8B9996;
+  --text-4:       #7E8C89;
+
+  --accent:       #35B5A8;
+  --accent-2:     #5FD3C7;
+  --accent-soft:  #0E2A29;
+  --accent-line:  #1E5F58;
+
+  --up:           #5B9DEA;
+  --up-soft:      #14243A;
+  --down:         #E0913F;
+  --down-soft:    #2E2011;
+  --warn:         #E0A44B;
+  --warn-soft:    #2C2312;
+  --crit:         #E0707E;
+  --crit-soft:    #33161A;
+  --info:         #8FA0D0;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.5), 0 8px 24px -12px rgba(0,0,0,.7);
+}

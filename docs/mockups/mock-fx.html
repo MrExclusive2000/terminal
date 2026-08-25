@@ -1,0 +1,106 @@
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">USDJPY Curncy&nbsp; DRIVERS</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">no consolidated tape — every quote carries its venue</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>OANDA v20</span><span><span class="ui-dot ok"></span>ECB ref</span>
+      <span><span class="ui-dot warn"></span>COT T+3</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:300px 1fr 1fr;height:540px;">
+
+    <!-- quote board -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>QUOTE BOARD</b><span class="r">source-labelled</span></div>
+      <div class="ui-body flush">
+        <table class="ui-t">
+          <thead><tr><th>PAIR</th><th class="n">BID</th><th class="n">SPR</th><th>VENUE</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td class="tk">USD/JPY</td><td class="n">154.28<span class="mut">2</span></td><td class="n mut">0.8</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">EUR/USD</td><td class="n">1.0914<span class="mut">6</span></td><td class="n mut">0.4</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">GBP/USD</td><td class="n">1.2733<span class="mut">1</span></td><td class="n mut">0.9</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">AUD/USD</td><td class="n">0.6602<span class="mut">4</span></td><td class="n mut">0.7</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">USD/CHF</td><td class="n">0.8841<span class="mut">0</span></td><td class="n mut">1.1</td><td class="mut">OANDA</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:7px 9px;border-top:1px solid var(--ui-line)" class="mut">
+          <div style="margin-bottom:5px"><span class="b b-stale">ECB REF</span> EUR/USD 1.0921 · 14:15 CET</div>
+          <div>Dealable ≠ official. The terminal never merges a dealer stream and a central-bank fixing into one “price”.</div>
+          <div style="margin-top:6px" class="warn">Tick count is not volume. No FX volume is shown.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- drivers -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>DRIVER STACK</b><span class="mut">USD/JPY</span><span class="r">why it is here</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>DRIVER</th><th class="n">LEVEL</th><th class="n">1M Δ</th><th class="n">β</th></tr></thead>
+          <tbody>
+            <tr><td>2y rate diff <span class="mut">US−JP</span></td><td class="n">3.71%</td><td class="n dn">−28bp</td><td class="n acc">0.81</td></tr>
+            <tr><td>10y rate diff</td><td class="n">2.94%</td><td class="n dn">−19bp</td><td class="n">0.64</td></tr>
+            <tr><td>OIS-implied Fed cuts <span class="mut">12m</span></td><td class="n">−71bp</td><td class="n dn">−34bp</td><td class="n">0.58</td></tr>
+            <tr><td>Carry <span class="mut">3m fwd pts</span></td><td class="n up">+3.42%</td><td class="n dn">−0.31</td><td class="n">0.44</td></tr>
+            <tr><td>Nikkei / S&amp;P ratio</td><td class="n">0.912</td><td class="n up">+1.8%</td><td class="n mut">0.21</td></tr>
+            <tr><td>Real yield diff</td><td class="n">1.12%</td><td class="n dn">−22bp</td><td class="n">0.49</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>INTERVENTION WATCH</b><span class="r">MoF monthly</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Last confirmed op</td><td class="n">2024-07</td><td class="mut">¥5.53T</td></tr>
+            <tr><td>Verbal escalation</td><td class="n warn">stage 2 of 3</td><td class="mut">“closely watching”</td></tr>
+            <tr><td>Level vs last op</td><td class="n crit">−2.1%</td><td class="mut">inside prior zone</td></tr>
+            <tr><td>Reported cadence</td><td class="mut" colspan="2">monthly, T+30 — never intraday</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px;white-space:normal">
+          Intervention data is published a month late. This panel shows escalation <em>language</em> and proximity to prior
+          operating zones — it cannot tell you an intervention is happening now, and does not claim to.
+        </div>
+      </div>
+    </div>
+
+    <!-- positioning -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>POSITIONING</b><span class="mut">the FX “insider” proxy</span><span class="r">CFTC COT · Tue data, Fri release</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>COHORT</th><th class="n">NET</th><th class="n">Δ WK</th><th class="n">%ILE 3Y</th></tr></thead>
+          <tbody>
+            <tr><td>Leveraged funds</td><td class="n dn">−82.4K</td><td class="n dn">−11.2K</td><td class="n crit">4th</td></tr>
+            <tr><td>Asset managers</td><td class="n up">+41.9K</td><td class="n up">+3.8K</td><td class="n">71st</td></tr>
+            <tr><td>Dealer/intermediary</td><td class="n up">+38.1K</td><td class="n up">+6.9K</td><td class="n">66th</td></tr>
+            <tr><td>Open interest</td><td class="n">231K</td><td class="n up">+4.1%</td><td class="n">58th</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-bottom:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; Leveraged short is at a 3-year extreme while the rate differential —
+          the dominant driver at β 0.81 — has moved <em>against</em> the short for a month. That is a crowded position
+          losing its fundamental support.
+          <div class="mut" style="margin-top:5px">Data is Tuesday's, released Friday. <span class="warn">Three days stale by construction.</span></div>
+        </div>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>SESSION</b><span class="r">Sun 17:00 ET week open</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Tokyo</td><td class="mut">closed</td><td class="n mut">0.31% ATR</td></tr>
+            <tr><td>London</td><td class="acc">open</td><td class="n">0.44% ATR</td></tr>
+            <tr><td>NY overlap</td><td class="acc">open · 2h14m left</td><td class="n up">0.58% ATR</td></tr>
+            <tr><td>Rollover</td><td class="warn">17:00 ET · spread widens</td><td class="n mut">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>04 · FX Desk</b> — FX as a macro and positioning surface, not a second charting product. Every quote names its venue; nothing pretends to a consolidated tape.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>

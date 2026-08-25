@@ -1,0 +1,1659 @@
+<title>Argus Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ============================================================
+   ARGUS TERMINAL — design plan document
+   Design system tokens. Light is the base; dark redefines tokens
+   only, guarded so an explicit theme choice always wins.
+   ============================================================ */
+
+:root {
+  /* -- ground & surfaces (warm-neutral, faintly green-biased) -- */
+  --ground:       #FAFAF8;
+  --surface:      #FFFFFF;
+  --surface-2:    #F2F3F0;
+  --surface-3:    #EDEEEA;
+  --hairline:     #DADDD6;
+  --hairline-str: #C2C7BE;
+
+  /* -- ink -- */
+  --text:         #161C1B;
+  --text-2:       #414A48;
+  --text-3:       #57615D;
+  --text-4:       #626C67;
+
+  /* -- accent: deep teal. the single bold spend. -- */
+  --accent:       #13766E;
+  --accent-2:     #0E5F58;
+  --accent-soft:  #DCEEEB;
+  --accent-line:  #9CCCC5;
+
+  /* -- semantic: CVD-safe blue/orange pair (NOT the accent) -- */
+  --up:           #2D6ABC;
+  --up-soft:      #E2ECF9;
+  --down:         #A2591A;
+  --down-soft:    #FAEBDA;
+  --warn:         #89600F;
+  --warn-soft:    #FBF0D6;
+  --crit:         #A33A46;
+  --crit-soft:    #FAE4E6;
+  --info:         #4A5B8C;
+
+  /* -- type -- */
+  --f-display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+  --f-body:    "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono:    "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --t-xs:   0.6875rem;
+  --t-sm:   0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md:   1.0625rem;
+  --t-lg:   1.375rem;
+  --t-xl:   1.875rem;
+  --t-2xl:  2.5rem;
+  --t-3xl:  3.5rem;
+
+  /* -- space -- */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px; --s9: 96px;
+
+  --radius: 3px;
+  --shadow: 0 1px 2px rgba(16,24,22,.06), 0 8px 24px -12px rgba(16,24,22,.18);
+  --rail-w: 232px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:       #0C1013;
+    --surface:      #12181A;
+    --surface-2:    #182022;
+    --surface-3:    #1A2325;
+    --hairline:     #263134;
+    --hairline-str: #354448;
+
+    --text:         #DFE6E4;
+    --text-2:       #AEBAB7;
+    --text-3:       #8B9996;
+    --text-4:       #7E8C89;
+
+    --accent:       #35B5A8;
+    --accent-2:     #5FD3C7;
+    --accent-soft:  #0E2A29;
+    --accent-line:  #1E5F58;
+
+    --up:           #5B9DEA;
+    --up-soft:      #14243A;
+    --down:         #E0913F;
+    --down-soft:    #2E2011;
+    --warn:         #E0A44B;
+    --warn-soft:    #2C2312;
+    --crit:         #E0707E;
+    --crit-soft:    #33161A;
+    --info:         #8FA0D0;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:       #0C1013;
+  --surface:      #12181A;
+  --surface-2:    #182022;
+  --surface-3:    #1A2325;
+  --hairline:     #263134;
+  --hairline-str: #354448;
+
+  --text:         #DFE6E4;
+  --text-2:       #AEBAB7;
+  --text-3:       #8B9996;
+  --text-4:       #7E8C89;
+
+  --accent:       #35B5A8;
+  --accent-2:     #5FD3C7;
+  --accent-soft:  #0E2A29;
+  --accent-line:  #1E5F58;
+
+  --up:           #5B9DEA;
+  --up-soft:      #14243A;
+  --down:         #E0913F;
+  --down-soft:    #2E2011;
+  --warn:         #E0A44B;
+  --warn-soft:    #2C2312;
+  --crit:         #E0707E;
+  --crit-soft:    #33161A;
+  --info:         #8FA0D0;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.5), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{animation:none!important;transition:none!important;}}
+body{margin:0;background:var(--ground);color:var(--text);
+  font-family:var(--f-body);font-size:var(--t-base);line-height:1.65;
+  -webkit-font-smoothing:antialiased;font-feature-settings:"kern" 1;}
+
+/* ---------- layout ---------- */
+.wrap{display:grid;grid-template-columns:var(--rail-w) minmax(0,1fr);gap:0;max-width:1560px;margin:0 auto;}
+.rail{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;
+  border-right:1px solid var(--hairline);padding:var(--s5) var(--s4);background:var(--ground);}
+.main{min-width:0;padding:0 var(--s6) var(--s9);}
+@media (max-width:1080px){
+  .wrap{grid-template-columns:1fr;}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--hairline);}
+  .main{padding:0 var(--s4) var(--s8);}
+}
+
+/* ---------- rail = command mnemonics ---------- */
+.rail-brand{font-family:var(--f-display);font-weight:600;font-size:var(--t-md);letter-spacing:.04em;
+  text-transform:uppercase;margin:0 0 2px;}
+.rail-sub{font-family:var(--f-mono);font-size:var(--t-xs);color:var(--text-3);margin:0 0 var(--s5);letter-spacing:.02em;}
+.rail-h{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-4);margin:var(--s5) 0 var(--s2);}
+.rail a{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:baseline;
+  text-decoration:none;color:var(--text-2);padding:3px 0;border-radius:2px;}
+.rail a:hover,.rail a:focus-visible{color:var(--accent);}
+.rail a code{font-family:var(--f-mono);font-size:var(--t-xs);color:var(--accent);letter-spacing:.04em;}
+.rail a span{font-size:var(--t-sm);}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+/* ---------- hero ---------- */
+.hero{padding:var(--s8) 0 var(--s7);border-bottom:1px solid var(--hairline);}
+.eyebrow{font-family:var(--f-mono);font-size:var(--t-xs);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 var(--s4);}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(2.1rem,5vw,var(--t-3xl));line-height:1.04;
+  letter-spacing:-.015em;margin:0 0 var(--s4);text-wrap:balance;}
+.lede{font-size:var(--t-md);color:var(--text-2);max-width:64ch;margin:0 0 var(--s5);}
+.hero-meta{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);font-family:var(--f-mono);
+  font-size:var(--t-xs);color:var(--text-3);letter-spacing:.02em;padding-top:var(--s4);
+  border-top:1px solid var(--hairline);}
+.hero-meta b{color:var(--text-2);font-weight:500;}
+
+/* ---------- sections as panels ---------- */
+section{padding-top:var(--s8);scroll-margin-top:var(--s4);}
+.sec-head{display:flex;align-items:baseline;gap:var(--s3);border-bottom:2px solid var(--text);
+  padding-bottom:var(--s2);margin-bottom:var(--s5);flex-wrap:wrap;}
+.sec-mn{font-family:var(--f-mono);font-size:var(--t-xs);letter-spacing:.1em;color:var(--accent);
+  border:1px solid var(--accent-line);padding:1px 6px;border-radius:2px;}
+h2{font-family:var(--f-display);font-weight:600;font-size:var(--t-xl);letter-spacing:-.01em;margin:0;text-wrap:balance;}
+.sec-note{margin-left:auto;font-family:var(--f-mono);font-size:var(--t-xs);color:var(--text-3);}
+h3{font-family:var(--f-display);font-weight:600;font-size:var(--t-lg);letter-spacing:-.005em;
+  margin:var(--s6) 0 var(--s3);text-wrap:balance;}
+h4{font-family:var(--f-display);font-weight:600;font-size:var(--t-md);margin:var(--s5) 0 var(--s2);}
+p{margin:0 0 var(--s4);max-width:74ch;}
+.main ul,.main ol{margin:0 0 var(--s4);padding-left:1.15rem;max-width:74ch;}
+.main li{margin-bottom:var(--s2);}
+strong{font-weight:600;color:var(--text);}
+em{font-style:italic;}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--surface-2);
+  border:1px solid var(--hairline);border-radius:2px;padding:.5px 4px;}
+hr{border:0;border-top:1px solid var(--hairline);margin:var(--s6) 0;}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:0 0 var(--s5);border:1px solid var(--hairline);border-radius:var(--radius);
+  background:var(--surface);}
+table.d{width:100%;border-collapse:collapse;font-size:var(--t-sm);font-variant-numeric:tabular-nums;}
+table.d th{text-align:left;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-3);font-weight:500;padding:8px 11px;border-bottom:1px solid var(--hairline-str);
+  background:var(--surface-2);white-space:nowrap;position:sticky;top:0;}
+table.d td{padding:7px 11px;border-bottom:1px solid var(--hairline);vertical-align:top;}
+table.d tr:last-child td{border-bottom:0;}
+table.d td.n,table.d th.n{text-align:right;white-space:nowrap;}
+table.d td.mono{font-family:var(--f-mono);font-size:var(--t-xs);}
+table.d .nm{font-weight:600;white-space:nowrap;}
+
+/* priority pills */
+.p0,.p1,.p2,.p3{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.06em;padding:1px 5px;
+  border-radius:2px;border:1px solid currentColor;white-space:nowrap;}
+.p0{color:var(--crit);} .p1{color:var(--down);} .p2{color:var(--up);} .p3{color:var(--text-4);}
+
+/* ---------- callouts ---------- */
+.call{border:1px solid var(--hairline-str);border-left:3px solid var(--accent);border-radius:var(--radius);
+  background:var(--surface);padding:var(--s4) var(--s5);margin:0 0 var(--s5);}
+.call.warn{border-left-color:var(--warn);}
+.call.crit{border-left-color:var(--crit);}
+.call.dec{border-left-color:var(--up);}
+.call-h{font-family:var(--f-mono);font-size:var(--t-xs);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-3);margin:0 0 var(--s2);}
+.call p:last-child,.call ul:last-child{margin-bottom:0;}
+
+/* ---------- pillar cards ---------- */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;
+  background:var(--hairline);border:1px solid var(--hairline);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:var(--s5);}
+.pil{background:var(--surface);padding:var(--s4);}
+.pil-n{font-family:var(--f-mono);font-size:var(--t-xs);color:var(--accent);letter-spacing:.1em;margin-bottom:var(--s2);}
+.pil h4{margin:0 0 var(--s2);font-size:var(--t-base);}
+.pil p{font-size:var(--t-sm);color:var(--text-2);margin:0;}
+
+/* ---------- figures ---------- */
+.fig{margin:0 0 var(--s6);}
+.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:var(--s2);margin-bottom:var(--s5);}
+.sw{border:1px solid var(--hairline);border-radius:var(--radius);overflow:hidden;background:var(--surface);}
+.sw-c{height:44px;}
+.sw-l{padding:5px 8px;font-family:var(--f-mono);font-size:9.5px;line-height:1.5;}
+.sw-l b{display:block;color:var(--text);font-weight:600;}
+.sw-l span{color:var(--text-3);}
+
+kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border:1px solid var(--hairline-str);
+  border-bottom-width:2px;border-radius:3px;padding:1px 5px;color:var(--text);white-space:nowrap;}
+
+.foot{margin-top:var(--s9);padding-top:var(--s5);border-top:1px solid var(--hairline);
+  font-family:var(--f-mono);font-size:var(--t-xs);color:var(--text-3);}
+
+/* ===== Mock terminal chrome — .ui- namespace, isolated from document styles ===== */
+.screen{border:1px solid var(--hairline-str);border-radius:var(--radius);overflow:hidden;
+  background:var(--ui-bg);color:var(--ui-fg);font-family:var(--f-mono);font-size:11px;line-height:1.45;
+  --ui-bg:#0C1013;--ui-panel:#12181A;--ui-panel2:#171F21;--ui-line:#26312F;--ui-line2:#35443F;
+  --ui-fg:#DFE6E4;--ui-fg2:#9FADA9;--ui-fg3:#74827E;
+  --ui-up:#5B9DEA;--ui-down:#E0913F;--ui-acc:#35B5A8;--ui-warn:#E0A44B;--ui-crit:#E0707E;--ui-ai:#B49BE8;}
+.screen *{box-sizing:border-box;}
+.screen-scroll{overflow-x:auto;overflow-y:hidden;}
+.screen-inner{min-width:1120px;}
+.screen-cap{display:flex;gap:12px;align-items:baseline;justify-content:space-between;
+  font-family:var(--f-mono);font-size:var(--t-xs);color:var(--text-3);
+  margin-top:8px;letter-spacing:.02em;flex-wrap:wrap;}
+.screen-cap b{color:var(--text-2);font-weight:600;}
+
+/* --- top chrome --- */
+.ui-top{display:flex;align-items:stretch;border-bottom:1px solid var(--ui-line);background:var(--ui-panel);}
+.ui-cmd{flex:1;display:flex;align-items:center;gap:8px;padding:7px 10px;border-right:1px solid var(--ui-line);}
+.ui-cmd-sig{color:var(--ui-acc);font-weight:600;}
+.ui-cmd-txt{color:var(--ui-fg);}
+.ui-cmd-ghost{color:var(--ui-fg3);}
+.ui-caret{display:inline-block;width:7px;height:13px;background:var(--ui-acc);vertical-align:-2px;}
+.ui-go{padding:1px 6px;border:1px solid var(--ui-acc);color:var(--ui-acc);border-radius:2px;font-size:10px;letter-spacing:.06em;}
+.ui-status{display:flex;align-items:center;gap:14px;padding:7px 12px;color:var(--ui-fg2);font-size:10px;white-space:nowrap;}
+.ui-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:0px;}
+.ui-dot.ok{background:var(--ui-acc);} .ui-dot.warn{background:var(--ui-warn);} .ui-dot.bad{background:var(--ui-crit);}
+
+/* --- workspace tabs --- */
+.ui-tabs{display:flex;align-items:stretch;background:var(--ui-bg);border-bottom:1px solid var(--ui-line);}
+.ui-tab{padding:6px 13px;color:var(--ui-fg3);border-right:1px solid var(--ui-line);letter-spacing:.03em;}
+.ui-tab.on{color:var(--ui-fg);background:var(--ui-panel);box-shadow:inset 0 -2px 0 var(--ui-acc);}
+.ui-links{margin-left:auto;display:flex;align-items:center;gap:6px;padding:0 12px;color:var(--ui-fg3);font-size:10px;}
+.ui-chip{width:11px;height:11px;border-radius:2px;display:inline-block;border:1px solid rgba(255,255,255,.25);}
+
+/* --- panel grid --- */
+.ui-grid{display:grid;gap:1px;background:var(--ui-line);}
+.ui-panel{background:var(--ui-panel);display:flex;flex-direction:column;min-width:0;min-height:0;}
+.ui-head{display:flex;align-items:center;gap:8px;padding:5px 9px;background:var(--ui-panel2);
+  border-bottom:1px solid var(--ui-line);font-size:10px;letter-spacing:.07em;color:var(--ui-fg2);text-transform:uppercase;}
+.ui-head b{color:var(--ui-fg);font-weight:600;letter-spacing:.05em;}
+.ui-head .r{margin-left:auto;color:var(--ui-fg3);text-transform:none;letter-spacing:.01em;font-size:10px;}
+.ui-body{padding:7px 9px;overflow:hidden;flex:1;min-height:0;}
+.ui-body.flush{padding:0;}
+
+/* --- tables --- */
+.ui-t{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:11px;}
+.ui-t th{text-align:left;font-weight:500;color:var(--ui-fg3);font-size:9.5px;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-bottom:1px solid var(--ui-line);white-space:nowrap;background:var(--ui-panel2);}
+.ui-t td{padding:3px 7px;border-bottom:1px solid rgba(255,255,255,.035);white-space:nowrap;}
+.ui-t td.n,.ui-t th.n{text-align:right;}
+.ui-t tr.sel td{background:rgba(53,181,168,.10);box-shadow:inset 2px 0 0 var(--ui-acc);}
+.up{color:var(--ui-up);} .dn{color:var(--ui-down);} .acc{color:var(--ui-acc);}
+.mut{color:var(--ui-fg3);} .mut2{color:var(--ui-fg2);} .warn{color:var(--ui-warn);} .crit{color:var(--ui-crit);}
+.tk{color:var(--ui-fg);font-weight:600;}
+
+/* --- badges --- */
+.b{display:inline-block;padding:0px 4px;border-radius:2px;font-size:9px;letter-spacing:.05em;
+   border:1px solid currentColor;line-height:1.5;}
+.b-p{color:var(--ui-up);}   .b-s{color:var(--ui-down);}
+.b-plan{color:var(--ui-warn);} .b-disc{color:var(--ui-acc);}
+.b-ai{color:var(--ui-ai);} .b-stale{color:var(--ui-warn);} .b-crit{color:var(--ui-crit);}
+.b-fact{color:var(--ui-fg3);}
+
+/* --- misc --- */
+.ui-kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;}
+.ui-kv dt{color:var(--ui-fg3);} .ui-kv dd{margin:0;color:var(--ui-fg);text-align:right;font-variant-numeric:tabular-nums;}
+.ui-bar{height:5px;background:var(--ui-line);border-radius:1px;overflow:hidden;}
+.ui-bar>i{display:block;height:100%;background:var(--ui-acc);}
+.ui-note{border-left:2px solid var(--ui-ai);padding:5px 8px;background:rgba(180,155,232,.07);color:var(--ui-fg2);}
+.ui-cite{color:var(--ui-ai);border-bottom:1px dotted var(--ui-ai);cursor:help;}
+.ui-freeze{color:var(--ui-warn);border:1px solid var(--ui-warn);padding:0 5px;border-radius:2px;font-size:9px;}
+
+</style>
+<div class="wrap">
+<nav class="rail" aria-label="Contents">
+  <p class="rail-brand">Argus</p>
+  <p class="rail-sub">design plan · v0.1 · 2026-08-25</p>
+
+  <p class="rail-h">Case</p>
+  <a href="#bet"><code>BET</code><span>The gap</span></a>
+  <a href="#cnpt"><code>CNPT</code><span>Concept</span></a>
+
+  <p class="rail-h">Screens</p>
+  <a href="#scrn"><code>SCRN</code><span>Mockups</span></a>
+
+  <p class="rail-h">Substance</p>
+  <a href="#feat"><code>FEAT</code><span>Feature inventory</span></a>
+  <a href="#arch"><code>ARCH</code><span>Architecture</span></a>
+  <a href="#data"><code>DATA</code><span>Data &amp; licensing</span></a>
+  <a href="#ai"><code>AI</code><span>Knowledge layer</span></a>
+  <a href="#sec"><code>SEC</code><span>Security</span></a>
+  <a href="#ux"><code>UX</code><span>Design system</span></a>
+
+  <p class="rail-h">Delivery</p>
+  <a href="#plan"><code>PLAN</code><span>Roadmap</span></a>
+  <a href="#risk"><code>RISK</code><span>Risks &amp; cuts</span></a>
+</nav>
+
+<main class="main">
+
+<header class="hero">
+  <p class="eyebrow">Windows trading terminal · information only · plan</p>
+  <h1>Who is buying it, who is dumping it, and who is paid to make the number.</h1>
+  <p class="lede">
+    A native Windows research terminal for one person. Equities and FX, no order execution, no broker
+    connection. Its distinguishing lens is <strong>incentives</strong> — insider transactions, ownership,
+    compensation structure and positioning treated as the primary surface rather than a bolt-on screener —
+    sitting on top of a knowledge base that I author, version and sign on a schedule.
+  </p>
+  <div class="hero-meta">
+    <span><b>Codename</b> Argus</span>
+    <span><b>Scope</b> single user, read-only</span>
+    <span><b>Stack</b> .NET 10 LTS + WPF</span>
+    <span><b>To MVP</b> ~34 eng-weeks</span>
+    <span><b>Run cost</b> $190–560/mo</span>
+    <span><b>Research</b> 8 dossiers · 201 findings</span>
+  </div>
+</header>
+
+<section id="bet">
+  <div class="sec-head"><span class="sec-mn">BET</span><h2>The gap this fills</h2>
+    <span class="sec-note">and the part of the thesis that does not survive</span></div>
+
+  <p>
+    The market is barbelled. Institutional terminals — Bloomberg, LSEG Workspace, FactSet, S&amp;P Capital IQ,
+    AlphaSense — publish no prices and sell annual enterprise seats. The prosumer tier clusters tightly between
+    $25 and $200 a month and is, without exception, a browser app: Koyfin ($39/$79), TIKR ($24.95–$119.95),
+    TradingView ($12.95–$199.95), Finviz Elite ($39.50), BamSEC Pro ($69), ORTEX ($49/$149),
+    Unusual Whales ($50–$120).
+  </p>
+  <p>
+    The structurally important finding is that <strong>OpenBB — the closest analogue — has abandoned the desktop
+    terminal.</strong> The open-source repo is now an "Open Data Platform", AGPL-3.0-only, reframed as a data
+    layer feeding a cloud workspace. AGPL plus a cloud pivot means you build <em>beside</em> it, borrowing its
+    provider-abstraction pattern, not on top of it.
+  </p>
+
+  <div class="pillars">
+    <div class="pil"><p class="pil-n">LEG 1 · holds</p><h4>Native research desktop</h4>
+      <p>Genuinely vacant. The surviving native platforms — Sierra Chart, NinjaTrader, MultiCharts, AmiBroker —
+         are execution and TA tools. Nobody ships a native multi-monitor <em>research</em> terminal.</p></div>
+    <div class="pil"><p class="pil-n">LEG 2 · holds</p><h4>Incentives as the primary lens</h4>
+      <p>Unowned. Fintel, Quiver, ORTEX, WhaleWisdom, 2iQ and Smart Insider each hold one fragment.
+         The global insider layer is enterprise-only.</p></div>
+    <div class="pil"><p class="pil-n">LEG 3 · holds</p><h4>Versioned, cited knowledge</h4>
+      <p>Novel against the generic RAG chatbots now shipping everywhere. A curated, diffable, signed
+         knowledge base is a different object from a chat box over your documents.</p></div>
+    <div class="pil"><p class="pil-n">LEG 4 · fails</p><h4>FX as a co-equal pillar</h4>
+      <p>This is the weak leg. TradingView already owns cheap FX charting, and FX has no ownership or
+         insider layer — so it dilutes the incentives thesis rather than reinforcing it.</p></div>
+  </div>
+
+  <div class="call warn">
+    <p class="call-h">Recommendation you did not ask for</p>
+    <p>
+      You asked for forex and stocks, and the plan keeps both. But I am not going to build you a second-rate
+      TradingView. <strong>FX belongs in this terminal as a macro and positioning surface, not as a charting
+      product</strong> — rate differentials, carry, COT positioning, central-bank reaction functions, session
+      structure. That is the FX work that has no good prosumer home, and it is the FX work that actually
+      rhymes with the incentives pillar: CFTC Commitments of Traders is the closest thing FX has to an
+      insider filing. Screen 04 shows what that looks like. If you want candlestick FX charting too, it is
+      cheap to add — it just should not be what the product is <em>for</em>.
+    </p>
+  </div>
+</section>
+
+<section id="cnpt">
+  <div class="sec-head"><span class="sec-mn">CNPT</span><h2>Concept</h2>
+    <span class="sec-note">three pillars, one invariant</span></div>
+
+  <p>
+    Argus is named for the hundred-eyed watchman. The product is a surveillance instrument pointed at
+    <em>disclosure</em>: the regulatory paper trail that public companies and large holders are compelled to
+    produce, normalised, scored and put next to the price.
+  </p>
+
+  <h3>The organising insight</h3>
+  <p>
+    Almost all of the incentives pillar is buildable on <strong>free primary regulatory sources</strong>.
+    The moat is not a data licence — it is normalisation, latency discipline and signal construction.
+    SEC EDGAR's <code>data.sec.gov</code> submissions, <code>companyfacts</code>, full-text search and daily
+    index files cost nothing and require only a declared User-Agent and a 10 requests/second ceiling. CFTC
+    Commitments of Traders is a free Socrata endpoint. FINRA's daily short-volume file is free. Cboe's CDN
+    serves a complete option chain with Greeks for nothing, which is a working gamma-exposure engine with no
+    vendor at all.
+  </p>
+  <p>
+    What you pay for is real-time equity prices, a fundamentals spine, and optionally borrow data. Everything
+    that makes this product <em>different</em> is free — and therefore defensible only by building it properly.
+  </p>
+
+  <h3>The three pillars</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pillar</th><th>What it answers</th><th>Primary sources</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Incentives &amp; insiders</td>
+        <td>Who is buying with their own money, who is selling on a schedule, who is paid to hit which metric,
+            who has pledged their shares to a bank.</td>
+        <td class="mono">EDGAR Forms 3/4/5/144, 13D/G, 13F, DEF 14A Item 402(v), 8-K; UK NSM/RNS; EU MAR Art.19;
+            EDINET; SEDI; HKEX DI</td><td class="mono">$0</td></tr>
+      <tr><td class="nm">Market &amp; macro</td>
+        <td>What the price is doing, what is priced in, where positioning is crowded, what the calendar holds.</td>
+        <td class="mono">Massive (ex-Polygon), IBKR, OANDA, ECB, FRED/ALFRED, CFTC COT, FINRA, Cboe CDN</td>
+        <td class="mono">$0–330/mo</td></tr>
+      <tr><td class="nm">Knowledge layer</td>
+        <td>What any of it means — sector primers, company dossiers, event playbooks, red-flag checklists,
+            filing-reading guides — kept current and cited.</td>
+        <td class="mono">Claude-authored signed packs + RAG over your own filing corpus</td>
+        <td class="mono">$60–250/mo</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call dec">
+    <p class="call-h">The invariant everything else hangs from</p>
+    <p>
+      <strong>Argus must never become a distributor.</strong> One person seeing full-depth Nasdaq TotalView
+      pays $15.00/month as a non-professional subscriber. An external distributor of the identical feed pays
+      $4,230/month plus per-subscriber fees. That is not a pricing tier, it is a category change, and the
+      trigger is a second human seeing the screen. The architecture treats this as a tested invariant — no
+      network listener, no export of raw licensed ticks, no hosted view, no screenshot bot — not as a policy
+      note in a README.
+    </p>
+  </div>
+</section>
+
+<section id="scrn">
+  <div class="sec-head"><span class="sec-mn">SCRN</span><h2>Mockups</h2>
+    <span class="sec-note">rendered UI · dark by design, on any page theme</span></div>
+
+  <p>
+    These are live HTML, not pictures — the type, density, colour and column structure below are the real
+    specification. They render dark regardless of your page theme because the terminal itself is dark; that is
+    a deliberate single-theme commitment for the app, not an omission. All figures carry a
+    <strong>SAMPLE DATA</strong> stamp: tickers are real companies, but every filing, price and name is
+    illustrative. Nothing here is a record of an actual transaction by an actual person.
+  </p>
+
+  <figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+
+  <!-- ============ SHELL CHROME ============ -->
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span>
+      <span class="ui-cmd-txt">INSIDER CLUSTER</span>
+      <span class="ui-cmd-ghost">&nbsp;mcap&lt;2B&nbsp; window=30d&nbsp; code=P&nbsp; officers&gt;=2</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">F1 help &nbsp;·&nbsp; ⌥1-4 panel &nbsp;·&nbsp; SPACE freeze</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>MASSIVE rt</span>
+      <span><span class="ui-dot ok"></span>EDGAR 0.4s</span>
+      <span><span class="ui-dot warn"></span>ORTEX 22m</span>
+      <span class="mut">NON-PRO</span>
+      <span class="mut">$41.20/mo</span>
+      <span class="acc">KP v2026.08.24</span>
+      <span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-tabs">
+    <div class="ui-tab">PRE-MARKET</div>
+    <div class="ui-tab">INTRADAY</div>
+    <div class="ui-tab on">INSIDER RADAR</div>
+    <div class="ui-tab">FX DESK</div>
+    <div class="ui-tab">RESEARCH</div>
+    <div class="ui-tab">REVIEW</div>
+    <div class="ui-links">
+      LINK
+      <span class="ui-chip" style="background:#35B5A8"></span>
+      <span class="ui-chip" style="background:#E0A44B"></span>
+      <span class="ui-chip" style="background:#B49BE8"></span>
+      <span class="ui-chip" style="background:transparent"></span>
+      <span class="mut">·&nbsp; 16:47:03 ET &nbsp;·&nbsp; Form 4 window open → 22:00</span>
+    </div>
+  </div>
+
+  <!-- ============ BODY ============ -->
+  <div class="ui-grid" style="grid-template-columns:340px 1fr 372px;height:600px;">
+
+    <!-- LEFT: live Form 4 tape -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>FORM 4 TAPE</b><span class="mut">live</span><span class="r">241 today · 0.4s lag</span></div>
+      <div class="ui-body flush" style="overflow:hidden">
+        <table class="ui-t">
+          <thead><tr><th>ET</th><th>SYM</th><th>ROLE</th><th>C</th><th class="n">VALUE</th><th>FLAG</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td class="mut">16:46:58</td><td class="tk">CRSP</td><td>CFO</td><td><span class="b b-p">P</span></td><td class="n up">$1.84M</td><td><span class="b b-disc">DISC</span></td></tr>
+            <tr><td class="mut">16:46:12</td><td class="tk">CRSP</td><td>Dir</td><td><span class="b b-p">P</span></td><td class="n up">$612K</td><td><span class="b b-disc">DISC</span></td></tr>
+            <tr><td class="mut">16:44:39</td><td class="tk">ONON</td><td>CEO</td><td><span class="b b-s">S</span></td><td class="n dn">$4.10M</td><td><span class="b b-plan">10b5-1</span></td></tr>
+            <tr><td class="mut">16:41:07</td><td class="tk">CRSP</td><td>EVP R&amp;D</td><td><span class="b b-p">P</span></td><td class="n up">$430K</td><td><span class="b b-disc">DISC</span></td></tr>
+            <tr><td class="mut">16:38:55</td><td class="tk">APP</td><td>Dir</td><td><span class="b b-s">S</span></td><td class="n dn">$18.7M</td><td><span class="b b-plan">10b5-1</span></td></tr>
+            <tr><td class="mut">16:35:20</td><td class="tk">TXG</td><td>10%</td><td><span class="b b-p">P</span></td><td class="n up">$2.95M</td><td><span class="b b-disc">DISC</span></td></tr>
+            <tr><td class="mut">16:33:02</td><td class="tk">ONON</td><td>CFO</td><td><span class="b b-s">S</span></td><td class="n dn">$1.22M</td><td><span class="b b-plan">10b5-1</span></td></tr>
+            <tr><td class="mut">16:29:48</td><td class="tk">HIMS</td><td>Dir</td><td><span class="b b-p">P</span></td><td class="n up">$275K</td><td><span class="b b-disc">DISC</span></td></tr>
+            <tr><td class="mut">16:24:11</td><td class="tk">MRNA</td><td>EVP</td><td class="mut">M+S</td><td class="n mut">$840K</td><td><span class="b b-plan">10b5-1</span></td></tr>
+            <tr><td class="mut">16:19:36</td><td class="tk">RIVN</td><td>Officer</td><td class="mut">F</td><td class="n mut">$96K</td><td><span class="b b-fact">TAX</span></td></tr>
+            <tr><td class="mut">16:12:04</td><td class="tk">CRSP</td><td>Dir</td><td><span class="b b-p">P</span></td><td class="n up">$188K</td><td><span class="b b-disc">DISC</span></td></tr>
+            <tr><td class="mut">16:08:52</td><td class="tk">SOFI</td><td>Dir</td><td><span class="b b-s">S</span></td><td class="n dn">$3.30M</td><td><span class="b b-plan">10b5-1</span></td></tr>
+            <tr><td class="mut">16:03:17</td><td class="tk">ASTS</td><td>10%</td><td><span class="b b-s">S</span></td><td class="n dn">$22.4M</td><td><span class="b b-disc">DISC</span></td></tr>
+          </tbody>
+        </table>
+        <div style="padding:6px 9px;border-top:1px solid var(--ui-line)" class="mut">
+          F=tax withholding · M+S=option exercise &amp; sell · <span class="acc">P=open-market buy</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTRE -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>CLUSTER LEADERBOARD</b><span class="mut">30d · open-market buys only</span><span class="r">ranked by conviction</span></div>
+      <div class="ui-body flush">
+        <table class="ui-t">
+          <thead><tr><th>SYM</th><th class="n">CONV</th><th class="n">BUYERS</th><th class="n">$ NET</th><th class="n">% SHOUT</th><th class="n">vs SALARY</th><th>OPPORTUNISTIC</th><th class="n">SI%</th><th class="n">1M</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td class="tk">CRSP</td><td class="n acc"><b>94</b></td><td class="n">4 <span class="mut">/9</span></td><td class="n up">+$3.07M</td><td class="n">0.31%</td><td class="n up">7.4×</td><td><span class="b b-disc">4 of 4 OPP</span></td><td class="n warn">18.4</td><td class="n dn">−12.6%</td></tr>
+            <tr><td class="tk">TXG</td><td class="n acc"><b>81</b></td><td class="n">3 <span class="mut">/7</span></td><td class="n up">+$4.11M</td><td class="n">0.55%</td><td class="n up">11.2×</td><td><span class="b b-disc">3 of 3 OPP</span></td><td class="n warn">24.1</td><td class="n dn">−21.3%</td></tr>
+            <tr><td class="tk">HIMS</td><td class="n">67</td><td class="n">3 <span class="mut">/11</span></td><td class="n up">+$710K</td><td class="n">0.04%</td><td class="n up">2.1×</td><td><span class="b b-disc">2 of 3 OPP</span></td><td class="n crit">31.7</td><td class="n dn">−8.1%</td></tr>
+            <tr><td class="tk">CELH</td><td class="n">58</td><td class="n">2 <span class="mut">/8</span></td><td class="n up">+$1.44M</td><td class="n">0.09%</td><td class="n up">3.6×</td><td><span class="b b-fact">1 of 2 OPP</span></td><td class="n">12.9</td><td class="n dn">−4.4%</td></tr>
+            <tr><td class="tk">DOCS</td><td class="n">44</td><td class="n">2 <span class="mut">/6</span></td><td class="n up">+$392K</td><td class="n">0.02%</td><td class="n">1.1×</td><td><span class="b b-fact">0 of 2 OPP</span></td><td class="n">7.2</td><td class="n up">+2.9%</td></tr>
+            <tr><td class="tk">PGNY</td><td class="n mut">31</td><td class="n">2 <span class="mut">/9</span></td><td class="n up">+$204K</td><td class="n">0.01%</td><td class="n mut">0.6×</td><td><span class="b b-fact">0 of 2 OPP</span></td><td class="n">9.8</td><td class="n dn">−1.2%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ui-head" style="border-top:1px solid var(--ui-line)"><b>CONVICTION DECOMPOSITION</b><span class="mut">CRSP</span><span class="r">click any factor → evidence</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:8px">
+          <tbody>
+            <tr><td style="width:190px">Cluster breadth <span class="mut">4 distinct filers / 14d</span></td><td style="width:150px"><span class="ui-bar"><i style="width:92%"></i></span></td><td class="n acc">+28</td><td class="mut">Cohen–Malloy–Pomorski cluster</td></tr>
+            <tr><td>Opportunistic <span class="mut">no trade same-month prior 3y</span></td><td><span class="ui-bar"><i style="width:100%"></i></span></td><td class="n acc">+24</td><td class="mut">routine filers score 0</td></tr>
+            <tr><td>Size vs comp <span class="mut">7.4× base salary</span></td><td><span class="ui-bar"><i style="width:74%"></i></span></td><td class="n acc">+18</td><td class="mut">skin-in-the-game normaliser</td></tr>
+            <tr><td>Discretionary <span class="mut">aff10b5One = false</span></td><td><span class="ui-bar"><i style="width:100%"></i></span></td><td class="n acc">+15</td><td class="mut">not a pre-scheduled plan</td></tr>
+            <tr><td>Buying into weakness <span class="mut">−12.6% 1M</span></td><td><span class="ui-bar"><i style="width:61%"></i></span></td><td class="n acc">+9</td><td class="mut">contrarian, not momentum</td></tr>
+            <tr><td>CFO participation</td><td><span class="ui-bar"><i style="width:100%"></i></span></td><td class="n acc">+8</td><td class="mut">CFO &gt; CEO &gt; director weight</td></tr>
+            <tr><td class="warn">Pledged shares <span class="mut">2 filers, margin loans</span></td><td><span class="ui-bar"><i style="width:30%;background:var(--ui-warn)"></i></span></td><td class="n warn">−8</td><td class="mut">forced-sale risk</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note">
+          <span class="b b-ai">AI INFERENCE</span>&nbsp; Four insiders bought within 14 days at a 3-year low, none on a 10b5-1 plan, none of whom
+          traded in August in the prior three years — the profile the literature calls <em>opportunistic</em>. Weigh against
+          <span class="crit">18.4% short interest</span> and a <span class="warn">Sept 2026 lock-up expiry</span>.
+          <span class="mut">Sources: <span class="ui-cite">Form 4 ×4</span> <span class="ui-cite">DEF 14A p.42</span> <span class="ui-cite">FINRA SI 08-15</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: filing detail -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>FILING DETAIL</b><span class="r">acc 0001209191-26-0418<span class="mut">33</span></span></div>
+      <div class="ui-body" style="overflow:hidden">
+        <dl class="ui-kv" style="margin-bottom:8px">
+          <dt>Issuer</dt><dd>CRISPR Therapeutics <span class="mut">CIK 1674416</span></dd>
+          <dt>Reporting person</dt><dd>[ CFO ] <span class="mut">CIK 1802..</span></dd>
+          <dt>Relationship</dt><dd>Officer — CFO</dd>
+          <dt>Transaction date</dt><dd>2026-08-22</dd>
+          <dt>Filed</dt><dd>2026-08-24 16:46 ET <span class="acc">T+2 ✓</span></dd>
+          <dt>Code</dt><dd><span class="b b-p">P</span> open-market purchase</dd>
+          <dt>Shares</dt><dd>42,500</dd>
+          <dt>Price</dt><dd>$43.28 <span class="mut">wtd avg</span></dd>
+          <dt>Value</dt><dd class="up">$1,839,400</dd>
+          <dt>Owned after</dt><dd>171,240 <span class="up">+33%</span></dd>
+          <dt>Ownership form</dt><dd>D <span class="mut">direct</span></dd>
+          <dt>10b5-1 plan</dt><dd><span class="b b-disc">FALSE</span> <span class="mut">doc-level flag</span></dd>
+        </dl>
+        <div class="ui-head" style="margin:0 -9px 6px;border-top:1px solid var(--ui-line)"><b>FOOTNOTES</b><span class="r">parsed</span></div>
+        <div class="mut2" style="margin-bottom:8px;white-space:normal">
+          (1) Weighted-average price; shares purchased in multiple trades $42.91–$43.60.
+          Full range reported to the issuer on request.
+        </div>
+        <div class="ui-head" style="margin:0 -9px 6px;border-top:1px solid var(--ui-line)"><b>PERSON GRAPH</b><span class="r">3 issuers</span></div>
+        <table class="ui-t">
+          <thead><tr><th>ISSUER</th><th>ROLE</th><th class="n">LAST P</th><th class="n">HIT 6M</th></tr></thead>
+          <tbody>
+            <tr><td class="tk">CRSP</td><td>CFO</td><td class="n">2026-08-22</td><td class="n up">+18%</td></tr>
+            <tr><td class="tk">NTLA</td><td>Director</td><td class="n">2025-11-04</td><td class="n up">+41%</td></tr>
+            <tr><td class="tk">BEAM</td><td>Director</td><td class="n mut">none</td><td class="n mut">—</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          Forward return after this filer's prior open-market buys, 6m horizon. n=4 — <span class="warn">too small to infer skill</span>.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>01 · Insider Radar</b> — the flagship surface. Form 4 tape, cluster ranking, conviction decomposition, filing forensics.</span>
+  <span>Sample data for layout. 2560×1440; panels reflow to 2 columns below 1600px.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">CRSP US Equity&nbsp; INCENTIVES</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">OWN · SI · COMP · DIFF · GRAPH</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>XBRL 2026-08-11</span><span class="mut">FY25 DEF 14A</span>
+      <span class="acc">KP v2026.08.24</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:1fr 1fr 340px;height:560px;">
+
+    <!-- comp structure -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>PAY → BEHAVIOUR</b><span class="mut">what the CEO is paid to do</span><span class="r">DEF 14A 2026-04-09</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>COMPONENT</th><th class="n">$</th><th class="n">% TOTAL</th><th>METRIC</th><th>PERIOD</th></tr></thead>
+          <tbody>
+            <tr><td>Base salary</td><td class="n">$720K</td><td class="n">6%</td><td class="mut">—</td><td class="mut">—</td></tr>
+            <tr><td>Annual cash bonus</td><td class="n">$1.15M</td><td class="n">10%</td><td class="warn">Adj. EBITDA 60% · pipeline 40%</td><td>1y</td></tr>
+            <tr><td>PSU</td><td class="n">$6.40M</td><td class="n">55%</td><td class="crit">Relative TSR vs XBI</td><td>3y cliff</td></tr>
+            <tr><td>RSU</td><td class="n">$2.10M</td><td class="n">18%</td><td class="mut">time only</td><td>4y ratable</td></tr>
+            <tr><td>Options</td><td class="n">$1.28M</td><td class="n">11%</td><td class="mut">strike $61.40</td><td>4y</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>INCENTIVE READ</b><span class="r">deterministic flags</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td><span class="b b-crit">FLAG</span> Options underwater</td><td class="mut">strike $61.40 vs spot $43.28 — <span class="crit">−29.5%</span></td></tr>
+            <tr><td><span class="b b-crit">FLAG</span> PSU on relative TSR</td><td class="mut">rewards beating XBI, not absolute value</td></tr>
+            <tr><td><span class="b b-stale">WATCH</span> Bonus on <em>Adjusted</em> EBITDA</td><td class="mut">non-GAAP; add-backs at board discretion</td></tr>
+            <tr><td><span class="b b-stale">WATCH</span> 2 filers pledged shares</td><td class="mut">margin loans → forced-sale risk</td></tr>
+            <tr><td><span class="b b-fact">OK</span> Clawback policy</td><td class="mut">2023 listing standard, filed as Ex-97</td></tr>
+            <tr><td><span class="b b-fact">OK</span> No repricing in 3y</td><td class="mut">no Item 402(x) spring-loading found</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ownership + short -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>OWNERSHIP &amp; FLOW</b><span class="r">mixed vintages — see stamps</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>HOLDER</th><th class="n">SHARES</th><th class="n">%OUT</th><th class="n">Δ QTR</th><th>AS OF</th></tr></thead>
+          <tbody>
+            <tr><td>Vanguard</td><td class="n">8.14M</td><td class="n">9.6%</td><td class="n up">+2.1%</td><td><span class="b b-stale">13F Q2 · 45d</span></td></tr>
+            <tr><td>BlackRock</td><td class="n">6.02M</td><td class="n">7.1%</td><td class="n dn">−0.8%</td><td><span class="b b-stale">13F Q2 · 45d</span></td></tr>
+            <tr><td>Baker Bros</td><td class="n">4.88M</td><td class="n">5.8%</td><td class="n up">+18.4%</td><td><span class="b b-disc">13D 08-04</span></td></tr>
+            <tr><td>State Street</td><td class="n">2.41M</td><td class="n">2.8%</td><td class="n mut">+0.1%</td><td><span class="b b-stale">13F Q2 · 45d</span></td></tr>
+            <tr><td class="acc">Insiders (agg.)</td><td class="n">1.92M</td><td class="n">2.3%</td><td class="n up">+9.4%</td><td><span class="b b-disc">Form 4 · live</span></td></tr>
+          </tbody>
+        </table>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Short interest</td><td class="n crit">18.4%</td><td class="mut">of float</td><td><span class="b b-stale">FINRA 08-15 · bi-monthly</span></td></tr>
+            <tr><td>Days to cover</td><td class="n warn">6.2</td><td class="mut">on 30d ADV</td><td><span class="b b-stale">derived</span></td></tr>
+            <tr><td>Borrow fee</td><td class="n warn">14.2%</td><td class="mut">annualised</td><td><span class="b b-stale">ORTEX · 22m</span></td></tr>
+            <tr><td>Off-exchange</td><td class="n">51.3%</td><td class="mut">of volume</td><td><span class="b b-disc">FINRA daily</span></td></tr>
+            <tr><td>Lock-up expiry</td><td class="n warn">2026-09-18</td><td class="mut">4.1M sh</td><td><span class="b b-disc">424B4</span></td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px;white-space:normal;border-top:1px solid var(--ui-line);padding-top:7px">
+          Every row carries its own vintage. 13F is 45 days stale by law; short interest is bi-monthly;
+          Form 4 is near-live. The panel never blends them into one “as of”.
+        </div>
+      </div>
+    </div>
+
+    <!-- filing diff -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>10-K REDLINE</b><span class="mut">FY25 vs FY24</span><span class="r">ranked by materiality</span></div>
+      <div class="ui-body" style="overflow:hidden">
+        <table class="ui-t" style="margin-bottom:8px">
+          <thead><tr><th>ITEM</th><th>CHANGE</th><th class="n">MAT</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>1A Risk</td><td class="crit">+ new: “manufacturing single-source”</td><td class="n crit">HIGH</td></tr>
+            <tr><td>7 MD&amp;A</td><td class="warn">“expect” → “may”, guidance para</td><td class="n warn">MED</td></tr>
+            <tr><td>1A Risk</td><td class="warn">− removed: “sufficient capital 24mo”</td><td class="n warn">MED</td></tr>
+            <tr><td>3 Legal</td><td class="mut">+ patent IPR filed</td><td class="n mut">LOW</td></tr>
+            <tr><td>9A Controls</td><td class="mut">no change</td><td class="n mut">—</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-bottom:8px">
+          <span class="b b-ai">AI INFERENCE</span>&nbsp; The removal of the 24-month capital-sufficiency statement is the
+          highest-signal change: it was present in FY22–FY24 and is now absent, while the lock-up expires in September.
+          <div class="mut" style="margin-top:5px">Evidence: <span class="ui-cite">FY25 10-K Item 1A ¶12</span> · <span class="ui-cite">FY24 10-K Item 1A ¶11</span></div>
+        </div>
+        <div class="ui-head" style="margin:0 -9px 6px;border-top:1px solid var(--ui-line)"><b>FACTS</b><span class="r">XBRL companyfacts</span></div>
+        <dl class="ui-kv">
+          <dt>Cash &amp; equiv</dt><dd>$1.24B <span class="mut">10-Q Q2</span></dd>
+          <dt>Quarterly burn</dt><dd class="dn">−$186M</dd>
+          <dt>Runway <span class="mut">derived</span></dt><dd class="warn">6.7 qtrs</dd>
+          <dt>Shares out</dt><dd>84.9M</dd>
+          <dt>Segment revenue</dt><dd class="mut">not in companyfacts</dd>
+        </dl>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          Segment data is dimensional XBRL and is <span class="warn">absent from companyfacts</span> — it must come from the
+          filing’s own instance document, not the convenience API.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>02 · Company Dossier → Incentives</b> — compensation decoded into behaviour, ownership with per-row vintage, filing redline ranked by materiality.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">?</span><span class="ui-cmd-txt">why are insiders buying CRSP into a 52-week low</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">&gt; command&nbsp; @symbol&nbsp; #screen&nbsp; ?ask</span>
+    </div>
+    <div class="ui-status">
+      <span class="acc">KP v2026.08.24</span><span><span class="ui-dot ok"></span>verified Ed25519</span>
+      <span class="mut">$3.71 today</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:1fr 400px;height:560px;">
+
+    <!-- assistant -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>ANALYST</b><span class="mut">read-only · no write tools</span><span class="r">Opus · 14.2s · 31K cached</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal;line-height:1.6">
+
+        <div style="border-left:2px solid var(--ui-fg3);padding:5px 9px;margin-bottom:10px">
+          <span class="b b-fact">FACT</span>&nbsp;<span class="mut">deterministic pipeline · no model in path</span>
+          <table class="ui-t" style="margin-top:6px">
+            <tbody>
+              <tr><td>Open-market buys, 14d</td><td class="n up">4 filers · $3.07M</td><td><span class="ui-cite">Form 4 ×4</span></td></tr>
+              <tr><td>All discretionary</td><td class="n">aff10b5One = false</td><td><span class="ui-cite">doc flag</span></td></tr>
+              <tr><td>Price vs 52w</td><td class="n dn">−61.2%</td><td><span class="ui-cite">Massive EOD</span></td></tr>
+              <tr><td>Short interest</td><td class="n crit">18.4%</td><td><span class="ui-cite">FINRA 08-15</span></td></tr>
+              <tr><td>Cash runway</td><td class="n warn">6.7 qtrs</td><td><span class="ui-cite">10-Q Q2 XBRL</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui-note" style="margin-bottom:10px">
+          <span class="b b-ai">INFERENCE</span>&nbsp;<span class="mut">model-generated · every number cited or struck</span>
+          <p style="margin:7px 0 0">
+            Three readings fit the facts, and they are not equally likely.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>1. Genuine conviction.</b> Four filers, none on a plan, none of whom bought in August in the prior three
+            years — the <em>opportunistic</em> profile that carries roughly
+            <span class="ui-cite">82bp/month abnormal return</span> in Cohen–Malloy–Pomorski, against ~0 for routine filers.
+            The CFO's purchase is <span class="ui-cite">7.4× base salary</span>, which is not a gesture.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>2. Signalling into a financing.</b> The FY25 10-K <span class="ui-cite">dropped its 24-month capital-sufficiency
+            language</span> and a <span class="ui-cite">lock-up expires 2026-09-18</span>. Insider buying ahead of a raise is a
+            known way to support a price. This is the reading the bull case must survive.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>3. Squeeze positioning.</b> 18.4% short with a 14.2% borrow fee. Cheap to buy, expensive to be short.
+          </p>
+          <p style="margin:9px 0 0" class="mut2">
+            What would separate them: an 8-K or 424B in the next six weeks favours (2). Continued buying
+            <em>after</em> the lock-up date favours (1). I have set a watch on both.
+          </p>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-crit);padding:5px 9px;background:rgba(224,112,126,.07)">
+          <span class="b b-crit">WITHHELD</span>&nbsp;<span class="mut2">2 sentences removed — numeric claims with no retrievable source.
+          <span class="acc" style="border-bottom:1px dotted">show what was cut</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- knowledge pack -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>KNOWLEDGE PACK</b><span class="mut">what your terminal learned</span><span class="r">03:14 ET</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal">
+        <dl class="ui-kv" style="margin-bottom:9px">
+          <dt>Version</dt><dd>2026.08.24 <span class="mut">← 2026.08.17</span></dd>
+          <dt>Signature</dt><dd class="acc">Ed25519 ✓</dd>
+          <dt>Claims changed</dt><dd>34 <span class="up">+21</span> <span class="dn">−6</span> <span class="warn">~7</span></dd>
+          <dt>Approval</dt><dd class="warn">awaiting review</dd>
+        </dl>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>CLAIM DIFF</b><span class="r">every claim cited</span></div>
+
+        <div style="border-left:2px solid var(--ui-up);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-p">ADDED</span> <span class="mut">gene-editing / financing-risk</span>
+          <div style="margin-top:4px">Clinical-stage biotechs with &lt;8 quarters runway historically raise within 2 quarters of dropping capital-sufficiency language.</div>
+          <div class="mut" style="margin-top:4px">conf <b>0.62</b> · decays 2027-02 · <span class="ui-cite">3 sources</span></div>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-warn);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-stale">REVISED</span> <span class="mut">us-regulatory/short-reporting</span>
+          <div style="margin-top:4px">
+            <span class="dn" style="text-decoration:line-through">Form SHO short-position data available from 2026.</span><br>
+            <span class="up">SEC exemption extended to 2 Jan 2028; first filings ~Feb 2028. Do not architect around it.</span>
+          </div>
+          <div class="mut" style="margin-top:4px">conf <b>0.94</b> · <span class="ui-cite">SEC release</span></div>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-crit);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-crit">RETIRED</span> <span class="mut">eu-regulatory/mar-19</span>
+          <div style="margin-top:4px"><span class="dn" style="text-decoration:line-through">PDMR notification threshold is €5,000 across the EU.</span></div>
+          <div class="mut" style="margin-top:4px">DE/FR/IT/DK raised to €50,000 on 2026-01-01 — creates a volume discontinuity in any cross-year comparison.</div>
+        </div>
+
+        <div class="mut" style="border-top:1px solid var(--ui-line);padding-top:7px;margin-top:9px">
+          Packs are authored on a schedule, signed with a key that never ships in the binary, and verified before load.
+          Rejecting a pack rolls back to the previous version; nothing auto-applies without this review.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>03 · Analyst &amp; Knowledge Pack</b> — facts and inference are structurally separate surfaces, not tone differences. Uncited numeric claims are struck before render.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">USDJPY Curncy&nbsp; DRIVERS</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">no consolidated tape — every quote carries its venue</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>OANDA v20</span><span><span class="ui-dot ok"></span>ECB ref</span>
+      <span><span class="ui-dot warn"></span>COT T+3</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:300px 1fr 1fr;height:540px;">
+
+    <!-- quote board -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>QUOTE BOARD</b><span class="r">source-labelled</span></div>
+      <div class="ui-body flush">
+        <table class="ui-t">
+          <thead><tr><th>PAIR</th><th class="n">BID</th><th class="n">SPR</th><th>VENUE</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td class="tk">USD/JPY</td><td class="n">154.28<span class="mut">2</span></td><td class="n mut">0.8</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">EUR/USD</td><td class="n">1.0914<span class="mut">6</span></td><td class="n mut">0.4</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">GBP/USD</td><td class="n">1.2733<span class="mut">1</span></td><td class="n mut">0.9</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">AUD/USD</td><td class="n">0.6602<span class="mut">4</span></td><td class="n mut">0.7</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">USD/CHF</td><td class="n">0.8841<span class="mut">0</span></td><td class="n mut">1.1</td><td class="mut">OANDA</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:7px 9px;border-top:1px solid var(--ui-line)" class="mut">
+          <div style="margin-bottom:5px"><span class="b b-stale">ECB REF</span> EUR/USD 1.0921 · 14:15 CET</div>
+          <div>Dealable ≠ official. The terminal never merges a dealer stream and a central-bank fixing into one “price”.</div>
+          <div style="margin-top:6px" class="warn">Tick count is not volume. No FX volume is shown.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- drivers -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>DRIVER STACK</b><span class="mut">USD/JPY</span><span class="r">why it is here</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>DRIVER</th><th class="n">LEVEL</th><th class="n">1M Δ</th><th class="n">β</th></tr></thead>
+          <tbody>
+            <tr><td>2y rate diff <span class="mut">US−JP</span></td><td class="n">3.71%</td><td class="n dn">−28bp</td><td class="n acc">0.81</td></tr>
+            <tr><td>10y rate diff</td><td class="n">2.94%</td><td class="n dn">−19bp</td><td class="n">0.64</td></tr>
+            <tr><td>OIS-implied Fed cuts <span class="mut">12m</span></td><td class="n">−71bp</td><td class="n dn">−34bp</td><td class="n">0.58</td></tr>
+            <tr><td>Carry <span class="mut">3m fwd pts</span></td><td class="n up">+3.42%</td><td class="n dn">−0.31</td><td class="n">0.44</td></tr>
+            <tr><td>Nikkei / S&amp;P ratio</td><td class="n">0.912</td><td class="n up">+1.8%</td><td class="n mut">0.21</td></tr>
+            <tr><td>Real yield diff</td><td class="n">1.12%</td><td class="n dn">−22bp</td><td class="n">0.49</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>INTERVENTION WATCH</b><span class="r">MoF monthly</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Last confirmed op</td><td class="n">2024-07</td><td class="mut">¥5.53T</td></tr>
+            <tr><td>Verbal escalation</td><td class="n warn">stage 2 of 3</td><td class="mut">“closely watching”</td></tr>
+            <tr><td>Level vs last op</td><td class="n crit">−2.1%</td><td class="mut">inside prior zone</td></tr>
+            <tr><td>Reported cadence</td><td class="mut" colspan="2">monthly, T+30 — never intraday</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px;white-space:normal">
+          Intervention data is published a month late. This panel shows escalation <em>language</em> and proximity to prior
+          operating zones — it cannot tell you an intervention is happening now, and does not claim to.
+        </div>
+      </div>
+    </div>
+
+    <!-- positioning -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>POSITIONING</b><span class="mut">the FX “insider” proxy</span><span class="r">CFTC COT · Tue data, Fri release</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>COHORT</th><th class="n">NET</th><th class="n">Δ WK</th><th class="n">%ILE 3Y</th></tr></thead>
+          <tbody>
+            <tr><td>Leveraged funds</td><td class="n dn">−82.4K</td><td class="n dn">−11.2K</td><td class="n crit">4th</td></tr>
+            <tr><td>Asset managers</td><td class="n up">+41.9K</td><td class="n up">+3.8K</td><td class="n">71st</td></tr>
+            <tr><td>Dealer/intermediary</td><td class="n up">+38.1K</td><td class="n up">+6.9K</td><td class="n">66th</td></tr>
+            <tr><td>Open interest</td><td class="n">231K</td><td class="n up">+4.1%</td><td class="n">58th</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-bottom:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; Leveraged short is at a 3-year extreme while the rate differential —
+          the dominant driver at β 0.81 — has moved <em>against</em> the short for a month. That is a crowded position
+          losing its fundamental support.
+          <div class="mut" style="margin-top:5px">Data is Tuesday's, released Friday. <span class="warn">Three days stale by construction.</span></div>
+        </div>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>SESSION</b><span class="r">Sun 17:00 ET week open</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Tokyo</td><td class="mut">closed</td><td class="n mut">0.31% ATR</td></tr>
+            <tr><td>London</td><td class="acc">open</td><td class="n">0.44% ATR</td></tr>
+            <tr><td>NY overlap</td><td class="acc">open · 2h14m left</td><td class="n up">0.58% ATR</td></tr>
+            <tr><td>Rollover</td><td class="warn">17:00 ET · spread widens</td><td class="n mut">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>04 · FX Desk</b> — FX as a macro and positioning surface, not a second charting product. Every quote names its venue; nothing pretends to a consolidated tape.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">#</span><span class="ui-cmd-txt">small caps where insiders bought over $1m in 30d and short interest above 15%</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+    </div>
+    <div class="ui-status"><span class="acc">compiled → SQL</span><span class="mut">no model in result path</span><span class="ui-freeze">SAMPLE DATA</span></div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:1fr 420px;height:470px;">
+
+    <div class="ui-panel">
+      <div class="ui-head"><b>COMPILED QUERY</b><span class="mut">editable before it runs</span><span class="r">deterministic · reproducible</span></div>
+      <div class="ui-body" style="overflow:hidden">
+        <pre style="margin:0 0 9px;padding:8px;background:#0A0E10;border:1px solid var(--ui-line);border-radius:2px;color:var(--ui-fg2);font-size:10.5px;line-height:1.6;white-space:pre-wrap;overflow-x:auto"><span class="acc">SELECT</span> t.symbol, t.mcap, i.net_usd, i.n_filers, s.si_pct, s.borrow_bps
+<span class="acc">FROM</span>   universe t
+<span class="acc">JOIN</span>   insider_net_30d i <span class="acc">USING</span>(symbol)
+<span class="acc">JOIN</span>   short_interest  s <span class="acc">USING</span>(symbol)
+<span class="acc">WHERE</span>  t.mcap <span class="acc">&lt;</span> 2e9
+  <span class="acc">AND</span>  i.net_usd <span class="acc">&gt;</span> 1e6
+  <span class="acc">AND</span>  i.code <span class="acc">=</span> <span class="warn">'P'</span>          <span class="mut">-- open-market only, not option exercise</span>
+  <span class="acc">AND</span>  s.si_pct <span class="acc">&gt;</span> 15.0
+<span class="acc">ORDER BY</span> i.n_filers <span class="acc">DESC</span>, i.net_usd <span class="acc">DESC</span>;</pre>
+        <div class="mut" style="white-space:normal;margin-bottom:9px">
+          The model writes the query; the query produces the rows. Results are never generated by the model, so the
+          same screen run twice returns the same answer and can be diffed over time.
+        </div>
+        <table class="ui-t">
+          <thead><tr><th>SYM</th><th class="n">MCAP</th><th class="n">$ NET</th><th class="n">FILERS</th><th class="n">SI%</th><th class="n">BORROW</th><th class="n">CONV</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td class="tk">CRSP</td><td class="n">$3.7B</td><td class="n up">+$3.07M</td><td class="n">4</td><td class="n warn">18.4</td><td class="n warn">1420bp</td><td class="n acc">94</td></tr>
+            <tr><td class="tk">TXG</td><td class="n">$1.4B</td><td class="n up">+$4.11M</td><td class="n">3</td><td class="n warn">24.1</td><td class="n crit">2870bp</td><td class="n acc">81</td></tr>
+            <tr><td class="tk">HIMS</td><td class="n">$1.9B</td><td class="n up">+$710K</td><td class="n">3</td><td class="n crit">31.7</td><td class="n crit">4110bp</td><td class="n">67</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px;white-space:normal">
+          <span class="warn">CRSP mcap $3.7B exceeds the $2B filter.</span> It is shown because “small cap” was interpreted as
+          a label, not a bound — <span class="acc" style="border-bottom:1px dotted">tighten to the literal filter</span>.
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-panel">
+      <div class="ui-head"><b>ALERTS</b><span class="mut">3 armed</span><span class="r">audit trail kept</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal">
+        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:7px">
+          <div><span class="b b-disc">ARMED</span> <b class="tk">Form 4 · watchlist</b></div>
+          <div class="mut" style="margin-top:4px">code = P <span class="acc">AND</span> value &gt; $250K <span class="acc">AND</span> aff10b5One = false</div>
+          <div class="mut" style="margin-top:4px">→ toast + sound · <span class="warn">fires 16:00–22:00 ET</span> when the Section 16 window is open</div>
+        </div>
+        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:7px">
+          <div><span class="b b-disc">ARMED</span> <b class="tk">CRSP · financing tell</b></div>
+          <div class="mut" style="margin-top:4px">new 8-K <span class="acc">OR</span> 424B <span class="acc">OR</span> S-3 within 45d</div>
+          <div class="mut" style="margin-top:4px">→ set by the analyst thread, 2026-08-24 16:52</div>
+        </div>
+        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:9px">
+          <div><span class="b b-stale">THROTTLED</span> <b class="tk">USDJPY · vol</b></div>
+          <div class="mut" style="margin-top:4px">1m range &gt; 2× ATR20 — <span class="warn">fired 14× today, muted 30m</span></div>
+        </div>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>DEGRADED STATE</b><span class="r">what failure looks like</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td><span class="ui-dot bad"></span>ORTEX</td><td class="crit">auth failed</td><td class="mut">borrow shows last-good + age</td></tr>
+            <tr><td><span class="ui-dot warn"></span>Massive WS</td><td class="warn">reconnect 2/5</td><td class="mut">REST backfill on resume</td></tr>
+            <tr><td><span class="ui-dot ok"></span>EDGAR</td><td class="acc">nominal</td><td class="mut">—</td></tr>
+            <tr><td><span class="ui-dot ok"></span>Local cache</td><td class="acc">14.2 GB</td><td class="mut">reads offline</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px">
+          A dead provider greys its panel and stamps the age of the last good value. It never renders a stale
+          number as though it were live, and never silently substitutes another provider without saying so.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>05 · Screener &amp; Alerts</b> — natural language compiles to SQL you can read and edit; the model never produces the rows. Degraded state is a designed screen, not an afterthought.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
+
+
+  <div class="call">
+    <p class="call-h">What the mockups are arguing</p>
+    <ul>
+      <li><strong>Density is the feature.</strong> 20–24px rows, hairline rules, tabular figures, no cards,
+          no shadows. Whitespace in a blotter is paid for in scroll events.</li>
+      <li><strong>Every number carries its own vintage.</strong> A 13F row is 45 days stale by law, short
+          interest is bi-monthly, a Form 4 is near-live. The ownership panel never blends them into one
+          "as of" — each row is stamped separately.</li>
+      <li><strong>Fact and inference are different surfaces</strong>, not different tones of voice. Facts come
+          from deterministic pipelines with no model in the path. Inference is visually segregated, and any
+          numeric sentence without a citation is struck before it renders.</li>
+      <li><strong>Failure is a designed screen.</strong> A dead provider greys its panel and stamps the age of
+          the last good value. It never renders stale data as live, and never silently fails over to another
+          source without saying so.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="feat">
+  <div class="sec-head"><span class="sec-mn">FEAT</span><h2>Feature inventory</h2>
+    <span class="sec-note">20 modules · 210 candidates · re-prioritised</span></div>
+
+  <p>
+    The research produced 210 candidate features. 103 of them came back marked P0, which is what happens when
+    eight specialists each rank their own domain — it is not a credible plan. What follows is re-prioritised
+    against a single test: <em>does this serve the incentives lens or the knowledge layer, and would its
+    absence make the terminal not worth opening?</em> Everything else moved down.
+  </p>
+
+  <h3>Module 1 · Insiders &amp; incentives <span class="p0">FLAGSHIP</span></h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
+    <tbody>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Insider Tape</td><td>Live filterable stream of every Form 3/4/5 and 144 as it hits EDGAR.</td><td class="mono">EDGAR daily index + Atom</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Form 4 Signal Decoder</td><td>Normalises by transaction code — P open-market buy vs F tax withholding vs M+S exercise-and-sell vs G gift. The single highest-value normalisation in the product.</td><td class="mono">Form 345 XML</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Conviction Score</td><td>0–100 per transaction: code, role weight, size vs holdings and vs salary, discretionary vs planned, buying into weakness.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Cluster Radar</td><td>Multiple distinct insiders, same issuer, same direction, inside a window. The strongest documented insider signal.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">10b5-1 Forensics</td><td>Reads the document-level <code>aff10b5One</code> flag plus Item 408(a) adoption dates; separates scheduled from discretionary.</td><td class="mono">Form 4 + 10-Q Item 5</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Footnote Resolver</td><td>Parses footnotes for what the schema omits: weighted-average price ranges, plan references, indirect ownership chains.</td><td class="mono">Form 4 footnotes</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Event Latency Ledger</td><td>Stamps every datum with event date, filing date, ingest date and age. Underpins every staleness badge.</td><td class="mono">internal</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Paid To Make The Number</td><td>Parses iXBRL-tagged Item 402(v) Pay-versus-Performance and the CD&amp;A metric list into an incentive model: which metric, which period, which cliff.</td><td class="mono">DEF 14A</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Form 144 Early Warning</td><td>Proposed-sale notices land 1–3 days ahead of the Form 4 that confirms them.</td><td class="mono">EDGAR 144</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Governance Stress Timeline</td><td>Ribbon of 8-K 4.01 auditor changes, 4.02 non-reliance, 5.02 departures, NT 10-K late filings, Item 404 related-party.</td><td class="mono">EDGAR 8-K</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Pledged-Share Detector</td><td>Margin-loan pledges from the proxy — a forced-sale risk that reads as insider selling when it fires.</td><td class="mono">DEF 14A</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Person Graph</td><td>Insider identity resolved across issuers — the same director on five boards, with per-filer history.</td><td class="mono">CIK graph</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">13D/G Activist Watch</td><td>Exploits the post-2024 compressed 5-business-day deadline; parses Item 4 intent language.</td><td class="mono">EDGAR 13D/G</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Global Insider Desk</td><td>Normalised PDMR feed across UK NSM/RNS, EU MAR Art.19, EDINET, SEDI, ASX 3Y, HKEX DI. Where every retail product gives up.</td><td class="mono">6 regimes</td><td class="n mono">XL</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Insider vs Institution Divergence</td><td>Insiders buying while institutions distribute.</td><td class="mono">derived</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Filing Punctuality Score</td><td>Business days from transaction to filing, per filer. Chronic lateness is a governance tell.</td><td class="mono">derived</td><td class="n mono">S</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Module 2 · Ownership &amp; flows</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
+    <tbody>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Ownership Map</td><td>Top holders, concentration, QoQ deltas, new and exited positions — each row stamped with its own vintage.</td><td class="mono">13F data sets</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Short Pressure Console</td><td>FINRA bi-monthly short interest with an explicit age badge, days-to-cover, off-exchange share, borrow fee.</td><td class="mono">FINRA + ORTEX</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Ownership Delta Tape</td><td>13F changes as a flow tape rather than a static table.</td><td class="mono">13F</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Free GEX Engine</td><td>Full-chain gamma exposure, flip level, per-strike profile, max pain — from the free Cboe CDN chain with Greeks.</td><td class="mono">Cboe CDN · $0</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Off-Exchange Share Tracker</td><td>Daily FINRA TRF/ADF/ORF volume over consolidated volume.</td><td class="mono">FINRA · $0</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Ownership Chain Resolver</td><td>Reporting-owner CIK → person → indirect ownership vehicles and trusts.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">HKEX CCASS Monitor</td><td>Participant-level shareholding deltas for HK listings.</td><td class="mono">HKEX</td><td class="n mono">M</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Module 3 · Company research</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
+    <tbody>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Point-in-Time Financial Model</td><td>Normalised statements from <code>companyfacts</code>, keyed to accession and filed date so no view is contaminated by later restatements.</td><td class="mono">XBRL · $0</td><td class="n mono">XL</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Filing Diff &amp; Materiality Redline</td><td>Structure-aware 10-K vs 10-K by Item, ranked by materiality. Removed language is the signal.</td><td class="mono">EDGAR</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Quality-of-Earnings Panel</td><td>Sloan accruals, cash conversion, DSO/DIO/DPO decomposition, capitalised-cost trends.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Red-Flag Scorecard</td><td>Beneish M, Altman Z, Piotroski F, Montier C — computed deterministically, annotated by AI.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Reverse-DCF</td><td>Solves for the growth and margin path the current price implies.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Filing Phrase Radar</td><td>Standing full-text queries: "material weakness", "going concern", "substantial doubt".</td><td class="mono">EDGAR FTS</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Consensus Snapshot Vault</td><td>Snapshots consensus daily from day one. Without this every surprise study is look-ahead contaminated, and it cannot be backfilled later.</td><td class="mono">vendor</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Segment &amp; SOTP Workbench</td><td>Segment splits from <em>dimensional</em> XBRL — which <code>companyfacts</code> silently drops.</td><td class="mono">instance docs</td><td class="n mono">XL</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Peer-Set Auto-Construction</td><td>Peer sets from the free <code>frames</code> API — 3,555 entities in one call.</td><td class="mono">XBRL frames</td><td class="n mono">M</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Modules 4–20 · condensed</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>#</th><th>Module</th><th>P0 core</th><th>Deferred</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">4</td><td class="nm">Market monitor &amp; watchlists</td><td>Virtualised 5,000-row blotter, flash-on-change with a 3/sec governor, six-channel linking, column sets</td><td class="mono">heatmap, mini-ticker, tray mode</td></tr>
+      <tr><td class="mono">5</td><td class="nm">Charting</td><td>Streaming candles on a FIFO ring buffer, <strong>incentives overlay ribbon</strong> (insider buys, 13D crossings, plan adoptions on the price axis), AVWAP anchored to events</td><td class="mono">replay, footprint, volume profile, drawing tools</td></tr>
+      <tr><td class="mono">6</td><td class="nm">Depth &amp; microstructure</td><td>Conflated tape and book renderer</td><td class="mono">TPO/market profile, cumulative delta, order imbalance</td></tr>
+      <tr><td class="mono">7</td><td class="nm">Screeners</td><td>SQL screener over the Parquet lake, NL→query compiler, saved view-sets</td><td class="mono">signal backtest harness</td></tr>
+      <tr><td class="mono">8</td><td class="nm">FX desk</td><td>Driver stack (rate diffs, CIP-implied carry), COT positioning, session engine, quote triangulation</td><td class="mono">vol surface, REER fair value, NDFs</td></tr>
+      <tr><td class="mono">9</td><td class="nm">Macro</td><td>Economic calendar, FRED/<strong>ALFRED vintages</strong>, yield curves, OIS-implied policy path</td><td class="mono">surprise index, factor returns</td></tr>
+      <tr><td class="mono">10</td><td class="nm">News &amp; filings feed</td><td>EDGAR filing stream, RSS from PR wires, phrase radar</td><td class="mono">sentiment scoring, transcript ingest</td></tr>
+      <tr><td class="mono">11</td><td class="nm">Events &amp; catalysts</td><td>Earnings (confirmed vs estimated flagged), lock-up expiries, index rebalances</td><td class="mono">FDA/court calendars, conferences</td></tr>
+      <tr><td class="mono">12</td><td class="nm">Alerts</td><td>Streaming rule engine, insider-aware composite predicates, fatigue governor, audit trail</td><td class="mono">three-lane NL compiler, mobile push</td></tr>
+      <tr><td class="mono">13</td><td class="nm">AI &amp; knowledge</td><td>Signed pack pull + hot-load, claim diff, evidence-locked answers, FACT/INFERENCE split</td><td class="mono">entity graph, call-tone analysis, comps</td></tr>
+      <tr><td class="mono">14</td><td class="nm">Journal &amp; discipline</td><td><kbd>Ctrl</kbd>+<kbd>J</kbd> quick capture, thesis card requiring an invalidation condition</td><td class="mono">pre-trade checklist agent, R-multiple analytics</td></tr>
+      <tr><td class="mono">15</td><td class="nm">Portfolio</td><td>Manual entry + CSV import, exposure by sector/currency</td><td class="mono">factor attribution, scenario shocks</td></tr>
+      <tr><td class="mono">16</td><td class="nm">Workspace</td><td>Named layouts, true multi-monitor tear-off with per-monitor DPI v2, linking channels</td><td class="mono">layout sync, workspace templates</td></tr>
+      <tr><td class="mono">17</td><td class="nm">Settings &amp; entitlements</td><td>Entitlement console (pro/non-pro), delay banner, <strong>API cost meter</strong>, licence ledger</td><td class="mono">per-panel cost attribution</td></tr>
+      <tr><td class="mono">18</td><td class="nm">Export</td><td>CSV, clipboard, snapshot-with-provenance (never raw licensed ticks)</td><td class="mono">Excel live cells (RTD)</td></tr>
+      <tr><td class="mono">19</td><td class="nm">Onboarding</td><td>Command catalogue, <kbd>?</kbd> cheat-sheet overlay, six shipped workspaces</td><td class="mono">guided tour</td></tr>
+      <tr><td class="mono">20</td><td class="nm">Diagnostics</td><td>Feed health monitor, schema-drift detection, cross-provider reconciliation</td><td class="mono">synthetic canaries</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call warn">
+    <p class="call-h">Features a plan like this normally forgets</p>
+    <p>
+      These are the ones that quietly decide whether the terminal is trustworthy, and every one of them came
+      out of the research rather than out of a feature brainstorm:
+    </p>
+    <ul>
+      <li><strong>The 23×5 session engine.</strong> The UTP tape moves to 23 hours a day, five days a week on
+          <strong>6 December 2026</strong>, Sunday 20:00 ET to Friday 20:00 ET, with new overnight LULD band
+          indicators. Any data model where "trading day" equals "calendar date" is structurally wrong within
+          months of launch. A session must be a named, venue-specific interval.</li>
+      <li><strong>The Form 4 filing wave is 16:00–22:00 ET</strong>, not intraday — EDGAR's Section 16 window
+          extends to 22:00. An insider alert designed around market hours will miss almost everything.</li>
+      <li><strong>FIGI-keyed identity.</strong> Tickers are mutable display labels. Reuse, spin-offs, mergers
+          and delistings all corrupt a ticker-keyed store.</li>
+      <li><strong>Survivorship.</strong> Every historical screen must run against a point-in-time universe
+          including dead names, or every backward-looking number is flattering nonsense.</li>
+      <li><strong>Adjustment policy as an explicit switch</strong> — unadjusted vs split vs split-and-dividend.
+          The classic bug is adjusting an already-adjusted series.</li>
+      <li><strong>Q4 is never filed</strong> and cash-flow facts are year-to-date cumulative, so TTM must be
+          derived by differencing. XBRL also carries no statement structure — you cannot render a financial
+          statement from <code>companyfacts</code> alone.</li>
+      <li><strong>$TICK, $TRIN and $ADD are proprietary calculated indices.</strong> They cannot be computed
+          from a consolidated tape; they are a paid feed or they are absent.</li>
+      <li><strong>Retail FX "volume" is tick count.</strong> Showing it as volume is a lie the UI should refuse
+          to tell.</li>
+    </ul>
+  </div>
+
+  <h3>Non-goals</h3>
+  <p>
+    Deliberately excluded, each for a reason: <strong>order execution and broker connectivity</strong> (a
+    different regulatory and security object entirely); <strong>anything multi-user</strong> — sharing, hosted
+    views, publishing (triggers the redistribution cliff); <strong>signals-as-a-service or copy-trading</strong>;
+    <strong>social features</strong>; <strong>alt data with PII</strong> (credit-card panels, geolocation — MNPI
+    and privacy hazards for no edge you can act on); <strong>automated strategy backtesting as a product</strong>
+    (the read-only evidence panels cover the honest 80% without pretending to a research platform).
+  </p>
+</section>
+
+<section id="arch">
+  <div class="sec-head"><span class="sec-mn">ARCH</span><h2>Architecture &amp; stack</h2>
+    <span class="sec-note">decided, not surveyed</span></div>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Layer</th><th>Choice</th><th>Why this and not the alternative</th><th class="n">Cost</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Runtime</td><td class="nm">.NET 10 LTS</td><td>GA Nov 2025, supported to Nov 2028. Covers the build window without a forced migration.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Shell</td><td class="nm">WPF <code>net10.0-windows</code></td><td>A terminal lives or dies on docking with multi-monitor tear-off and layout persistence. WPF is the only Microsoft stack in 2026 with three mature independent docking implementations. <strong>WinUI 3 still has no first-party dock manager</strong> — the tracking issues have been open for years. MAUI is disqualified: it pins the WindowsAppSDK version and is a full major version behind with no supported upgrade path.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Docking</td><td class="nm">Syncfusion DockingManager</td><td>Community licence at $0 if eligible; AvalonDock 4.72 as the MIT fallback.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Charting</td><td class="nm">SciChart WPF v9 2D Pro</td><td>The only .NET control with credible FIFO-streaming-at-scale evidence. Perpetual, royalty-free. ScottPlot 5 (MIT) for secondary panels.</td><td class="n mono">~$899</td></tr>
+      <tr><td class="mono">Analytics store</td><td class="nm">DuckDB 1.5 + hive-partitioned Parquet</td><td>Analytical engine with Arrow streaming and allocation-free append. Ticks land in daily Parquet.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">OLTP + vectors</td><td class="nm">SQLite (WAL) + <code>sqlite-vec</code></td><td>App state, watchlists, journal, alerts, and the embedding index. <strong>Avoid DuckDB VSS</strong> — HNSW persistence is still experimental with known WAL-recovery data-loss risk.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Packaging</td><td class="nm">Velopack, portable + delta</td><td>MSIX's per-user-only model and sideload friction buy nothing for a single-user app.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Signing</td><td class="nm">Azure Artifact Signing Basic</td><td>SmartScreen convenience, not a legal requirement here. OV + cloud HSM as fallback if the 3-year-entity eligibility rule blocks you.</td><td class="n mono">$9.99/mo</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Year-one licence total: roughly $1,020.</strong></p>
+
+  <h3>The Form 4 pipeline, with a latency budget</h3>
+  <p>
+    This is the path that has to be fast, because it is the product's reason to exist. Target is
+    <strong>filing visible on screen within 60 seconds</strong> of hitting EDGAR.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>#</th><th>Hop</th><th>Mechanism</th><th class="n">Budget</th><th>Failure mode handled</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td class="nm">Detect</td><td>Poll <code>browse-edgar?action=getcurrent</code> Atom at 2s, inside the 10 req/s fair-access ceiling with the mandatory declared User-Agent.</td><td class="n mono">≤2s</td><td>A generic browser UA gets an immediate SEC block page.</td></tr>
+      <tr><td class="mono">2</td><td class="nm">Fetch</td><td>Pull the Form 345 XML by accession number.</td><td class="n mono">~300ms</td><td>Retry with jittered backoff; circuit-break on repeated 403.</td></tr>
+      <tr><td class="mono">3</td><td class="nm">Parse</td><td><code>ownershipDocument</code> — derivative and non-derivative tables, transaction codes, and the document-level <code>aff10b5One</code> boolean.</td><td class="n mono">~50ms</td><td>Schema drift → quarantine + alert, never silent drop.</td></tr>
+      <tr><td class="mono">4</td><td class="nm">Resolve</td><td>CIK → FIGI → internal instrument. Supersede any prior 4/A amendment.</td><td class="n mono">~20ms</td><td>Ticker reuse and name changes never corrupt identity.</td></tr>
+      <tr><td class="mono">5</td><td class="nm">Score</td><td>Conviction model: code weight, role, size vs holdings and salary, discretionary flag, cluster membership.</td><td class="n mono">~30ms</td><td>Deterministic — no model in this path.</td></tr>
+      <tr><td class="mono">6</td><td class="nm">Fan out</td><td>Tape row, cluster recompute, alert evaluation, chart ribbon marker.</td><td class="n mono">~50ms</td><td>Backpressure via bounded channels.</td></tr>
+      <tr><td class="mono">7</td><td class="nm">Render</td><td>Conflated to frame rate; never bind a raw event stream to the UI thread.</td><td class="n mono">≤16ms</td><td>Flash governor caps at 3/sec.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call">
+    <p class="call-h">Provider abstraction</p>
+    <p>
+      One interface per <em>capability</em> — quotes, bars, fundamentals, filings, news, macro, FX — never per
+      vendor. Each adapter declares what it can serve and under which entitlement; a router picks the cheapest
+      capable source per request. This is the pattern OpenBB got right, and it is what makes vendor breakage
+      survivable: schema drift is caught by contract tests running against recorded fixtures plus a live canary,
+      and a dead provider degrades to last-known-good with a visible age stamp rather than taking a panel down.
+    </p>
+  </div>
+
+  <h3>Performance budgets</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Path</th><th class="n">Target</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Cold start to first paint</td><td class="n mono">&lt;2.5s</td><td>ReadyToRun, deferred panel hydration, cached layout tree</td></tr>
+      <tr><td>Panel open</td><td class="n mono">&lt;150ms</td><td>Local-first render, network fills in</td></tr>
+      <tr><td>Chart pan/zoom</td><td class="n mono">16ms/frame</td><td>FIFO ring buffer, GPU path, no per-tick allocation</td></tr>
+      <tr><td>Tick to pixel</td><td class="n mono">&lt;80ms</td><td>Lock-free ingest → last-value cache → frame-rate sampling</td></tr>
+      <tr><td>Form 4 to alert</td><td class="n mono">&lt;60s</td><td>The table above</td></tr>
+      <tr><td>Memory, 30 panels</td><td class="n mono">&lt;1.6GB</td><td>Server GC, struct-of-arrays, ArrayPool, virtualised grids</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="data">
+  <div class="sec-head"><span class="sec-mn">DATA</span><h2>Data, licensing &amp; cost</h2>
+    <span class="sec-note">the part that actually decides feasibility</span></div>
+
+  <p>
+    Because this is one person, own-use, and non-redistributive, the cost structure collapses. Below are three
+    honest tiers. The column that applies to you depends on a single question addressed underneath.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Component</th><th>Free build</th><th>Lean</th><th>Full</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Equity prices</td><td class="mono">Massive Basic (EOD) $0</td><td class="mono">Massive Developer $79</td><td class="mono">Massive Advanced $199</td></tr>
+      <tr><td class="nm">Depth / microstructure</td><td class="mono">—</td><td class="mono">—</td><td class="mono">Databento usage-based</td></tr>
+      <tr><td class="nm">Cross-check feed</td><td class="mono">—</td><td class="mono">IBKR non-pro ~$31</td><td class="mono">IBKR non-pro ~$31</td></tr>
+      <tr><td class="nm">Nasdaq TotalView (non-pro)</td><td class="mono">—</td><td class="mono">—</td><td class="mono">$15</td></tr>
+      <tr><td class="nm">FX</td><td class="mono">OANDA + ECB $0</td><td class="mono">OANDA + ECB $0</td><td class="mono">OANDA + ECB $0</td></tr>
+      <tr><td class="nm">Filings / insiders</td><td class="mono">EDGAR $0</td><td class="mono">EDGAR $0</td><td class="mono">EDGAR $0 + sec-api convenience</td></tr>
+      <tr><td class="nm">Borrow / short</td><td class="mono">FINRA $0</td><td class="mono">FINRA $0</td><td class="mono">ORTEX $49–149</td></tr>
+      <tr><td class="nm">Options / GEX</td><td class="mono">Cboe CDN $0</td><td class="mono">Cboe CDN $0</td><td class="mono">Cboe CDN $0</td></tr>
+      <tr><td class="nm">Macro</td><td class="mono">FRED/ALFRED, ECB, CFTC $0</td><td class="mono">$0</td><td class="mono">$0</td></tr>
+      <tr><td class="nm">Consensus estimates</td><td class="mono">absent</td><td class="mono">absent</td><td class="mono">vendor ~$50–100</td></tr>
+      <tr><td class="nm">AI</td><td class="mono">~$60</td><td class="mono">~$110</td><td class="mono">~$250</td></tr>
+      <tr><td><strong>Monthly</strong></td><td class="mono"><strong>~$60</strong></td><td class="mono"><strong>~$220</strong></td><td class="mono"><strong>~$560</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call crit">
+    <p class="call-h">The one question that changes your bill by 10–50×</p>
+    <p>
+      Exchanges classify you <strong>professional</strong> or <strong>non-professional</strong>, and it has
+      nothing to do with skill. The incoming <strong>CT Plan</strong> — approved by the SEC in July 2026,
+      replacing the CTA/CQ/UTP plans, launch expected early 2027 — makes the test <em>use-based</em> rather
+      than status-based. Its language captures any use "by or on behalf of any entity… limited liability
+      company…".
+    </p>
+    <p>
+      In plain terms: <strong>if you trade your own money in your own name, you are non-professional</strong> —
+      roughly $2.70/month of tape fees and $15/month for full Nasdaq depth. <strong>If you route through a
+      company or LLC, or you are employed by a financial entity, you are professional</strong> — roughly
+      $73/month in tape fees plus per-device charges, before vendor markups. Same software, same screen.
+      Given the Rothschild background, if that is current rather than past, assume the professional column.
+      This is worth confirming before you sign a single data contract.
+    </p>
+  </div>
+
+  <h3>Time-sensitive facts that would sink a naive plan</h3>
+  <ul>
+    <li><strong>Polygon.io is now Massive.com</strong> (effective 30 Oct 2025). <code>polygon.io/pricing</code>
+        301-redirects. Keys still work and <code>api.polygon.io</code> runs in parallel, but every doc link and
+        invoice reference changes. Several third-party comparison sites date this wrongly — cite vendors directly.</li>
+    <li><strong>Form SHO short-position reporting is not live.</strong> The SEC exemption from Rule 13f-2 now
+        runs to <strong>2 January 2028</strong>, first filings around February 2028. Do not architect around it.</li>
+    <li><strong>Securities-lending reporting (Rule 10c-1a) slipped</strong> to September 2028 for reporting and
+        March 2029 for dissemination.</li>
+    <li><strong>The 2023 daily buyback-disclosure rule was vacated</strong> by the Fifth Circuit. Item 703
+        monthly-in-quarterly is still the law.</li>
+    <li><strong>FINRA has a pending proposal to move short interest to weekly</strong> with T+1 turnaround.
+        Build the ingest so cadence is configuration, not an assumption.</li>
+    <li><strong>EU MAR Art.19 PDMR thresholds rose to €50,000</strong> in Germany, France, Italy and Denmark on
+        1 Jan 2026 — a volume discontinuity that will corrupt any naive cross-year comparison.</li>
+  </ul>
+</section>
+
+<section id="ai">
+  <div class="sec-head"><span class="sec-mn">AI</span><h2>The knowledge layer</h2>
+    <span class="sec-note">what "I update it personally" actually means</span></div>
+
+  <p>
+    You asked me to keep the AI knowledge current myself. The honest mechanism, and its one real constraint,
+    are worth stating plainly.
+  </p>
+
+  <div class="call warn">
+    <p class="call-h">The constraint</p>
+    <p>
+      A scheduled Claude Code Routine — the natural way to run "Claude updates this nightly" — requires a
+      claude.ai subscription login and <strong>cannot be driven by an API key</strong>. So this cannot be a
+      subsystem that ships inside the binary and runs on its own. It has to be <strong>your pipeline</strong>:
+      a Routine on your account, operating on a private repo, publishing signed packs the terminal then pulls.
+      That is a better design anyway — the signing key never ships in the app — but it does mean the update
+      loop lives beside the product rather than inside it.
+    </p>
+  </div>
+
+  <h3>Knowledge Packs</h3>
+  <p>
+    A pack is a versioned set of <em>claims</em>. Each claim carries a stable ID, a body, sources, a confidence
+    score and a decay date. Stable IDs are what make the diff possible: because a claim persists across
+    versions, the terminal can show you exactly which claims were added, revised or retired last night, and why —
+    the panel in screen 03.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Stage</th><th>What happens</th><th>Control</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">1 · Author</td><td>Scheduled Routine researches assigned pack classes, writes claims with sources, self-checks against the prior version.</td><td class="mono">~03:30 local, off-peak</td></tr>
+      <tr><td class="nm">2 · Gate</td><td>A frozen golden question set runs against the candidate pack. Regressions block publication.</td><td class="mono">automated</td></tr>
+      <tr><td class="nm">3 · Sign</td><td>Ed25519 over the pack and a manifest index. Key lives on your account, never in the binary.</td><td class="mono">key custody</td></tr>
+      <tr><td class="nm">4 · Distribute</td><td>Terminal polls a small signed <code>index.json</code> with ETag; downloads only changed packs.</td><td class="mono">bandwidth-cheap</td></tr>
+      <tr><td class="nm">5 · Verify</td><td>Signature checked before load. Failure → refuse and keep the previous version.</td><td class="mono">hard fail</td></tr>
+      <tr><td class="nm">6 · Review</td><td>Per pack class: Auto, Review (staged until approved), or Pinned. Rollback is one click.</td><td class="mono">your call</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>What goes in them</h4>
+  <p>
+    Sector and industry primers; per-company dossiers (business model, what actually drives the number, which
+    metrics matter for <em>that</em> company); FX pair dossiers (drivers, correlations, session behaviour,
+    central-bank reaction functions); event playbooks for CPI, NFP, FOMC, earnings and OPEC; accounting
+    red-flag checklists; insider-signal interpretation guides; filing-reading guides ordered by what to read
+    first for a given company type; a historical analogue library; and the terminal's own documentation, so the
+    assistant can answer "how do I…" without a separate help system.
+  </p>
+
+  <h3>Model routing</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Task</th><th>Where it runs</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Any displayed number, ratio or score</td><td class="nm">Deterministic code</td><td>No model in the path. Ever. This is what makes a FACT panel a fact.</td></tr>
+      <tr><td>Pack authoring, filing redline, thesis red-team</td><td class="nm">Opus, batch overnight</td><td>Judgment and citation quality; batch pricing halves it.</td></tr>
+      <tr><td>Interactive Q&amp;A</td><td class="nm">Opus with cached prefix</td><td>Cached input tokens do not count toward throughput limits, so caching buys speed as well as cost.</td></tr>
+      <tr><td>Hover-translate, query rewriting, NER, offline mode</td><td class="nm">Local small model</td><td>Cheap, private, works with no network. Your watchlist is your alpha — it should not leave the machine for a definition lookup.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call">
+    <p class="call-h">Two API facts that shape the build</p>
+    <ul>
+      <li><strong>Citations and structured outputs are mutually exclusive</strong> — requesting both returns a
+          400. Since "no citation, no claim" is the core guarantee, citations win, and the pack schema is
+          enforced by validation on the way out rather than by a structured-output constraint.</li>
+      <li><strong>The current tokenizer emits roughly 30% more tokens</strong> for the same text than older
+          ones. Any cost model built on older token counts is wrong by a third — the figures in the cost table
+          already account for this.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec">
+  <div class="sec-head"><span class="sec-mn">SEC</span><h2>Security</h2>
+    <span class="sec-note">two real adversaries, honestly assessed</span></div>
+
+  <p>
+    Single-user removes multi-tenancy, auth and account-takeover from the threat model entirely. What remains
+    is worth taking seriously, and one common mitigation is largely theatre.
+  </p>
+
+  <div class="call crit">
+    <p class="call-h">DPAPI does not protect you from the actual threat</p>
+    <p>
+      <code>CryptProtectData</code> binds a secret to your user account — but <em>any process running as you
+      can call <code>CryptUnprotectData</code></em>. That is precisely what the current infostealer families
+      do. Chrome's App-Bound Encryption tried to fix this class of problem with an elevation-service identity
+      check and was bypassed in about 45 days, then broken structurally.
+    </p>
+    <p>
+      What actually raises the bar: <strong>CNG with VBS/Credential-Guard-class key isolation, or the TPM
+      platform crypto provider, plus a user passphrase</strong> (Argon2id) so the ciphertext is not silently
+      machine-recoverable. SQLCipher, EFS and BitLocker protect against a stolen laptop — not against malware
+      running as you. This distinction should drive the design rather than being discovered later.
+    </p>
+    <p>
+      Worth knowing: trading brands are actively impersonated. One vendor tracked 75+ malicious
+      "TradingView Premium" ad campaigns across 500+ domains. Your own download path is an attack surface,
+      which is the real argument for signing the build.
+    </p>
+  </div>
+
+  <h3>The LLM boundary</h3>
+  <p>
+    This is the largest <em>new</em> attack surface, and it is not hypothetical. SEC filings, RNS
+    announcements, news, PDFs and RSS are <strong>attacker-controlled text</strong>. A hostile footnote in an
+    8-K is indirect prompt injection with a direct payoff: combined with markdown image rendering in a WebView2
+    panel, it can exfiltrate your watchlist — which is your alpha — through an image URL.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Control</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">AI can read, cannot act</td><td>Architectural, not a prompt instruction. The model process holds no credentials, no filesystem write, no network egress of its own.</td></tr>
+      <tr><td class="nm">Untrusted-content firewall</td><td>Every ingested document is parsed, stripped of hidden and zero-width characters, and provenance-tagged as untrusted before it reaches a context window.</td></tr>
+      <tr><td class="nm">Sanitised render</td><td>Allow-listed markdown → HTML inside WebView2 under a restrictive CSP. No remote image loads. No script.</td></tr>
+      <tr><td class="nm">Egress allow-list</td><td>Outbound hosts are enumerated and enforced, with a live console showing every host, byte count and quota burn.</td></tr>
+      <tr><td class="nm">Prompt redaction</td><td>Pre-flight strip of keys, tokens, file paths, machine identifiers from anything sent to a hosted model.</td></tr>
+      <tr><td class="nm">Pack channel integrity</td><td>The knowledge-pack repo is a supply-chain target. Signature verification is mandatory and fails closed; a compromised repo cannot push an unsigned pack.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Regulatory perimeter</h3>
+  <p>
+    Because it is only you, the advice perimeter does not bite — you cannot advise yourself, so the Advisers
+    Act, FCA Article 53 and financial promotions, MiFID II advice and MAR Art.20 recommendation-disclosure
+    rules are all inapplicable. <strong>The AI can be as opinionated and directive as you want.</strong> The
+    binding constraint is the market-data licensing cliff, which is why the no-distribution invariant is
+    architectural. One dormant control is worth keeping: a MAR Art.20 disclosure wrapper, shipped disabled, so
+    that if you ever add an export or share feature the compliance shape already exists rather than needing a
+    retrofit.
+  </p>
+</section>
+
+<section id="ux">
+  <div class="sec-head"><span class="sec-mn">UX</span><h2>Design system</h2>
+    <span class="sec-note">density, provenance, and one mandatory accessibility feature</span></div>
+
+  <h3>Principles</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Principle</th><th>Therefore</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Density is the feature</td><td>20–24px rows, hairline rules, no cards, no shadows, three density modes. Whitespace in a blotter costs scroll events.</td></tr>
+      <tr><td class="nm">Every number carries provenance</td><td><kbd>Ctrl</kbd>+<kbd>/</kbd> toggles a mode where every figure gains a dotted underline and becomes click-through to its source filing, with an as-of stamp on hover.</td></tr>
+      <tr><td class="nm">Staleness is never hidden</td><td>Per-row vintage badges. A 45-day-old 13F and a live Form 4 never share one "as of".</td></tr>
+      <tr><td class="nm">Fact and inference are different surfaces</td><td>Separate chrome systems, not separate tones. Uncited numeric claims are struck before render.</td></tr>
+      <tr><td class="nm">Object first, then verb</td><td><code>CRSP US Equity OWN</code> — the Bloomberg grammar, because it matches how you think: name the thing, then ask the question.</td></tr>
+      <tr><td class="nm">No mouse required</td><td>Full keyboard map, visible focus rings that survive a dark theme, disciplined tab order.</td></tr>
+      <tr><td class="nm">Degradation is designed</td><td>Every panel has a specified empty, loading, stale, unentitled and provider-down state.</td></tr>
+      <tr><td class="nm">The app never lies to look complete</td><td>No FX "volume" from tick counts. No blended vintages. No silent provider substitution.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Colour</h3>
+  <p>
+    Red/green fails roughly <strong>1 in 12 men</strong>. The default directional palette is therefore
+    <strong>Okabe-Ito blue and vermilion</strong>, with classic red/green available as an opt-in rather than
+    the reverse. Direction is additionally encoded by glyph and sign, so colour is never the sole carrier.
+    This document uses the same pair, so you can judge it in situ.
+  </p>
+  <div class="swatches">
+    <div class="sw"><div class="sw-c" style="background:#0072B2"></div><div class="sw-l"><b>#0072B2</b><span>up · Okabe-Ito blue</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#D55E00"></div><div class="sw-l"><b>#D55E00</b><span>down · vermilion</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#35B5A8"></div><div class="sw-l"><b>#35B5A8</b><span>accent · teal</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#E0A44B"></div><div class="sw-l"><b>#E0A44B</b><span>stale / warning</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#B49BE8"></div><div class="sw-l"><b>#B49BE8</b><span>AI inference</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#0C1013"></div><div class="sw-l"><b>#0C1013</b><span>ground · never pure black</span></div></div>
+  </div>
+  <p>
+    The accent is deliberately a different hue family from both directional colours, so "this is interactive"
+    never reads as "this went up". Every text token in this document was solved numerically to clear
+    <strong>WCAG AA (4.5:1) on all four surface levels in both themes</strong> — four values failed the first
+    pass and were corrected rather than asserted.
+  </p>
+
+  <h3>Type</h3>
+  <p>
+    IBM Plex Sans Condensed for panel headers (it reads as terminal chrome), IBM Plex Sans for prose, IBM Plex
+    Mono for all data. Tabular figures everywhere digits align. FX prices use three-tier rendering — big figure
+    de-emphasised, pip digits large, pipette small — because that is how the number is actually read.
+  </p>
+
+  <h3>Command grammar</h3>
+  <p>
+    A mnemonic line as primary, a fuzzy palette as the discoverability escape hatch. Sigils namespace the
+    palette: none for symbols, <code>&gt;</code> for verbs, <code>@</code> for function mnemonics,
+    <code>#</code> for screens, <code>?</code> to ask.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Command</th><th>Expands to</th><th>Command</th><th>Expands to</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">DES</td><td>Company description</td><td class="mono">OWN</td><td>Ownership map</td></tr>
+      <tr><td class="mono">INSD</td><td>Insider tape, filtered</td><td class="mono">CLUS</td><td>Cluster leaderboard</td></tr>
+      <tr><td class="mono">COMP</td><td>Pay → behaviour</td><td class="mono">PVP</td><td>Pay versus performance</td></tr>
+      <tr><td class="mono">SI</td><td>Short pressure console</td><td class="mono">BORR</td><td>Borrow &amp; lending</td></tr>
+      <tr><td class="mono">DIFF</td><td>Filing redline</td><td class="mono">FTS</td><td>Full-text phrase radar</td></tr>
+      <tr><td class="mono">GEX</td><td>Gamma exposure map</td><td class="mono">FLOW</td><td>Options flow</td></tr>
+      <tr><td class="mono">COT</td><td>CFTC positioning</td><td class="mono">DRIV</td><td>FX driver stack</td></tr>
+      <tr><td class="mono">CAL</td><td>Economic calendar</td><td class="mono">EVT</td><td>Catalysts &amp; lock-ups</td></tr>
+      <tr><td class="mono">QOE</td><td>Quality of earnings</td><td class="mono">RDCF</td><td>Reverse DCF</td></tr>
+      <tr><td class="mono">GRPH</td><td>Person / entity graph</td><td class="mono">GOV</td><td>Governance timeline</td></tr>
+      <tr><td class="mono">JRNL</td><td>Journal entry</td><td class="mono">THES</td><td>Thesis card</td></tr>
+      <tr><td class="mono">KP</td><td>Knowledge pack diff</td><td class="mono">HLTH</td><td>Provider health</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Keyboard</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Key</th><th>Action</th><th>Key</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td>Fuzzy palette</td><td><kbd>Alt</kbd>+<kbd>1..9</kbd></td><td>Named workspace</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>/</kbd></td><td>Provenance mode</td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>1..6</kbd></td><td>Link channel</td></tr>
+      <tr><td><kbd>Alt</kbd>+<kbd>P</kbd></td><td><strong>Freeze all live updates</strong></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td><td>Density mode</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>J</kbd></td><td>Journal quick-capture</td><td><kbd>?</kbd></td><td>Cheat-sheet overlay</td></tr>
+      <tr><td><kbd>F1</kbd></td><td>Command catalogue</td><td><kbd>Esc</kbd></td><td>Cancel / close</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call">
+    <p class="call-h">Freeze is mandatory, not a nicety</p>
+    <p>
+      WCAG 2.2 caps flashing at three per second, and requires a pause mechanism for auto-updating content
+      lasting more than five seconds. A live tape violates both by default. So: a <strong>global Freeze key</strong>
+      that halts all animation and pins every visible value with its freeze timestamp, and a
+      <strong>flash governor</strong> that degrades from per-cell flashing to a steady tint above three updates
+      per second. Both are accessibility requirements that happen to be exactly what you want at 09:30 anyway.
+      Screen readers get UIA notification events with most-recent processing — never a live region on the tape,
+      which would produce continuous unusable speech.
+    </p>
+  </div>
+</section>
+
+<section id="plan">
+  <div class="sec-head"><span class="sec-mn">PLAN</span><h2>Roadmap</h2>
+    <span class="sec-note">honest numbers, not encouraging ones</span></div>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Phase</th><th>Ships</th><th class="n">Eng-wks</th><th>Proves</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">0 · Walking skeleton</td><td>WPF shell, docking, one workspace, one live quote panel, SQLite/DuckDB store, provider abstraction with one adapter.</td><td class="n mono">6</td><td>The stack holds together.</td></tr>
+      <tr><td class="nm">1 · The pillar</td><td>Full EDGAR pipeline: Form 3/4/5/144 ingest, code decoder, footnote resolver, conviction score, cluster radar, insider tape, alerts. <strong>The Insider Radar screen.</strong></td><td class="n mono">14</td><td>The reason the product exists. Ship this before charting.</td></tr>
+      <tr><td class="nm">2 · MVP</td><td>Company dossier, XBRL point-in-time model, ownership map, short console, charting with the incentives ribbon, watchlists, screener.</td><td class="n mono">14</td><td>Daily-usable. <strong>~34 weeks to here.</strong></td></tr>
+      <tr><td class="nm">3 · Knowledge layer</td><td>Pack schema, authoring Routine, signing and distribution, hot-load, claim diff, evidence-locked answers, golden-set gate.</td><td class="n mono">12</td><td>The differentiator that is hardest to copy.</td></tr>
+      <tr><td class="nm">4 · v1</td><td>FX desk, macro, events, journal and thesis cards, GEX, alerts maturity, diagnostics, accessibility pass.</td><td class="n mono">20</td><td>Complete product. <strong>~66 weeks total.</strong></td></tr>
+      <tr><td class="nm">5 · v2</td><td>Global insider desk (6 regimes), entity graph, segment workbench, replay, microstructure.</td><td class="n mono">25+</td><td>Depth no competitor has.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call warn">
+    <p class="call-h">Where this estimate will be wrong</p>
+    <p>
+      The research put a solo build at 80–125 engineer-weeks to v1; I have it at ~66 because single-user
+      removes accounts, billing, onboarding-for-strangers and multi-tenant security. I would still treat 66 as
+      optimistic. The modules that habitually run 3–5× their estimate in this product class are, in order:
+      <strong>symbology and corporate actions</strong> (endless edge cases, no glory), <strong>charting</strong>
+      (the last 10% of interaction polish is half the work), <strong>real-time infrastructure</strong>
+      (reconnect, gap-fill, backpressure), and <strong>entitlements</strong>. Budget accordingly, and note that
+      Phase 1 is deliberately sequenced before charting so that if the project stalls you still own the thing
+      nobody else has.
+    </p>
+  </div>
+
+  <h3>What I would cut first</h3>
+  <p>
+    If this has to be smaller: drop microstructure and depth entirely (Module 6), drop chart replay, drop the
+    segment workbench, and defer the global insider desk to v2. The minimum slice that still delivers the
+    differentiating value is <strong>Phase 0 + Phase 1 + the dossier half of Phase 2</strong> — about 26 weeks —
+    because insider forensics plus a company dossier is already a product no one sells you.
+  </p>
+</section>
+
+<section id="risk">
+  <div class="sec-head"><span class="sec-mn">RISK</span><h2>Risks &amp; open questions</h2>
+    <span class="sec-note">what I would want answered before writing code</span></div>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Professional subscriber status</td><td><span class="p0">HIGH</span></td><td>Changes the data bill by 10–50×. Confirm before contracting. Design the entitlement console so the status is a setting, not an assumption baked into adapters.</td></tr>
+      <tr><td class="nm">Consensus estimates gap</td><td><span class="p0">HIGH</span></td><td>The one genuinely expensive dataset. Snapshot consensus daily from day one — it cannot be reconstructed retroactively, and without it every surprise and drift study is contaminated.</td></tr>
+      <tr><td class="nm">Provider breakage cadence</td><td><span class="p1">MED</span></td><td>Contract tests against recorded fixtures plus a live canary; schema drift quarantines rather than silently drops.</td></tr>
+      <tr><td class="nm">Scope collapse under solo build</td><td><span class="p1">MED</span></td><td>Phase 1 before charting. Ship the differentiator first.</td></tr>
+      <tr><td class="nm">Pack channel compromise</td><td><span class="p1">MED</span></td><td>Ed25519 verification fails closed; key never in the binary; rollback one click.</td></tr>
+      <tr><td class="nm">AI inference read as fact</td><td><span class="p1">MED</span></td><td>Structural surface separation plus uncited-claim striking. Worth watching in real use — this is the failure mode that costs money, and no amount of visual design fully eliminates it.</td></tr>
+      <tr><td class="nm">23×5 session change, Dec 2026</td><td><span class="p2">LOW</span></td><td>Session-as-interval from the start. Cheap now, expensive to retrofit.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Open questions for you</h3>
+  <ol>
+    <li><strong>Professional or non-professional?</strong> Own name, or through an entity? This is the single
+        highest-leverage answer and it changes the data architecture, not just the bill.</li>
+    <li><strong>Which markets beyond the US actually matter to you?</strong> The global insider desk is XL
+        effort spread across six regulatory regimes. If it is really just US and UK, that is a much smaller
+        job and it moves up the roadmap.</li>
+    <li><strong>How much does intraday matter versus multi-day research?</strong> The day-trader and the
+        Buffett-school analyst want different defaults. The plan currently leans research-first, with intraday
+        tooling present but not dominant.</li>
+    <li><strong>Do you want the FX charting after all?</strong> I have argued for FX as macro/positioning
+        context. Say the word and I will add the charting surface — I just will not pretend it is a
+        differentiator.</li>
+  </ol>
+
+  <div class="call dec">
+    <p class="call-h">If a second person ever uses this</p>
+    <p>
+      Everything changes at once: you become a redistributor, exchange fees multiply by subscriber, vendor
+      agreements and audit clauses attach, the advice perimeter reappears (FCA financial promotions, MAR Art.20
+      disclosure), and you need an EULA, auth and a support burden. Databento prices that transition explicitly
+      at $1,750/month. Do not drift into it accidentally — that is why no-distribution is an architectural
+      invariant with a test, and why the MAR wrapper ships dormant rather than absent.
+    </p>
+  </div>
+</section>
+
+<p class="foot">
+  Argus · design plan v0.1 · 2026-08-25 · plan only, nothing built.<br>
+  Sources: 8 domain research dossiers, 201 findings, live-verified 2026-08-24. Prices, regulations and API
+  terms are time-sensitive and were current at that date. Anything a researcher marked medium or low
+  confidence is flagged in the dossiers and should be re-verified before you contract on it.<br>
+  Mockups use real tickers with illustrative data; no filing, price or person shown is a real record.
+</p>
+
+</main>
+</div>

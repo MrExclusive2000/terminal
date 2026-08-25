@@ -1,0 +1,114 @@
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">CRSP US Equity&nbsp; INCENTIVES</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">OWN · SI · COMP · DIFF · GRAPH</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>XBRL 2026-08-11</span><span class="mut">FY25 DEF 14A</span>
+      <span class="acc">KP v2026.08.24</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:1fr 1fr 340px;height:560px;">
+
+    <!-- comp structure -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>PAY → BEHAVIOUR</b><span class="mut">what the CEO is paid to do</span><span class="r">DEF 14A 2026-04-09</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>COMPONENT</th><th class="n">$</th><th class="n">% TOTAL</th><th>METRIC</th><th>PERIOD</th></tr></thead>
+          <tbody>
+            <tr><td>Base salary</td><td class="n">$720K</td><td class="n">6%</td><td class="mut">—</td><td class="mut">—</td></tr>
+            <tr><td>Annual cash bonus</td><td class="n">$1.15M</td><td class="n">10%</td><td class="warn">Adj. EBITDA 60% · pipeline 40%</td><td>1y</td></tr>
+            <tr><td>PSU</td><td class="n">$6.40M</td><td class="n">55%</td><td class="crit">Relative TSR vs XBI</td><td>3y cliff</td></tr>
+            <tr><td>RSU</td><td class="n">$2.10M</td><td class="n">18%</td><td class="mut">time only</td><td>4y ratable</td></tr>
+            <tr><td>Options</td><td class="n">$1.28M</td><td class="n">11%</td><td class="mut">strike $61.40</td><td>4y</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>INCENTIVE READ</b><span class="r">deterministic flags</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td><span class="b b-crit">FLAG</span> Options underwater</td><td class="mut">strike $61.40 vs spot $43.28 — <span class="crit">−29.5%</span></td></tr>
+            <tr><td><span class="b b-crit">FLAG</span> PSU on relative TSR</td><td class="mut">rewards beating XBI, not absolute value</td></tr>
+            <tr><td><span class="b b-stale">WATCH</span> Bonus on <em>Adjusted</em> EBITDA</td><td class="mut">non-GAAP; add-backs at board discretion</td></tr>
+            <tr><td><span class="b b-stale">WATCH</span> 2 filers pledged shares</td><td class="mut">margin loans → forced-sale risk</td></tr>
+            <tr><td><span class="b b-fact">OK</span> Clawback policy</td><td class="mut">2023 listing standard, filed as Ex-97</td></tr>
+            <tr><td><span class="b b-fact">OK</span> No repricing in 3y</td><td class="mut">no Item 402(x) spring-loading found</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ownership + short -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>OWNERSHIP &amp; FLOW</b><span class="r">mixed vintages — see stamps</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>HOLDER</th><th class="n">SHARES</th><th class="n">%OUT</th><th class="n">Δ QTR</th><th>AS OF</th></tr></thead>
+          <tbody>
+            <tr><td>Vanguard</td><td class="n">8.14M</td><td class="n">9.6%</td><td class="n up">+2.1%</td><td><span class="b b-stale">13F Q2 · 45d</span></td></tr>
+            <tr><td>BlackRock</td><td class="n">6.02M</td><td class="n">7.1%</td><td class="n dn">−0.8%</td><td><span class="b b-stale">13F Q2 · 45d</span></td></tr>
+            <tr><td>Baker Bros</td><td class="n">4.88M</td><td class="n">5.8%</td><td class="n up">+18.4%</td><td><span class="b b-disc">13D 08-04</span></td></tr>
+            <tr><td>State Street</td><td class="n">2.41M</td><td class="n">2.8%</td><td class="n mut">+0.1%</td><td><span class="b b-stale">13F Q2 · 45d</span></td></tr>
+            <tr><td class="acc">Insiders (agg.)</td><td class="n">1.92M</td><td class="n">2.3%</td><td class="n up">+9.4%</td><td><span class="b b-disc">Form 4 · live</span></td></tr>
+          </tbody>
+        </table>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Short interest</td><td class="n crit">18.4%</td><td class="mut">of float</td><td><span class="b b-stale">FINRA 08-15 · bi-monthly</span></td></tr>
+            <tr><td>Days to cover</td><td class="n warn">6.2</td><td class="mut">on 30d ADV</td><td><span class="b b-stale">derived</span></td></tr>
+            <tr><td>Borrow fee</td><td class="n warn">14.2%</td><td class="mut">annualised</td><td><span class="b b-stale">ORTEX · 22m</span></td></tr>
+            <tr><td>Off-exchange</td><td class="n">51.3%</td><td class="mut">of volume</td><td><span class="b b-disc">FINRA daily</span></td></tr>
+            <tr><td>Lock-up expiry</td><td class="n warn">2026-09-18</td><td class="mut">4.1M sh</td><td><span class="b b-disc">424B4</span></td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px;white-space:normal;border-top:1px solid var(--ui-line);padding-top:7px">
+          Every row carries its own vintage. 13F is 45 days stale by law; short interest is bi-monthly;
+          Form 4 is near-live. The panel never blends them into one “as of”.
+        </div>
+      </div>
+    </div>
+
+    <!-- filing diff -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>10-K REDLINE</b><span class="mut">FY25 vs FY24</span><span class="r">ranked by materiality</span></div>
+      <div class="ui-body" style="overflow:hidden">
+        <table class="ui-t" style="margin-bottom:8px">
+          <thead><tr><th>ITEM</th><th>CHANGE</th><th class="n">MAT</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>1A Risk</td><td class="crit">+ new: “manufacturing single-source”</td><td class="n crit">HIGH</td></tr>
+            <tr><td>7 MD&amp;A</td><td class="warn">“expect” → “may”, guidance para</td><td class="n warn">MED</td></tr>
+            <tr><td>1A Risk</td><td class="warn">− removed: “sufficient capital 24mo”</td><td class="n warn">MED</td></tr>
+            <tr><td>3 Legal</td><td class="mut">+ patent IPR filed</td><td class="n mut">LOW</td></tr>
+            <tr><td>9A Controls</td><td class="mut">no change</td><td class="n mut">—</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-bottom:8px">
+          <span class="b b-ai">AI INFERENCE</span>&nbsp; The removal of the 24-month capital-sufficiency statement is the
+          highest-signal change: it was present in FY22–FY24 and is now absent, while the lock-up expires in September.
+          <div class="mut" style="margin-top:5px">Evidence: <span class="ui-cite">FY25 10-K Item 1A ¶12</span> · <span class="ui-cite">FY24 10-K Item 1A ¶11</span></div>
+        </div>
+        <div class="ui-head" style="margin:0 -9px 6px;border-top:1px solid var(--ui-line)"><b>FACTS</b><span class="r">XBRL companyfacts</span></div>
+        <dl class="ui-kv">
+          <dt>Cash &amp; equiv</dt><dd>$1.24B <span class="mut">10-Q Q2</span></dd>
+          <dt>Quarterly burn</dt><dd class="dn">−$186M</dd>
+          <dt>Runway <span class="mut">derived</span></dt><dd class="warn">6.7 qtrs</dd>
+          <dt>Shares out</dt><dd>84.9M</dd>
+          <dt>Segment revenue</dt><dd class="mut">not in companyfacts</dd>
+        </dl>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          Segment data is dimensional XBRL and is <span class="warn">absent from companyfacts</span> — it must come from the
+          filing’s own instance document, not the convenience API.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>02 · Company Dossier → Incentives</b> — compensation decoded into behaviour, ownership with per-row vintage, filing redline ranked by materiality.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
