@@ -373,10 +373,18 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     engine, then substituting a smaller product for the one asked for. This version treats the brief as a
     contract rather than a starting position. Each line below is traceable to a section.
   </p>
+  <p>
+    Two of those lines are <strong>lenses rather than deliverables</strong>: the brief asked for the judgement
+    of an institutional trader on one side and a senior dev/ops and UX/UI hand on the other. They do not get
+    their own chapters — they show in what the plan treats as worth building, what it refuses to build, and
+    where it says a common approach is wrong. Both are listed below so the reader can check whether they are
+    actually present rather than merely claimed.
+  </p>
 
   <div class="tw"><table class="d">
     <thead><tr><th>Asked for</th><th>Where it is delivered</th></tr></thead>
     <tbody>
+      <tr><td class="nm">Written from a trading desk's perspective, not a vendor's</td><td>A lens on everything rather than a section. It shows in what the plan treats as important: incentives as the organising question, routine-versus-opportunistic insider classification from the academic literature, owner earnings and capital allocation over headline multiples, producer hedging read as insider selling, positioning treated as fuel rather than a trigger, vintage discipline on every number, and a refusal to render tick counts as volume.</td></tr>
       <tr><td class="nm">Windows app, trading terminal, information only</td><td>Native WPF desktop, read-only by architecture — <a href="#arch">ARCH</a>. Twenty-four modules, no execution path anywhere in the design.</td></tr>
       <tr><td class="nm">Including forex <em>and</em> stocks</td><td>Both first-class. Equities: modules 1–8. FX and metals: modules 9–12. Neither is a context panel for the other — <a href="#feat">FEAT</a>.</td></tr>
       <tr><td class="nm">Incentives / insiders</td><td>The flagship pillar, in full: Form 3/4/5/144, 13D/G, 13F, N-PX voting, DEF 14A pay-for-metric, pledged shares, 10b5-1 forensics, the person graph, six non-US disclosure regimes, and the FX/metals equivalent — <a href="#feat">FEAT</a> modules 4–8, screens 02–04.</td></tr>
