@@ -1,13 +1,4 @@
-# build output
-bin/
-obj/
-dist/
-*.user
-
-# local data cache — never commit market data (licensing) or keys
-/data/
-*.duckdb
-*.parquet
-*.sqlite
-.env
-*.local.json
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
