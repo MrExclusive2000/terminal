@@ -1,0 +1,104 @@
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd"><span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">CRSP US Equity&nbsp; OWN</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span><span class="ui-cmd-ghost" style="margin-left:auto">OWN · NPX · SI · BORR · GEX · DILU</span></div>
+    <div class="ui-status"><span class="mut">every row stamped with its own vintage</span><span class="ui-freeze">SAMPLE DATA</span></div>
+  </div>
+  <div class="ui-grid" style="grid-template-columns:1fr 1fr 1fr;height:580px;">
+
+    <div class="ui-panel">
+      <div class="ui-head"><b>WHO OWNS IT</b><span class="r">13F · 45d stale by law</span></div>
+      <div class="ui-body flush">
+        <table class="ui-t">
+          <thead><tr><th>HOLDER</th><th class="n">SHARES</th><th class="n">%OUT</th><th class="n">Δ QTR</th><th>VINTAGE</th></tr></thead>
+          <tbody>
+            <tr><td>Vanguard</td><td class="n">8.14M</td><td class="n">9.6</td><td class="n up">+2.1%</td><td><span class="b b-stale">Q2 · 68d</span></td></tr>
+            <tr><td>BlackRock</td><td class="n">6.02M</td><td class="n">7.1</td><td class="n dn">−0.8%</td><td><span class="b b-stale">Q2 · 68d</span></td></tr>
+            <tr class="sel"><td>Baker Bros</td><td class="n">4.88M</td><td class="n">5.8</td><td class="n up">+18.4%</td><td><span class="b b-disc">13D · 21d</span></td></tr>
+            <tr><td>State Street</td><td class="n">2.41M</td><td class="n">2.8</td><td class="n mut">+0.1%</td><td><span class="b b-stale">Q2 · 68d</span></td></tr>
+            <tr><td class="acc">Insiders (agg)</td><td class="n">1.92M</td><td class="n">2.3</td><td class="n up">+9.4%</td><td><span class="b b-disc">Form 4 · live</span></td></tr>
+          </tbody>
+        </table>
+        <div class="ui-head" style="margin:0;border-top:1px solid var(--ui-line)"><b>N-PX VOTING</b><span class="acc">free · structured</span><span class="r">say-on-pay</span></div>
+        <table class="ui-t">
+          <thead><tr><th>MANAGER</th><th>SAY-ON-PAY</th><th>DIRECTORS</th></tr></thead>
+          <tbody>
+            <tr><td>Vanguard</td><td class="crit">AGAINST</td><td class="mut">withheld 2</td></tr>
+            <tr><td>BlackRock</td><td class="crit">AGAINST</td><td class="mut">for</td></tr>
+            <tr><td>State Street</td><td class="up">FOR</td><td class="mut">for</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:6px 9px" class="mut">
+          Two of the three largest holders voted against the pay plan the incentives panel decodes.
+          That is the institutional counterpart to Pay-versus-Performance, and it is free.
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-panel">
+      <div class="ui-head"><b>SHORT SIDE</b><span class="r">mixed cadence</span></div>
+      <div class="ui-body flush">
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Short interest</td><td class="n crit">18.4%</td><td class="mut">of float</td><td><span class="b b-stale">FINRA · bi-monthly</span></td></tr>
+            <tr><td>Days to cover</td><td class="n warn">6.2</td><td class="mut">30d ADV</td><td><span class="b b-stale">derived</span></td></tr>
+            <tr><td>Borrow fee</td><td class="n warn">14.2%</td><td class="mut">annualised</td><td><span class="b b-stale">ORTEX · 22m</span></td></tr>
+            <tr><td>Off-exchange</td><td class="n">51.3%</td><td class="mut">of volume</td><td><span class="b b-disc">FINRA · daily</span></td></tr>
+            <tr><td>Fails to deliver</td><td class="n">184K</td><td class="mut">shares</td><td><span class="b b-stale">SEC · T+13</span></td></tr>
+          </tbody>
+        </table>
+        <div class="ui-head" style="margin:0;border-top:1px solid var(--ui-line)"><b>NAMED SHORTS</b><span class="acc">free · daily · non-US</span></div>
+        <table class="ui-t">
+          <thead><tr><th>HOLDER</th><th class="n">NET SHORT</th><th>JURIS</th><th class="n">Δ</th></tr></thead>
+          <tbody>
+            <tr><td>Marshall Wace</td><td class="n crit">1.42%</td><td class="mut">FCA</td><td class="n dn">+0.11</td></tr>
+            <tr><td>AKO Capital</td><td class="n crit">0.94%</td><td class="mut">FCA</td><td class="n mut">—</td></tr>
+            <tr><td>Qube RT</td><td class="n">0.61%</td><td class="mut">BaFin</td><td class="n up">−0.08</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:6px 9px" class="mut">
+          The FCA and EU registers <span class="acc">name the actual short seller</span> and update daily —
+          strictly better than the US bi-monthly aggregate, and free.
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-panel">
+      <div class="ui-head"><b>DILUTION &amp; DEALER</b><span class="r">where small caps die</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>ISSUANCE</th><th class="n">LEVEL</th><th>SOURCE</th></tr></thead>
+          <tbody>
+            <tr><td>Shares out, 4q trend</td><td class="n warn">+11.2%</td><td class="mut">cover page</td></tr>
+            <tr><td>Shelf capacity left</td><td class="n crit">$420M</td><td class="mut">S-3</td></tr>
+            <tr><td>ATM daily as % ADV</td><td class="n warn">4.1%</td><td class="mut">424B5</td></tr>
+            <tr><td>S-8 forward dilution</td><td class="n">3.4%</td><td class="mut">S-8</td></tr>
+            <tr><td>Warrant overhang</td><td class="n">1.8M sh</td><td class="mut">10-K note</td></tr>
+            <tr><td class="warn">Lock-up expiry</td><td class="n warn">2026-09-18</td><td class="mut">4.1M sh</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-bottom:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; Runway 6.7 quarters, $420M shelf undrawn, capital-sufficiency
+          language dropped from the 10-K, lock-up in three weeks. <strong>Issuance is the dominant loss
+          mechanism in this name</strong> — the insider cluster has to be weighed against it, not instead of it.
+        </div>
+        <div class="ui-head" style="margin:0 -9px 6px;border-top:1px solid var(--ui-line)"><b>OPTIONS POSITIONING</b><span class="acc">Cboe CDN · $0</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Net GEX</td><td class="n dn">−$142M</td><td class="mut">/1% move</td></tr>
+            <tr><td>Gamma flip</td><td class="n warn">$46.10</td><td class="mut">above spot</td></tr>
+            <tr><td>Max pain</td><td class="n">$44.00</td><td class="mut">Fri exp</td></tr>
+            <tr><td>Put/call OI</td><td class="n">1.42</td><td class="mut">—</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px">Below the flip, dealers amplify moves rather than damp them.</div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>04 · Ownership &amp; Flows</b> — who holds it, who is short it by name, who is being diluted, and where dealers sit. Every row carries its own vintage; nothing is blended.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
