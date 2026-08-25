@@ -7,7 +7,7 @@
       <span class="ui-cmd-ghost" style="margin-left:auto">POSN · PHYS · BASIS · DRIV · CB</span>
     </div>
     <div class="ui-status">
-      <span><span class="ui-dot ok"></span>OANDA</span><span><span class="ui-dot ok"></span>CFTC</span>
+      <span><span class="ui-dot ok"></span>IC cTrader</span><span><span class="ui-dot ok"></span>CFTC</span>
       <span><span class="ui-dot warn"></span>COT T+3</span><span class="mut">NON-PRO</span>
       <span class="mut">$0.00/mo data</span><span class="ui-freeze">SAMPLE DATA</span>
     </div>
@@ -35,16 +35,17 @@
         <table class="ui-t" style="margin-bottom:9px">
           <thead><tr><th>VENUE</th><th class="n">LEVEL</th><th class="n">vs OTC</th><th>TYPE</th></tr></thead>
           <tbody>
-            <tr class="sel"><td>Your broker</td><td class="n">3,962.<span class="mut">40</span></td><td class="n mut">—</td><td class="mut">dealer</td></tr>
+            <tr class="sel"><td>IC Markets <span class="mut">CFD</span></td><td class="n">3,962.<span class="mut">40</span></td><td class="n mut">—</td><td class="mut">dealer</td></tr>
             <tr><td>OTC aggregate</td><td class="n">3,962.<span class="mut">15</span></td><td class="n mut">+0.25</td><td class="mut">indicative mid</td></tr>
             <tr><td>LBMA AM auction</td><td class="n">3,958.<span class="mut">60</span></td><td class="n up">+3.55</td><td class="acc">executable</td></tr>
             <tr><td>COMEX front (GCZ6)</td><td class="n">3,981.<span class="mut">70</span></td><td class="n dn">−19.55</td><td class="acc">exchange</td></tr>
           </tbody>
         </table>
         <div class="mut" style="white-space:normal;border-top:1px solid var(--ui-line);padding-top:7px;margin-bottom:9px">
-          Gold is OTC. There is <span class="warn">no consolidated tape and no NBBO</span>. Your broker's XAUUSD is
-          a dealer quote, not a market price. The only <em>executable</em> benchmarks are the two LBMA auctions
-          (10:30 / 15:00 London, ICE Benchmark Administration).
+          Gold is OTC. There is <span class="warn">no consolidated tape and no NBBO</span>. Your IC Markets
+          XAUUSD is a <span class="warn">CFD dealer quote</span> — 100 oz/lot, IC's spread on top of the
+          underlying — not spot bullion and not an exchange price. The only <em>executable</em> benchmarks are
+          the two LBMA auctions (10:30 / 15:00 London, ICE Benchmark Administration).
         </div>
         <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>BASIS &amp; CARRY</b><span class="r">derived</span></div>
         <table class="ui-t">

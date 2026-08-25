@@ -354,7 +354,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </p>
   <div class="hero-meta">
     <span><b>Codename</b> Argus</span>
-    <span><b>Scope</b> single user, UK, non-pro</span>
+    <span><b>Scope</b> single user · UK · IC Markets</span>
     <span><b>Stack</b> .NET 10 LTS + WPF</span>
     <span><b>To MVP</b> 30–48 eng-weeks</span>
     <span><b>Data cost</b> ~$0/mo</span>
@@ -489,7 +489,10 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       real-time US equity depth carried exchange fees. In a gold and FX build it barely binds, because the
       positioning and physical layer is public regulatory data and your price feed is your own broker's. The
       invariant stays architectural anyway — no network listener, no export of raw licensed ticks, no hosted
-      view — because it costs nothing to keep and everything to retrofit.
+      view — because it costs nothing to keep and everything to retrofit. And with IC Markets there is a
+      stronger version available: provision the terminal with cTrader's <strong>price-only</strong> FIX
+      credentials and never create the trade credentials, so read-only becomes a fact enforced by the broker
+      rather than a promise enforced by me. See <a href="#arch">ARCH</a>.
     </p>
   </div>
 </section>
@@ -515,7 +518,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <span class="ui-cmd-ghost" style="margin-left:auto">POSN · PHYS · BASIS · DRIV · CB</span>
     </div>
     <div class="ui-status">
-      <span><span class="ui-dot ok"></span>OANDA</span><span><span class="ui-dot ok"></span>CFTC</span>
+      <span><span class="ui-dot ok"></span>IC cTrader</span><span><span class="ui-dot ok"></span>CFTC</span>
       <span><span class="ui-dot warn"></span>COT T+3</span><span class="mut">NON-PRO</span>
       <span class="mut">$0.00/mo data</span><span class="ui-freeze">SAMPLE DATA</span>
     </div>
@@ -543,16 +546,17 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
         <table class="ui-t" style="margin-bottom:9px">
           <thead><tr><th>VENUE</th><th class="n">LEVEL</th><th class="n">vs OTC</th><th>TYPE</th></tr></thead>
           <tbody>
-            <tr class="sel"><td>Your broker</td><td class="n">3,962.<span class="mut">40</span></td><td class="n mut">—</td><td class="mut">dealer</td></tr>
+            <tr class="sel"><td>IC Markets <span class="mut">CFD</span></td><td class="n">3,962.<span class="mut">40</span></td><td class="n mut">—</td><td class="mut">dealer</td></tr>
             <tr><td>OTC aggregate</td><td class="n">3,962.<span class="mut">15</span></td><td class="n mut">+0.25</td><td class="mut">indicative mid</td></tr>
             <tr><td>LBMA AM auction</td><td class="n">3,958.<span class="mut">60</span></td><td class="n up">+3.55</td><td class="acc">executable</td></tr>
             <tr><td>COMEX front (GCZ6)</td><td class="n">3,981.<span class="mut">70</span></td><td class="n dn">−19.55</td><td class="acc">exchange</td></tr>
           </tbody>
         </table>
         <div class="mut" style="white-space:normal;border-top:1px solid var(--ui-line);padding-top:7px;margin-bottom:9px">
-          Gold is OTC. There is <span class="warn">no consolidated tape and no NBBO</span>. Your broker's XAUUSD is
-          a dealer quote, not a market price. The only <em>executable</em> benchmarks are the two LBMA auctions
-          (10:30 / 15:00 London, ICE Benchmark Administration).
+          Gold is OTC. There is <span class="warn">no consolidated tape and no NBBO</span>. Your IC Markets
+          XAUUSD is a <span class="warn">CFD dealer quote</span> — 100 oz/lot, IC's spread on top of the
+          underlying — not spot bullion and not an exchange price. The only <em>executable</em> benchmarks are
+          the two LBMA auctions (10:30 / 15:00 London, ICE Benchmark Administration).
         </div>
         <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>BASIS &amp; CARRY</b><span class="r">derived</span></div>
         <table class="ui-t">
@@ -697,7 +701,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <span class="ui-cmd-ghost" style="margin-left:auto">no consolidated tape — every quote carries its venue</span>
     </div>
     <div class="ui-status">
-      <span><span class="ui-dot ok"></span>OANDA v20</span><span><span class="ui-dot ok"></span>ECB ref</span>
+      <span><span class="ui-dot ok"></span>IC cTrader</span><span><span class="ui-dot ok"></span>ECB ref</span>
       <span><span class="ui-dot warn"></span>COT T+3</span><span class="ui-freeze">SAMPLE DATA</span>
     </div>
   </div>
@@ -711,16 +715,16 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
         <table class="ui-t">
           <thead><tr><th>PAIR</th><th class="n">BID</th><th class="n">SPR</th><th>VENUE</th></tr></thead>
           <tbody>
-            <tr class="sel"><td class="tk">USD/JPY</td><td class="n">154.28<span class="mut">2</span></td><td class="n mut">0.8</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">EUR/USD</td><td class="n">1.0914<span class="mut">6</span></td><td class="n mut">0.4</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">GBP/USD</td><td class="n">1.2733<span class="mut">1</span></td><td class="n mut">0.9</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">AUD/USD</td><td class="n">0.6602<span class="mut">4</span></td><td class="n mut">0.7</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">USD/CHF</td><td class="n">0.8841<span class="mut">0</span></td><td class="n mut">1.1</td><td class="mut">OANDA</td></tr>
+            <tr class="sel"><td class="tk">USD/JPY</td><td class="n">154.28<span class="mut">2</span></td><td class="n mut">0.8</td><td class="mut">IC Mkts</td></tr>
+            <tr><td class="tk">EUR/USD</td><td class="n">1.0914<span class="mut">6</span></td><td class="n mut">0.4</td><td class="mut">IC Mkts</td></tr>
+            <tr><td class="tk">GBP/USD</td><td class="n">1.2733<span class="mut">1</span></td><td class="n mut">0.9</td><td class="mut">IC Mkts</td></tr>
+            <tr><td class="tk">AUD/USD</td><td class="n">0.6602<span class="mut">4</span></td><td class="n mut">0.7</td><td class="mut">IC Mkts</td></tr>
+            <tr><td class="tk">USD/CHF</td><td class="n">0.8841<span class="mut">0</span></td><td class="n mut">1.1</td><td class="mut">IC Mkts</td></tr>
           </tbody>
         </table>
         <div style="padding:7px 9px;border-top:1px solid var(--ui-line)" class="mut">
           <div style="margin-bottom:5px"><span class="b b-stale">ECB REF</span> EUR/USD 1.0921 · 14:15 CET</div>
-          <div>Dealable ≠ official. The terminal never merges a dealer stream and a central-bank fixing into one “price”.</div>
+          <div>Dealable ≠ official. The terminal never merges a dealer stream and a central-bank fixing into one “price”. IC quotes are CFDs — spread included, no exchange behind them.</div>
           <div style="margin-top:6px" class="warn">Tick count is not volume. No FX volume is shown.</div>
         </div>
       </div>
@@ -1555,6 +1559,74 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </table></div>
   <p><strong>Year-one licence total: roughly $1,020.</strong></p>
 
+  <h3>Broker integration — IC Markets</h3>
+  <p>
+    This is the one integration the plan could not specify generically, and knowing it resolves several open
+    design questions. IC Markets is an MT4/MT5/cTrader broker, not a REST-API house, so the path in is
+    different from the OANDA-shaped assumption the earlier draft carried.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Route</th><th>What it gives you</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">cTrader Open API</td><td>OAuth 2.0, protobuf or JSON over TCP/WebSocket. Streaming spot quotes, symbol metadata, historical trendbars (<code>ProtoOAGetTrendbarsReq</code>) and historical ticks (<code>ProtoOAGetTickDataReq</code>). Official SDKs; no terminal needs to be running.</td><td class="acc"><strong>Primary.</strong> History, symbol master, backfill.</td></tr>
+      <tr><td class="nm">cTrader FIX API</td><td>Two <em>separate</em> connections with <em>separate</em> credentials: a <strong>Price Connection</strong> and a <strong>Trade Connection</strong>. IC's cTrader server sits in LD5 Equinix, London.</td><td class="acc"><strong>Primary for live quotes</strong> — see below.</td></tr>
+      <tr><td class="nm">MT4 / MT5</td><td>IC Markets <strong>does not offer FIX into MT4 or MT5</strong>. Integration would mean driving a running MT5 terminal, which is fragile and couples your app's uptime to a third-party GUI.</td><td class="mut">Avoid unless you are committed to MT5.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call dec">
+    <p class="call-h">The read-only invariant stops being a promise and becomes a fact</p>
+    <p>
+      Because cTrader's FIX API splits Price and Trade into two connections with independent credentials,
+      <strong>Argus should be provisioned with the Price Connection credentials only — and the Trade
+      Connection credentials should never be created for it.</strong>
+    </p>
+    <p>
+      That converts "this application does not place orders" from a design intention enforced by my own
+      discipline into a property enforced by the broker. Even a total compromise of the app — infostealer,
+      prompt injection, a supply-chain attack on the update channel — yields an attacker credentials that
+      <em>cannot trade</em>. This is the single strongest security control available in the whole plan, it
+      costs nothing, and it exists only because of how cTrader happens to be built. Take it.
+    </p>
+  </div>
+
+  <h4>What IC Markets constrains</h4>
+  <ul>
+    <li><strong>Historical tick requests are capped at one week per call.</strong> Deep tick history therefore
+        cannot be fetched retroactively at any useful depth — so <strong>the local tick archive must start
+        recording from day one of the build</strong>, and backfill must page weekly. This is the same
+        cannot-reconstruct-it-later problem as point-in-time consensus in v0.1, and it needs the same answer:
+        start the recorder before you need it.</li>
+    <li><strong>XAUUSD here is a CFD on spot gold</strong>, one lot = 100 troy ounces. It is a dealer price
+        derived from the underlying OTC market plus IC's spread — not spot bullion and not an exchange price.
+        The four-venue panel in screen 01 exists precisely for this: IC's quote, the OTC aggregate, the LBMA
+        auction and COMEX front month, with the basis between them shown rather than hidden.</li>
+    <li><strong>Swap is charged at a multiple on one day of the week</strong> to cover weekend settlement
+        (commonly Wednesday for FX; confirm which day applies to XAUUSD on your account type). Any carry or
+        holding-cost calculation in the journal must model this rather than assuming a flat daily rate.</li>
+    <li><strong>Tick volume is not volume.</strong> A CFD venue has no consolidated volume, so the UI shows
+        tick counts labelled as tick counts, or shows nothing.</li>
+    <li><strong>Weekend gap.</strong> The CFD closes Friday and reopens Sunday, so gap-risk on held positions
+        is a real modelled state, not an edge case.</li>
+    <li><strong>Which platform are you actually on?</strong> The Open API and FIX routes both require a
+        <em>cTrader</em> account with IC Markets. If you currently trade MT4 or MT5, opening a cTrader account
+        alongside is free and is the cleanest way to get a supported data path — but it is a decision, so I am
+        flagging it rather than assuming it.</li>
+  </ul>
+
+  <div class="call">
+    <p class="call-h">One thing worth knowing, unrelated to the software</p>
+    <p>
+      As a UK resident you will be contracting with <strong>IC Markets (EU) Ltd, regulated by CySEC</strong>
+      (licence 362/18), not with an FCA-authorised entity — IC Markets is not FCA regulated, and the FCA has
+      published a warning about IC Markets Global specifically. Practically that means MiFID II protections
+      (segregated funds, negative balance protection, 1:30 retail leverage) but <strong>no FSCS
+      coverage</strong>. That is your call entirely and it does not affect the terminal design; it only
+      affects the leverage cap the position-sizing calculator should default to, which I have set to 1:30.
+    </p>
+  </div>
+
   <h3>Two ingest shapes, not one</h3>
   <p>
     The gold and FX build inverts v0.1's assumption. Almost nothing in the positioning and physical layer is
@@ -1566,7 +1638,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   <div class="tw"><table class="d">
     <thead><tr><th>Shape</th><th>Examples</th><th>Requirement</th></tr></thead>
     <tbody>
-      <tr><td class="nm">Streaming</td><td class="mono">Broker FX/XAUUSD quotes</td><td>Conflated to frame rate, bar builder with correct session boundaries, reconnect with gap backfill. The only genuinely real-time path.</td></tr>
+      <tr><td class="nm">Streaming</td><td class="mono">IC Markets cTrader FIX <em>Price</em> connection</td><td>Conflated to frame rate, bar builder with correct session boundaries, reconnect with gap backfill. The only genuinely real-time path.</td></tr>
       <tr><td class="nm">Scheduled release</td><td class="mono">COT (Fri 15:30 ET), BPR (1st Fri), LBMA vaults (monthly), WGC (weekly), Swiss customs (monthly)</td><td>A release calendar, not a poller. Fetch on schedule, detect change, diff against prior vintage, alert on percentile moves. Catch up correctly after the machine has been asleep.</td></tr>
       <tr><td class="nm">Daily file</td><td class="mono">CME warehouse stocks, GLD holdings, SGE premium, FRED/BoE series</td><td>Idempotent daily pull with backfill, outlier detection, and a cross-source sanity check.</td></tr>
       <tr><td class="nm">Event-driven</td><td class="mono">Miner filings (the equity bridge)</td><td>The EDGAR pipeline below — retained but now serving ~40 names rather than the whole market.</td></tr>
@@ -1652,7 +1724,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   <div class="tw"><table class="d">
     <thead><tr><th>Component</th><th>Source</th><th>Cadence</th><th class="n">Cost</th></tr></thead>
     <tbody>
-      <tr><td class="nm">FX + XAUUSD quotes</td><td class="mono">Your broker's API (OANDA v20 or equivalent)</td><td class="mono">streaming</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">FX + XAUUSD quotes</td><td class="mono">IC Markets cTrader — FIX Price connection + Open API</td><td class="mono">streaming</td><td class="n mono">$0</td></tr>
       <tr><td class="nm">Official FX reference</td><td class="mono">ECB Data Portal</td><td class="mono">daily fix</td><td class="n mono">$0</td></tr>
       <tr><td class="nm">Gold benchmarks</td><td class="mono">LBMA auction prices</td><td class="mono">2× daily</td><td class="n mono">$0</td></tr>
       <tr><td class="nm">Positioning</td><td class="mono">CFTC COT + Bank Participation (Socrata)</td><td class="mono">weekly / monthly</td><td class="n mono">$0</td></tr>
@@ -2152,6 +2224,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <tr><td class="nm">Scope collapse under solo build</td><td><span class="p1">MED</span></td><td>Phase 1 before charting. Ship the differentiator first.</td></tr>
       <tr><td class="nm">Pack channel compromise</td><td><span class="p1">MED</span></td><td>Ed25519 verification fails closed; key never in the binary; rollback one click.</td></tr>
       <tr><td class="nm">AI inference read as fact</td><td><span class="p1">MED</span></td><td>Structural surface separation plus uncited-claim striking. Worth watching in real use — this is the failure mode that costs money, and no amount of visual design fully eliminates it.</td></tr>
+      <tr><td class="nm">Tick history cannot be backfilled</td><td><span class="p0">HIGH</span></td><td>cTrader caps historical tick requests at one week. Deep history is unobtainable retroactively — start the local tick recorder on day one of the build, before it is needed.</td></tr>
       <tr><td class="nm">Query-sandbox escape</td><td><span class="p0">HIGH</span></td><td>Model-authored SQL reaching an unhardened DuckDB is arbitrary read and exfiltration from a hostile filing. Read-only connection, no extensions, no external FS or network, allow-listed views, AST check. Must be in from day one.</td></tr>
       <tr><td class="nm">Data protection on third parties</td><td><span class="p1">MED</span></td><td>The insider archive profiles named individuals. Keep a register, set retention, do not infer personal attributes. The household exemption is read narrowly.</td></tr>
       <tr><td class="nm">Loss of irreplaceable local data</td><td><span class="p1">MED</span></td><td>Journal and theses sealed behind a hardware-bound key with no backup path. Passphrase-KDF backup plus a tested restore.</td></tr>
@@ -2174,9 +2247,10 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <li><strong>Which pairs, and how many?</strong> A sterling-centric book (GBP crosses plus EURUSD, USDJPY,
         XAUUSD) is a materially smaller build than global coverage, mainly because each pair's driver stack
         needs its own curve sources and its own dossier.</li>
-    <li><strong>Who is your broker?</strong> It determines the quote feed, the API shape, the session and
-        rollover conventions, and how XAUUSD is actually priced for you. It is the one integration the plan
-        cannot specify generically.</li>
+    <li><strong>cTrader, or MT4/MT5?</strong> Broker is settled — IC Markets — but the data path runs through
+        cTrader, and IC offers no FIX into MT4 or MT5. If you are on MetaTrader today, opening a cTrader
+        account alongside is free and gives a properly supported integration. Driving a running MT5 terminal
+        instead is possible but couples the app's uptime to a third-party GUI, and I would not recommend it.</li>
     <li><strong>Intraday or swing?</strong> The positioning and physical layer is inherently multi-day — COT
         is weekly, vault data monthly. If you are trading XAUUSD intraday, that layer is context rather than
         signal, and the balance of the workspaces should shift toward session structure and the driver panel.</li>
