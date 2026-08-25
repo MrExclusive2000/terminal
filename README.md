@@ -11,13 +11,16 @@ rather than a bolt-on screener — applied to equities via SEC filings and to FX
 and metals via CFTC positioning, official-sector flows and physical stocks.
 Underneath sits a knowledge base authored, versioned and signed on a schedule.
 
-24 modules · 209 features · 9 rendered mockups.
+24 modules · 182 features · 9 rendered mockups.
 
 ## Contents
 
 | Path | What it is |
 |---|---|
-| `docs/plan/argus-design-plan.html` | **The plan.** Brief as a contract, concepts, mockups, exhaustive feature inventory, architecture, data economics, the AI knowledge layer, security, usability, roadmap, risks. |
+| `docs/plan/argus-build-plan-v2.html` | **The plan (current).** Written from the desk: what the job is, where the edge is and isn't, the screens, what it must know, the knowledge layer, how it's made, what breaks it, how it looks, money and time, what I'd cut. |
+| `docs/plan/argus-design-plan.html` | The earlier v1.0 draft, kept for history. Superseded by v2. |
+| `docs/plan/src/`, `assemble.py` | The v2 plan's sections and its assembly script — `python3 docs/plan/assemble.py` rebuilds the single-file HTML. |
+| `docs/plan/validate.py`, `crosscheck.py` | Build gates. `validate.py` checks tag nesting, dangling anchors, duplicate ids, rail/section parity, CSS variable and dark-theme token integrity, table column counts and superseded figures. `crosscheck.py` reconciles the arithmetic — feature totals, the module map, phase weeks, the effort multiplier. Both exit non-zero on failure. |
 | `docs/mockups/` | The nine screens as standalone HTML fragments. |
 | `docs/research/` | Nine domain dossiers (201 findings) and four adversarial reviews (121 gaps, 42 corrections). |
 | `docs/plan/*.css` | Design tokens. Every text token solved numerically to clear WCAG AA on all four surfaces in both themes. |

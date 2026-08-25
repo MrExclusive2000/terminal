@@ -1,0 +1,135 @@
+<section id="build">
+  <div class="sec-head"><span class="sec-mn">BUILD</span><h2>How it's made</h2>
+    <span class="sec-note">every choice with the alternative I rejected</span></div>
+
+  <p>
+    Twenty years of this has taught me one thing about stack decisions: the cost isn't the choice, it's the
+    <em>reversal</em>. So below is what I'd pick, and — more usefully — what I'd have picked instead and why I
+    didn't. A plan that only lists winners is hiding its reasoning.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Layer</th><th>Choice</th><th>Why this, not the alternative</th><th class="n">Cost</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Runtime</td><td class="nm">.NET 10 LTS</td><td>GA Nov 2025, supported to Nov 2028. That covers the build window without a forced framework migration landing in the middle of it — which is the single most demoralising thing that can happen to a long solo project.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Shell</td><td class="nm">WPF <code>net10.0-windows</code></td><td>A terminal lives or dies on docking: multi-monitor tear-off, arbitrary splits, layout that survives a restart. WPF is the only Microsoft stack in 2026 with three mature independent dock managers. <strong>WinUI 3 still ships no first-party docking</strong> — those tracking issues have been open for years — so you'd be on a community control anyway, with a less mature one. MAUI is disqualified outright: it pins the WindowsAppSDK version and runs a major version behind with no supported upgrade path. Avalonia 12 is the honest second choice and the only cross-platform escape hatch; the .NET financial charting ecosystem there is thinner, which is the one thing I won't compromise.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Docking</td><td class="nm">AvalonDock 4.72 (MIT)</td><td>Chosen over Syncfusion's Community licence deliberately. That licence keys on the licensee entity's revenue — <em>the same variable that flips your market-data status from non-professional to professional</em>. One good year and two unrelated things break at once. A correlated licence failure is worse than a marginally weaker control.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Charting</td><td class="nm">SciChart WPF v9 2D Pro</td><td>The only .NET control with credible evidence of FIFO streaming at scale. Perpetual and royalty-free, fee includes a year of updates. ScottPlot 5 (MIT) for secondary panels where 60fps doesn't matter. This is the one line item I'd pay for without arguing.</td><td class="n mono">~$899</td></tr>
+      <tr><td class="mono">Analytics store</td><td class="nm">DuckDB 1.5 + hive-partitioned Parquet</td><td>Columnar, Arrow streaming, allocation-free append. Ticks land in daily Parquet partitioned by symbol and date, so a five-year screen is a predicate pushdown rather than a table scan.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">OLTP + vectors</td><td class="nm">SQLite (WAL) + <code>sqlite-vec</code></td><td>App state, watchlists, journal, alerts, embedding index. <strong>Deliberately not DuckDB VSS</strong> — its HNSW persistence is still experimental with a known WAL-recovery data-loss path. I'm not putting the journal anywhere with a documented way to lose it.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Scheduler</td><td class="nm">Quartz.NET, RAMJobStore + watermark table</td><td>Durable catch-up after the laptop sleeps, without adding a second persistence layer that can disagree with the first. The watermark table <em>is</em> the state; Quartz just fires.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Packaging</td><td class="nm">Velopack, portable + delta</td><td>MSIX's per-user-only model and sideload friction buy nothing for one user on one machine.</td><td class="n mono">$0</td></tr>
+      <tr><td class="mono">Signing</td><td class="nm">Azure Artifact Signing</td><td>Not legally required for personal use, and it is still the one I'd insist on: it is <strong>the only runtime integrity check that exists on the binary</strong>. Treat it as a supply-chain control, not a SmartScreen convenience. Note the trap — a per-user install path means malware running as you can overwrite signed binaries without elevation, so <strong>verify signatures on load</strong>, not only at update time.</td><td class="n mono">$9.99/mo</td></tr>
+      <tr><td class="mono">Broker bridge</td><td class="nm">MT5 via a bundled Python child process</td><td>IC Markets offers <strong>no FIX into MT4/MT5</strong> — FIX and the Open API belong to cTrader, a different platform. MetaQuotes' Python package is the only supported programmatic path, so this isn't really a choice. Ship an embeddable runtime inside the app directory: a system Python dependency is a support burden you'll pay for on the first Windows feature update. MQL5 named pipes are the fallback, but MQL5 has no documented async pipe support and reconnect matters more than elegance here.</td><td class="n mono">$0</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Year-one licence total: roughly $1,020</strong> — and note that's nearly all SciChart plus signing. The data, which is the expensive part of every competing product, is free at origin. That's the whole commercial argument for this design.</p>
+
+  <h3>Layers, and the one contract people get wrong</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Layer</th><th>Contains</th><th>Contracts</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Presentation</td><td>Shell, dock host, panels, command line, linking channels</td><td class="mono">IPanel, IWorkspaceHost, ILinkChannel</td></tr>
+      <tr><td class="nm">Application</td><td>View models, command bus, alert engine, cost meter</td><td class="mono">ICommandHandler, IAlertRule, ICostSink</td></tr>
+      <tr><td class="nm">Domain</td><td>Instrument, Quote, Bar, Filing, InsiderTransaction, CohortPosition, Claim, Signal</td><td class="mono">value types, no I/O</td></tr>
+      <tr><td class="nm">Data access</td><td>Provider router, entitlement model, rate governors, cache tiers, vintage stamping</td><td class="mono">IQuoteSource, IBarSource, IFilingSource, IFundamentalSource, IPositioningSource, IMacroSource, <strong>IBulkDatasetSource</strong></td></tr>
+      <tr><td class="mono">Providers</td><td>One adapter per vendor, each declaring its capabilities and entitlements</td><td class="mono">ICapabilityDeclaring</td></tr>
+      <tr><td class="nm">Local store</td><td>DuckDB/Parquet lake, SQLite app store, encrypted user store, pack store</td><td class="mono">IRepository&lt;T&gt;</td></tr>
+      <tr><td class="nm">Background</td><td>Ingest workers, release-calendar scheduler, pack sync, embedding rebuild</td><td class="mono">IScheduledJob</td></tr>
+      <tr><td class="nm">AI boundary</td><td>Analysis service — <strong>no credentials, no filesystem write, no bridge handle</strong></td><td class="mono">IAnalysisRequest → text</td></tr>
+    </tbody>
+  </table></div>
+  <p>
+    One interface per <em>capability</em>, never per vendor — vendors get replaced, capabilities don't. A router
+    picks the cheapest capable source per request. Schema drift is caught by contract tests against recorded
+    fixtures plus a nightly live canary. A dead provider degrades to last-known-good with a visible age stamp
+    rather than taking the panel down.
+  </p>
+  <p>
+    <strong><code>IBulkDatasetSource</code> is separate on purpose, and this is the contract people get
+    wrong.</strong> A good deal of regulatory data ships as ZIP archives, not as an API. A provider layer that
+    models only per-request endpoints will quietly lead you into designing a multi-week polite crawl for data
+    that downloads in four minutes. I've seen that mistake cost a quarter. Modelling bulk as a first-class
+    shape at the interface level is what prevents it.
+  </p>
+
+  <h3>Four ingest shapes, because treating them alike is the classic error</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Shape</th><th>Examples</th><th>Requirement</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Streaming</td><td class="mono">MT5 FX/metals ticks; equity L1</td><td>Conflated to frame rate, bar builder with correct session boundaries, reconnect with sequence-gap detection and REST backfill.</td></tr>
+      <tr><td class="nm">Event-driven</td><td class="mono">EDGAR filings</td><td>Sub-60s detection. Latency budget below — this is the path the product exists for.</td></tr>
+      <tr><td class="nm">Scheduled release</td><td class="mono">COT (Fri 15:30 ET), Bank Participation (1st Fri), LBMA vaults, WGC, Swiss customs, FINRA short interest</td><td>A <strong>release calendar</strong>, not a poller. Each source declares its publication rule, its data-as-of rule and its expected lag; the scheduler derives fetch times from those. Hardcoded cron strings break at DST and you find out on a Friday afternoon.</td></tr>
+      <tr><td class="nm">Bulk archive</td><td class="mono">SEC DERA quarterly sets, 13F sets, financial statement sets</td><td>Download, verify, load once. Never crawl what ships as a ZIP.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The Form 4 path, with a latency budget</h3>
+  <p>
+    This is the hop-by-hop budget for the one path that has to be fast, because it's the product's reason to
+    exist. Target: <strong>on screen within 60 seconds of the filing hitting EDGAR</strong>. Budgets are stated
+    per hop so that when it regresses you know which hop to look at rather than profiling the whole thing.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>#</th><th>Hop</th><th>Mechanism</th><th class="n">Budget</th><th>Failure handled</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td class="nm">Detect</td><td>Poll the EDGAR current-filings Atom feed at 2s, inside the 10 req/s fair-access ceiling, with a declared contact User-Agent.</td><td class="n mono">≤2s</td><td>A generic browser UA earns an immediate SEC block page — this is a documented policy, not a rate limit you can retry through.</td></tr>
+      <tr><td class="mono">2</td><td class="nm">Fetch</td><td>Pull the Form 345 XML by accession number.</td><td class="n mono">~300ms</td><td>Jittered backoff; circuit-break on repeated 403 rather than hammering.</td></tr>
+      <tr><td class="mono">3</td><td class="nm">Parse</td><td><code>ownershipDocument</code> — derivative and non-derivative tables, transaction codes, footnotes, and the document-level <code>aff10b5One</code> flag.</td><td class="n mono">~50ms</td><td>Schema drift quarantines the document and raises an alert. Never a silent drop — a silently dropped filing is indistinguishable from no filing, which is the worst failure this system has.</td></tr>
+      <tr><td class="mono">4</td><td class="nm">Resolve</td><td>CIK → FIGI → instrument. Supersede any prior 4/A amendment.</td><td class="n mono">~20ms</td><td>Ticker reuse and name changes never corrupt identity.</td></tr>
+      <tr><td class="mono">5</td><td class="nm">Score</td><td>Conviction model plus routine/opportunistic classification and cluster recompute.</td><td class="n mono">~30ms</td><td>Deterministic by design — there is no model call in this path, so it cannot stall on a provider.</td></tr>
+      <tr><td class="mono">6</td><td class="nm">Fan out</td><td>Tape row, cluster leaderboard, alert evaluation, chart ribbon marker.</td><td class="n mono">~50ms</td><td>Backpressure via bounded channels; a slow consumer drops frames, never blocks ingest.</td></tr>
+      <tr><td class="mono">7</td><td class="nm">Render</td><td>Conflated to frame rate. A raw event stream is never bound to the UI thread.</td><td class="n mono">≤16ms</td><td>Flash governor caps at 3/sec — a WCAG requirement that happens to also be what you want at 09:30.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Performance budgets</h3>
+  <p>Numbers, so they can be tested rather than asserted. Anything without a target regresses.</p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Path</th><th class="n">Target</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Cold start to first paint</td><td class="n mono">&lt;2.5s</td><td>ReadyToRun, deferred panel hydration, cached layout tree</td></tr>
+      <tr><td>Panel open</td><td class="n mono">&lt;150ms</td><td>Local-first render; the network fills in behind</td></tr>
+      <tr><td>Chart pan / zoom</td><td class="n mono">16ms/frame</td><td>FIFO ring buffer, GPU path, no per-tick allocation</td></tr>
+      <tr><td>Tick to pixel</td><td class="n mono">&lt;80ms</td><td>Lock-free ingest → last-value cache → frame-rate sampling</td></tr>
+      <tr><td>Form 4 to alert</td><td class="n mono">&lt;60s</td><td>The table above</td></tr>
+      <tr><td>Screener, 5y × 3,000 names</td><td class="n mono">&lt;3s</td><td>DuckDB over partitioned Parquet, predicate pushdown</td></tr>
+      <tr><td>Memory, 30 panels</td><td class="n mono">&lt;1.6GB</td><td>Server GC, struct-of-arrays, ArrayPool, virtualised grids</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>What lands on disk</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Store</th><th>Contents</th><th class="n">Approx size</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">lake/bars/</td><td>Minute bars, hive-partitioned by symbol and date</td><td class="n mono">~40GB (5y, 3k names)</td></tr>
+      <tr><td class="mono">lake/ticks/</td><td>Daily tick Parquet, traded instruments only</td><td class="n mono">~15GB/yr</td></tr>
+      <tr><td class="mono">lake/filings/</td><td>Compressed originals + extracted text + XBRL facts</td><td class="n mono">~25GB</td></tr>
+      <tr><td class="mono">lake/insider/</td><td>~11.6M transaction rows and ~13M footnote rows from 2006</td><td class="n mono">~4GB</td></tr>
+      <tr><td class="mono">lake/macro/</td><td>Series with ALFRED vintages, so you can ask what was known on the day</td><td class="n mono">~2GB</td></tr>
+      <tr><td class="mono">app.sqlite</td><td>Layouts, alerts, column sets, cost ledger</td><td class="n mono">&lt;100MB</td></tr>
+      <tr><td class="mono">user.enc</td><td><strong>Encrypted</strong> — journal, theses, watchlists, positions, keys. A physically separate store so that clearing the data cache can never destroy your own work.</td><td class="n mono">&lt;500MB</td></tr>
+      <tr><td class="mono">packs/</td><td>Signed knowledge packs and their version history</td><td class="n mono">&lt;200MB</td></tr>
+      <tr><td class="mono">vectors.db</td><td>Embeddings, capped to the watchlist corpus (~200k chunks)</td><td class="n mono">~2GB</td></tr>
+    </tbody>
+  </table></div>
+  <p class="mut" style="font-size:var(--t-sm)">
+    That vector cap is a deliberate design decision, not a limitation. Embedding the full filing corpus is
+    roughly 4.7M chunks; brute-force search over that is a multi-second scan, so you'd need an ANN index, which
+    brings its own corruption failure mode and its own rebuild time. Watchlist-only keeps retrieval under 100ms
+    with no index that can go bad. Scope the corpus, not the algorithm.
+  </p>
+
+  <h3>Build, release and the boring operational discipline</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Concern</th><th>Approach</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">CI</td><td>GitHub Actions Windows runners: build, test, SBOM (CycloneDX), vulnerability scan, sign, publish.</td></tr>
+      <tr><td class="nm">Signing in CI</td><td>Signing secrets reachable only from a protected branch. <strong>Workflow files must themselves be protected and tag triggers restricted.</strong> A tag-triggered workflow runs from the tagged ref — so anyone who can commit a workflow file and push a tag can reach the signing key. That's the tj-actions class of compromise, and it applies to both the app pipeline and the knowledge-pack pipeline. This is the control I'd check first on any repo I inherited.</td></tr>
+      <tr><td class="nm">Release channels</td><td>alpha / beta / stable, delta updates, previous version retained on disk so rollback is a local operation and not a download.</td></tr>
+      <tr><td class="nm">Crash reporting</td><td>Local-only by default with explicit opt-in to send. Structured logging with a field <em>allow-list</em>, not a deny-list — keys, tokens, prompt text and quote data are never loggable. Deny-lists fail open; allow-lists fail closed.</td></tr>
+      <tr><td class="nm">Provider breakage</td><td>Contract tests against recorded fixtures, a nightly live canary per provider, schema-drift quarantine. Expect breakage several times a year. The abstraction exists to make each one a one-file fix rather than a weekend.</td></tr>
+      <tr><td class="nm">Effort ledger</td><td>Estimated versus actual per feature, committed to the repo from the first week. After ten features you know your real multiplier, and every estimate in <a href="#cost">COST</a> stops being a guess and becomes a calculation. This is the cheapest thing in the plan and the one most likely to be skipped.</td></tr>
+    </tbody>
+  </table></div>
+</section>

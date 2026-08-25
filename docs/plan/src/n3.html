@@ -1,0 +1,195 @@
+<section id="scrn">
+  <div class="sec-head"><span class="sec-mn">SCRN</span><h2>The screens</h2>
+    <span class="sec-note">nine · live HTML, not pictures</span></div>
+  <p>
+    I think in screens, so this is where the plan gets concrete. These are rendered HTML — the density, type,
+    colour and column structure below <em>are</em> the specification. Every figure is stamped
+    <strong>SAMPLE DATA</strong>: real tickers, illustrative everything else. Nothing here records an actual
+    transaction by an actual person.
+  </p>
+  <!--MOCKUPS-->
+  <div class="call">
+    <p class="call-h">What I am arguing with these</p>
+    <ul>
+      <li><strong>Density is not a failure of design.</strong> 20–24px rows, hairlines, tabular figures, no
+          cards, no drop shadows. Whitespace in a blotter is paid for in scroll events, and a trader scanning
+          forty rows does not want them to breathe.</li>
+      <li><strong>Every number carries its own age.</strong> A 13F row is 45 days stale by law; a Form 4 is
+          near-live. They never share an "as of". This is the single decision that most separates a terminal
+          you trust from one that is merely fast.</li>
+      <li><strong>Fact and inference are different surfaces</strong>, marked at glyph level — not by background
+          tint, which people stop seeing within a week and which survives neither screenshot nor clipboard.</li>
+      <li><strong>Failure is a designed screen.</strong> A dead feed greys its panel and stamps the age of the
+          last good value. It never renders stale as live, and never silently swaps to another source.</li>
+      <li><strong>Both asset classes carry full weight.</strong> Screen 01 is equities, FX and metals side by
+          side, each with the lens that applies to it.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="brain">
+  <div class="sec-head"><span class="sec-mn">BRAIN</span><h2>The knowledge layer</h2>
+    <span class="sec-note">what "you personally update it" actually requires</span></div>
+
+  <p>
+    Every product is bolting a chatbot onto its documents and calling it AI. That is worth very little: it
+    retrieves what you already had, in a worse format, with a confidence it has not earned.
+  </p>
+  <p>
+    What is actually useful on a desk is the thing a good analyst builds over years and then takes with them
+    when they leave — <strong>accumulated judgement</strong>. Which metric matters for a miner and why it
+    differs for a bank. What the last three regime breaks looked like. Which insider patterns have historically
+    meant something and which are payroll. What is typically priced into an NFP print. That is what separates
+    ten years on a desk from a terminal licence.
+  </p>
+  <p>
+    So this is not a chatbot. It is a <strong>maintained body of claims that I write, version, sign and keep
+    current</strong>, which the terminal loads and reasons from. It needs a schema, an authoring loop, a
+    distribution channel, a trust model and an approval gate — anything less is a text file that goes stale
+    without telling you.
+  </p>
+
+  <h3>The object: a knowledge pack</h3>
+  <p>
+    A pack is a versioned set of <em>claims</em>. Each claim has a <strong>stable identity</strong>, a body, a
+    confidence score, a decay date and sources. Stable identity is the whole trick: because a claim persists
+    across versions, the terminal can compute a claim-level diff and show you precisely what changed and why —
+    rather than handing you a new opaque blob and asking you to trust it.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Field</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">id</td><td>Stable across versions, e.g. <code>gold.realyield.decoupled</code>. Never reused for a different assertion.</td></tr>
+      <tr><td class="mono">body</td><td>The claim itself. One assertion, not a paragraph of hedging.</td></tr>
+      <tr><td class="mono">why_it_matters</td><td>What it changes about a decision. A claim that changes nothing does not belong in the pack.</td></tr>
+      <tr><td class="mono">confidence</td><td>0–1. Below 0.6 renders with a visible warning.</td></tr>
+      <tr><td class="mono">decays</td><td>The date after which it must be re-verified. Expired claims render struck-through with a warning, and never silently.</td></tr>
+      <tr><td class="mono">sources</td><td>Where it came from. A claim with no source cannot be signed.</td></tr>
+      <tr><td class="mono">supersedes</td><td>Optional — the claim id this replaces, so the lineage is auditable.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Pack taxonomy</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pack class</th><th>Contents</th><th>Cadence</th><th>Default gate</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Instrument dossiers</td><td>Per instrument: what actually drives it, correlation structure, session behaviour, typical ranges, what breaks the usual relationship.</td><td class="mono">monthly</td><td class="mono">review</td></tr>
+      <tr><td class="nm">Regime histories</td><td>Named historical regimes, what characterised each, what ended them. The panel says the correlation flipped; the pack says what happened last three times.</td><td class="mono">quarterly</td><td class="mono">review</td></tr>
+      <tr><td class="nm">Event playbooks</td><td>NFP, CPI, FOMC, BoE, ECB, OPEC, earnings: what is typically priced, the historical distribution of the move, how first prints revise.</td><td class="mono">monthly</td><td class="mono">auto</td></tr>
+      <tr><td class="nm">Sector &amp; industry primers</td><td>What drives the numbers in a bank, REIT, insurer, E&amp;P, miner or biotech, and which metrics are load-bearing.</td><td class="mono">quarterly</td><td class="mono">review</td></tr>
+      <tr><td class="nm">Company dossiers</td><td>Per watchlist name: business model, moat, unit economics, the metrics that matter for <em>that</em> company, known accounting quirks.</td><td class="mono">on watchlist change</td><td class="mono">review</td></tr>
+      <tr><td class="nm">Incentive interpretation</td><td>How to read Form 4 codes, cluster patterns, comp structures, 10b5-1 timing, pledged shares. The judgement layer over the raw feed.</td><td class="mono">quarterly</td><td class="mono">review</td></tr>
+      <tr><td class="nm">Accounting red flags</td><td>Beneish, Altman, Piotroski, Sloan accruals, Montier C — what each catches, what each misses, and the failure modes.</td><td class="mono">yearly</td><td class="mono">pinned</td></tr>
+      <tr><td class="nm">Filing-reading guides</td><td>What to read in a 10-K and in what order, by company type. Where the bodies are usually buried.</td><td class="mono">yearly</td><td class="mono">pinned</td></tr>
+      <tr><td class="nm">Regulatory state</td><td>What is live, what is delayed, what was vacated. The fast-decaying pack — Form SHO, 10c-1a, buyback rules, CT Plan.</td><td class="mono">monthly</td><td class="mono">auto</td></tr>
+      <tr><td class="nm">Your own playbook</td><td>Patterns extracted from your journal once there is enough of it. The most valuable pack, and the only one that cannot be written in advance.</td><td class="mono">monthly</td><td class="mono">review</td></tr>
+      <tr><td class="nm">Product documentation</td><td>The terminal's own docs, so the assistant answers "how do I…" without a separate help system.</td><td class="mono">per release</td><td class="mono">auto</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The authoring loop — how I actually update it</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Stage</th><th>What happens</th><th>Control</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">1 · Schedule</td><td>A scheduled job runs off-peak against a private repo. Pack classes are due on their own cadence, so not everything regenerates nightly.</td><td class="mono">cron</td></tr>
+      <tr><td class="nm">2 · Research</td><td>Each due pack is researched against its declared sources, with the prior version supplied so the model is revising rather than rewriting.</td><td class="mono">web + local corpus</td></tr>
+      <tr><td class="nm">3 · Author</td><td>Claims written with ids preserved where the assertion persists, superseded where it changed, retired where it no longer holds.</td><td class="mono">schema-validated</td></tr>
+      <tr><td class="nm">4 · Self-check</td><td>Every claim must carry a source. Numeric claims are checked against the cited source. Unsourced claims are dropped, not softened.</td><td class="mono">automated</td></tr>
+      <tr><td class="nm">5 · Gate</td><td>A frozen golden question set (200+ typed questions with known answers) runs against the candidate. Regressions block publication.</td><td class="mono">CI gate</td></tr>
+      <tr><td class="nm">6 · Adversarial gate</td><td>A <em>separate</em> suite from the correctness set: regenerated poisoned filings, hidden-instruction fixtures, injection canaries. Eval sets catch regressions; they do not catch attacks.</td><td class="mono">CI gate</td></tr>
+      <tr><td class="nm">7 · Sign</td><td>Ed25519 over each pack and the index. The key lives in CI, never in the binary, and never in the repo the authoring agent can write to.</td><td class="mono">key custody</td></tr>
+      <tr><td class="nm">8 · Distribute</td><td>The terminal polls a small signed <code>index.json</code> with ETag and downloads only changed packs.</td><td class="mono">bandwidth-cheap</td></tr>
+      <tr><td class="nm">9 · Verify</td><td>Signature checked before load. Failure keeps the previous version and raises a visible alert — it fails closed.</td><td class="mono">hard fail</td></tr>
+      <tr><td class="nm">10 · Review</td><td>Per pack class: auto, review-before-live, or pinned. The claim diff is what you review, not the file.</td><td class="mono">your call</td></tr>
+      <tr><td class="nm">11 · Rollback</td><td>Previous versions retained on disk; revert is one click and takes effect without a restart.</td><td class="mono">one click</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call warn">
+    <p class="call-h">Two constraints that shape this, honestly stated</p>
+    <ul>
+      <li><strong>A scheduled agent on a consumer plan is capped at single-digit-to-low-tens of runs per day.</strong>
+          A "one job per pack class" design across dozens of packs is therefore impossible. The pipeline is
+          <em>one</em> scheduled job that batches many packs per run — which is also where batch pricing lives,
+          so it is cheaper as well as feasible.</li>
+      <li><strong>This lives beside the product, not inside the binary.</strong> The authoring pipeline runs on
+          my side against a private repo; the terminal only ever consumes signed output. That is a better
+          design anyway — the signing key never ships to you — but it does mean the update loop is a service
+          you rely on, not a feature you own outright. If that pipeline stops, the terminal keeps working with
+          the last verified packs and tells you they are ageing.</li>
+    </ul>
+  </div>
+
+  <h3>Model routing</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Task</th><th>Runs on</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Any displayed number, ratio, score or percentile</td><td class="nm">Deterministic code</td><td>No model in the path, ever. This is what makes a FACT panel a fact.</td></tr>
+      <tr><td>Pack authoring, filing redline, weekly review</td><td class="nm">Frontier model, batched overnight</td><td>Judgement and citation quality; none of it is latency-sensitive, and batch pricing roughly halves it.</td></tr>
+      <tr><td>Interactive analysis, thesis stress-test, pre-trade check</td><td class="nm">Frontier model, cached prefix</td><td>The knowledge base is a stable prefix, so repeated reads pay a fraction on the bulk of the input. Cached input also does not count toward throughput limits.</td></tr>
+      <tr><td>Hover-translate, query rewriting, entity extraction, offline mode</td><td class="nm">Small local model</td><td>Cheap, private, works with no network. <strong>Your watchlist is your alpha</strong> — it should not leave the machine for a definition lookup.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Retrieval over your own corpus</h3>
+  <ul>
+    <li><strong>Structure-aware chunking</strong> of filings by Item, so a citation resolves to a section rather than an arbitrary window.</li>
+    <li><strong>XBRL facts in preference to prose</strong> wherever a number exists in both. Never ask a model to read a figure it could look up.</li>
+    <li><strong>Hybrid retrieval</strong> — BM25 plus dense — with reranking, because filing language is formulaic and lexical match matters.</li>
+    <li><strong>Corpus capped to the watchlist</strong> (~200k chunks). Embedding everything is ~4.7M chunks and turns a sub-100ms lookup into a multi-second scan.</li>
+    <li><strong>Freshness weighting</strong>, so the current 10-K outranks the 2019 one unless you asked historically.</li>
+    <li><strong>Citation granularity to (accession, byte offset, length, hash)</strong>, with the immutable original retained — which turns a citation chip from a presentation feature into a tamper-evident chain.</li>
+  </ul>
+
+  <h3>Guardrails</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Control</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">No citation, no claim</td><td>Numeric sentences without a resolvable citation are struck before render, with a visible count of what was withheld and a drawer to inspect it.</td></tr>
+      <tr><td class="nm">FACT / INFERENCE separation</td><td>Distinct chrome, not distinct tone. Facts render only from deterministic pipelines. <strong>Marked at glyph level, not by background tint</strong> — users habituate to background colour within a week, and it survives neither screenshot nor clipboard.</td></tr>
+      <tr><td class="nm">Confidence and decay surfaced</td><td>Every claim shows its score; expired claims are struck and flagged rather than quietly dropped.</td></tr>
+      <tr><td class="nm">Untrusted content boundary</td><td>Filings, news and commentary are wrapped and declared as data. Instructions inside them are never followed, and an attempt is reported.</td></tr>
+      <tr><td class="nm">Model-deprecation runbook</td><td>Model ids pinned in config, an inventory of every behaviour that is model-specific, and a re-eval gate before any swap. No single model's behaviour is a load-bearing security invariant.</td></tr>
+      <tr><td class="nm">Refusal handling</td><td>A declined request is surfaced honestly rather than retried into a worse answer.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The features this becomes</h3>
+<p class="mut" style="margin-top:-8px">Enumerated here for completeness; specified in full above.</p>
+  <div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Signed pack distribution</td><td>Poll a signed index, download changed packs, verify Ed25519 before load, hot-swap, roll back on failure.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Claim-level diff</td><td>"What your terminal learned last night" — added, revised and retired claims, with reasons and sources.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Approval gate &amp; rollback</td><td>Per pack class: auto, review-before-live, or pinned. One-click revert to the previous version.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Evidence-locked answers</td><td>Every numeric claim carries a citation or is struck before render. No citation, no claim.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">FACT / INFERENCE split</td><td>Two visually distinct chrome systems. Facts render only from deterministic pipelines with no model in the path.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Morning brief</td><td>What moved overnight and why, what is scheduled, where positioning sits, what changed in the packs.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Filing diff &amp; materiality ranking</td><td>AI ranks what changed in a redline by materiality; the diff itself is deterministic.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Thesis stress-test</td><td>Steel-manned bear case with citations, plus the specific evidence that would settle it.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Pre-trade check</td><td>Positioning, scheduled events and your own record for similar setups, assembled before you act.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Plain-English hover</td><td>Hover any metric or filing phrase for a one-sentence translation — routed to a local model, no network.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Cost &amp; token meter</td><td>Live spend by feature, cache hit rate, remaining headroom against a monthly cap.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Golden-set regression harness</td><td>200+ typed questions with known answers, run against every pack before it can be signed.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Entity &amp; relationship graph</td><td>Who sits on whose board, who owns whom, built from proxies, Forms 3/4/5, 13D/G and 13F.</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Offline genesis bundle</td><td>A complete pack set ships at install so the terminal is useful before its first sync.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>Cost</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Workload</th><th>Frequency</th><th class="n">Est. monthly</th></tr></thead>
+    <tbody>
+      <tr><td>Pack authoring (batched, off-peak)</td><td class="mono">nightly, staggered by class</td><td class="n mono">$40–90</td></tr>
+      <tr><td>Morning brief</td><td class="mono">daily</td><td class="n mono">$15–30</td></tr>
+      <tr><td>Interactive analysis</td><td class="mono">~20/day, cached prefix</td><td class="n mono">$50–150</td></tr>
+      <tr><td>Filing redlines</td><td class="mono">per filing on watchlist</td><td class="n mono">$10–40</td></tr>
+      <tr><td>Weekly review</td><td class="mono">weekly</td><td class="n mono">$5–15</td></tr>
+      <tr><td>Golden + adversarial gates</td><td class="mono">per pack build</td><td class="n mono">$10–40</td></tr>
+      <tr><td><strong>Total</strong></td><td class="mono">—</td><td class="n mono"><strong>$130–365</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p class="mut" style="font-size:var(--t-sm)">
+    Estimates, not quotes. Token accounting differs between model generations, so baseline empirically with the
+    token-counting endpoint on your own payloads before committing to a budget, and set a hard monthly cap in
+    the cost meter regardless.
+  </p>
+</section>

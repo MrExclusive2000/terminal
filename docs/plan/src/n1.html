@@ -1,0 +1,186 @@
+<title>Argus Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<div class="wrap">
+<nav class="rail" aria-label="Contents">
+  <p class="rail-brand">Argus</p>
+  <p class="rail-sub">build plan · v2 · written from the desk</p>
+
+  <p class="rail-h">The case</p>
+  <a href="#job"><code>JOB</code><span>What it's for</span></a>
+  <a href="#edge"><code>EDGE</code><span>Where the edge is</span></a>
+
+  <p class="rail-h">The product</p>
+  <a href="#scrn"><code>SCRN</code><span>The screens</span></a>
+  <a href="#know"><code>KNOW</code><span>What it must know</span></a>
+  <a href="#brain"><code>BRAIN</code><span>The knowledge layer</span></a>
+
+  <p class="rail-h">The build</p>
+  <a href="#build"><code>BUILD</code><span>How it's made</span></a>
+  <a href="#break"><code>BREAK</code><span>What breaks it</span></a>
+  <a href="#look"><code>LOOK</code><span>How it looks</span></a>
+
+  <p class="rail-h">The decision</p>
+  <a href="#cost"><code>COST</code><span>Money and time</span></a>
+  <a href="#cut"><code>CUT</code><span>What I'd cut</span></a>
+</nav>
+
+<main class="main">
+
+<header class="hero">
+  <p class="eyebrow">Windows terminal · equities &amp; forex · information only · plan</p>
+  <h1>Somebody always has to trade. Find out who, and why, before the price tells you.</h1>
+  <p class="lede">
+    This is a build plan for a single-user Windows terminal covering <strong>equities and forex</strong>. No
+    execution, no broker connection — it informs decisions, it doesn't make them. I've written it the way I'd
+    brief a desk: what the job is, where the edge actually is, what I'd refuse to build, and what will go
+    wrong at three in the morning.
+  </p>
+  <div class="hero-meta">
+    <span><b>Codename</b> Argus</span>
+    <span><b>User</b> one · UK · non-professional</span>
+    <span><b>Broker</b> IC Markets MT5</span>
+    <span><b>Stack</b> .NET 10 LTS + WPF</span>
+    <span><b>Scope</b> 24 modules · 182 features</span>
+    <span><b>To v1</b> 96 wks irreducible</span>
+  </div>
+</header>
+
+<section id="job">
+  <div class="sec-head"><span class="sec-mn">JOB</span><h2>What this is actually for</h2>
+    <span class="sec-note">stated the way I'd state it to a desk</span></div>
+
+  <p>
+    Most trading software answers the wrong question. It tells you what the price <em>did</em>, in more colours
+    and on more timeframes than anyone needs. Price is the most crowded data in the industry and the least
+    differentiated — everybody has it, it's free, and it's already in everybody else's model.
+  </p>
+  <p>
+    The question worth asking is different: <strong>who knows more than me, and what are they doing about
+    it?</strong> That question has a good answer, and it's a boring one. The people who know more are
+    frequently <em>compelled to tell you</em>. Not out of generosity — because regulators force them.
+  </p>
+
+  <div class="call dec">
+    <p class="call-h">The through-line: compelled disclosure</p>
+    <p>
+      A CFO buying her own stock has to file within two business days. A fund crossing 5% has to file within
+      five. A miner hedging next year's production shows up in a positioning report every Friday. A central
+      bank buying gold reports it to the IMF. A director pledging shares to a bank discloses it in the proxy.
+      A company must publish which metric its CEO is paid to hit.
+    </p>
+    <p>
+      <strong>None of these people want to tell you. All of them have to.</strong> That obligation trail is the
+      one dataset in finance where the informed participant is legally required to show their hand, and it is
+      almost entirely free at origin. Everything in this plan is built to collect it, normalise it, and put it
+      next to the price.
+    </p>
+  </div>
+
+  <h3>The second thing, which matters more than people admit</h3>
+  <p>
+    Compelled disclosure tells you what informed people <em>chose</em> to do. The higher-quality signal is what
+    people are <strong>forced</strong> to do. Forced flow doesn't care about your thesis and doesn't change its
+    mind:
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Forced flow</th><th>Who has to trade, and why</th><th>Visible where</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Index rebalances</td><td>Trackers must own the new weight on the day, regardless of price.</td><td class="mono">index announcements</td></tr>
+      <tr><td class="nm">Lock-up expiries</td><td>Holders who couldn't sell, now can — and often must.</td><td class="mono">424B / S-1</td></tr>
+      <tr><td class="nm">Pledged-share margin calls</td><td>A director who borrowed against stock doesn't choose when it's sold.</td><td class="mono">DEF 14A</td></tr>
+      <tr><td class="nm">Covenant-driven hedging</td><td>A miner's project finance mandates forward sales irrespective of their price view.</td><td class="mono">10-K notes + COT</td></tr>
+      <tr><td class="nm">ATM issuance</td><td>A company burning cash with an open shelf will sell into strength. It has no choice.</td><td class="mono">424B5 / cover page</td></tr>
+      <tr><td class="nm">Options expiry pinning</td><td>Dealers hedging gamma trade mechanically into the close.</td><td class="mono">option chain</td></tr>
+      <tr><td class="nm">Central bank reserve policy</td><td>A multi-year diversification mandate is price-insensitive by design.</td><td class="mono">IMF / WGC</td></tr>
+      <tr><td class="nm">Swap-line and rollover mechanics</td><td>Month-end and quarter-end FX flow that exists for balance-sheet reasons.</td><td class="mono">calendar</td></tr>
+    </tbody>
+  </table></div>
+  <p>
+    Every one of these is knowable in advance. None of them requires a prediction. This is the part of the
+    plan I'd defend hardest, because it's the part that doesn't depend on being cleverer than the market —
+    only on being better organised than the people who haven't bothered to look.
+  </p>
+
+  <h3>What I'm not building, and why</h3>
+  <p>
+    I've watched a lot of terminals get built. They fail the same way: they add surface until nothing is
+    trustworthy, and the honest answer to "where did this number come from?" becomes "somewhere".
+  </p>
+  <ul>
+    <li><strong>No execution, no broker connection.</strong> You trade in MT5. This informs, it doesn't act.
+        That's a smaller regulatory object, a smaller security object, and a smaller failure mode.</li>
+    <li><strong>No prediction engine.</strong> No "AI price target". If I can't show you the evidence and the
+        thing that would falsify it, I'd rather show you nothing.</li>
+    <li><strong>No second user, ever.</strong> The moment someone else sees the screen, this stops being a
+        subscriber and becomes a distributor. Same feed, three orders of magnitude in cost. It's an
+        architectural invariant with a test, not a note in a README.</li>
+    <li><strong>No plugins, no third-party extensions.</strong> The AI reads attacker-controlled text — filings
+        and news. Every extension point is a hole in the only boundary keeping that safe.</li>
+    <li><strong>No fake numbers to look complete.</strong> Retail FX "volume" is a tick count. If I don't have
+        volume, the panel says so.</li>
+  </ul>
+  <h3>What you asked for, and where it is</h3>
+  <p>
+    Your brief was specific. I've held this table against it clause by clause so neither of us has to take on
+    trust that it was read properly.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>You said</th><th>Where it lands</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Institutional trader's judgement</td><td>The voice of this document, and specifically <a href="#edge">EDGE</a> — what I'd actually trade off, and what I'd bin.</td></tr>
+      <tr><td class="nm">Research and analysis</td><td>Nine domain dossiers, live-verified, plus four adversarial passes. Findings are load-bearing throughout; the corrections they forced are listed in <a href="#cut">CUT</a>.</td></tr>
+      <tr><td class="nm">Windows app</td><td>.NET 10 LTS + WPF, docked and tear-off, offline-first — <a href="#build">BUILD</a>.</td></tr>
+      <tr><td class="nm">Information only</td><td>An architectural invariant, not a promise. No order path exists in the codebase — <a href="#job">JOB</a>, <a href="#break">BREAK</a>.</td></tr>
+      <tr><td class="nm">Forex <em>and</em> stocks</td><td>Both carry full weight. FX and metals get positioning and driver lenses; equities get the disclosure stack — <a href="#know">KNOW</a>.</td></tr>
+      <tr><td class="nm">Incentives / insiders</td><td>The flagship. Form 4 conviction scoring, pay-to-behaviour decoding, pledged shares, 10b5-1 forensics, cluster detection — the largest single module in the plan.</td></tr>
+      <tr><td class="nm">AI knowledge, personally updated</td><td>Signed, versioned knowledge packs with a claim-level diff and an approval gate — <a href="#brain">BRAIN</a>. Not a chatbot over your documents.</td></tr>
+      <tr><td class="nm">Usability and security</td><td><a href="#look">LOOK</a> and <a href="#break">BREAK</a>, including the controls I'd refuse to ship without and one very common one that is theatre.</td></tr>
+      <tr><td class="nm">Concepts and mockups</td><td>Nine rendered screens in <a href="#scrn">SCRN</a> — live HTML at true density, not pictures of an idea.</td></tr>
+      <tr><td class="nm">Research and add features</td><td>182 features across 24 modules, every one traceable to a dossier finding or a review gap. Nothing dropped for convenience.</td></tr>
+      <tr><td class="nm">Plan only</td><td>This document. Nothing has been built, and I've not treated any part of the conversation as revoking that.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="edge">
+  <div class="sec-head"><span class="sec-mn">EDGE</span><h2>Where the edge is, and where it isn't</h2>
+    <span class="sec-note">the part most plans skip</span></div>
+
+  <p>
+    A plan that only lists what works is marketing. Here's my honest read, from both sides.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Claim</th><th>My read</th><th>What the terminal does about it</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Insider <em>buying</em> carries information</td><td class="up"><strong>Holds up.</strong> Open-market purchases by officers, clustered, off-plan, are the best-documented anomaly in this space. Cohen–Malloy–Pomorski's split matters: opportunistic filers carry the return, routine filers carry roughly none.</td><td>Scored, not just listed. The classifier is the product.</td></tr>
+      <tr><td class="nm">Insider <em>selling</em> carries information</td><td class="dn"><strong>Mostly doesn't.</strong> Measured on a recent quarter, <strong>67% of Form 4 rows are non-discretionary</strong> — tax withholding, awards, option mechanics. Code P is only 5.5%. Most "insider selling" headlines are payroll.</td><td>Decoded by transaction code. But a <em>separate</em> path catches the large, off-plan, badly-timed sale — the one event that does matter and that a naive filter mutes.</td></tr>
+      <tr><td class="nm">13F tells you what funds hold</td><td class="warn"><strong>Half-true and dangerously stale.</strong> 45 days late by law, up to 135 days old at the position level, longs only, no shorts, no derivatives.</td><td>Shown with its age stamped in the row. Never blended with live data.</td></tr>
+      <tr><td class="nm">Positioning extremes mark turns</td><td class="warn"><strong>They mark fuel, not timing.</strong> Crowded gets more crowded. Fading an extreme without a price trigger is how you get run over.</td><td>Percentile bands, never a signal. The copy says "stretched", never "due".</td></tr>
+      <tr><td class="nm">Short interest predicts squeezes</td><td class="warn"><strong>Weak on its own.</strong> The US number is bi-monthly and aggregate.</td><td>The free FCA and EU registers <em>name the holder</em> and update daily. Strictly better data, and nobody uses it.</td></tr>
+      <tr><td class="nm">Retail sentiment / social</td><td class="dn"><strong>Noise.</strong> I've never seen it survive a fee.</td><td>Not built.</td></tr>
+      <tr><td class="nm">Technical indicators as signals</td><td class="dn"><strong>Not as signals.</strong> As <em>context</em> — where is normal volatility, where is the level everyone can see — they're useful and cheap.</td><td>ATR, levels and session structure for stop placement and sizing. No oscillator buy-signals.</td></tr>
+      <tr><td class="nm">Gold trades off real yields</td><td class="crit"><strong>It did, and then it stopped.</strong> Roughly −0.73 from 2003 to 2022, decoupled after 2024 when central banks displaced ETFs as the marginal buyer.</td><td>Every correlation is shown <em>beside its long-run value</em>, so a broken model announces itself instead of quietly misleading you.</td></tr>
+      <tr><td class="nm">Forced flow</td><td class="up"><strong>The most reliable thing here.</strong> Somebody has to trade, on a known date, for reasons unrelated to value.</td><td>A first-class calendar: rebalances, lock-ups, expiries, covenant hedging, shelf takedowns.</td></tr>
+      <tr><td class="nm">Your own track record</td><td class="up"><strong>Underrated, and free.</strong> Most discretionary traders don't lose for want of data. They lose to sizing drift, overtrading, and holding through binary events.</td><td>The journal is a first-class module, not a notes field.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call warn">
+    <p class="call-h">The thing that actually loses money</p>
+    <p>
+      Not direction. In twenty years of watching people blow up, almost none of it was "they were wrong about
+      the trade". It was <strong>size</strong>, <strong>stops inside the noise</strong>, <strong>holding through
+      an event they knew was coming</strong>, and <strong>trading bigger after a loss</strong>.
+    </p>
+    <p>
+      So the terminal computes what most tools leave to your head: position size from your actual stop
+      distance, whether that stop sits inside normal volatility, what the spread costs as a percentage of the
+      risk you're taking, and what your own record says about this setup at this time of day. That's not a
+      discipline lecture — it's arithmetic you'd otherwise do badly under pressure.
+    </p>
+  </div>
+</section>

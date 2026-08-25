@@ -1,0 +1,341 @@
+<section id="know">
+  <div class="sec-head"><span class="sec-mn">KNOW</span><h2>What it has to know</h2>
+    <span class="sec-note">24 modules · 182 features · grouped by the question they answer</span></div>
+
+  <p>
+    Organised by what you would actually ask, not by an engineering taxonomy. Priorities are
+    <span class="p0">P0</span> core, <span class="p1">P1</span> v1, <span class="p2">P2</span> v2,
+    <span class="p3">P3</span> later; effort is S (≈1 day) / M (≈2 days) / L (≈1 week) / XL (≈2.5 weeks).
+  </p>
+
+  <h3>Who is buying it with their own money?</h3>
+  <p>The flagship, and the reason the rest exists. Everything here turns on one distinction: <strong>most Form 4
+  activity is payroll, not opinion.</strong> Measured on a recent quarter, 67% of rows are non-discretionary —
+  awards, tax withholding, option mechanics — and open-market purchases are just 5.5%, about 22,700 a year
+  across the whole market. A product that shows you "insider activity" without decoding the code is showing
+  you a company's HR department.
+  <br><br>The second distinction is <em>who</em>. A director who buys every January carries no information; the
+  filer who has never bought in this month in three years and just did, carries most of it. That split is the
+  single most valuable transform in this plan.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Insider tape</td><td>Live filterable stream of every Form 3/4/5 and Form 144 as it reaches EDGAR, sub-60s.</td><td class="mono">EDGAR index + Atom</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Transaction-code decoder</td><td>The single highest-value normalisation in the product. Measured on a recent quarter, <strong>67% of Form 4 rows are non-discretionary</strong> (A 24.5%, F 26.6%, M 15.5%) and <strong>code P is only 5.5%</strong> — roughly 22,700 open-market buys a year market-wide.</td><td class="mono">Form 345 XML</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Conviction score</td><td>0–100 per transaction: code weight, role (CFO &gt; CEO &gt; director &gt; 10% holder), size vs holdings and vs salary, discretionary flag, buying into weakness.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Cluster radar</td><td>Multiple distinct insiders, same issuer, same direction, inside a window — the strongest documented insider signal.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Routine vs opportunistic classifier</td><td>Cohen–Malloy–Pomorski: filers with no trade in the same month over prior years score as opportunistic; routine filers score ~0.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">10b5-1 forensics</td><td>Document-level <code>aff10b5One</code> flag plus Item 408(a) adoption/modification dates and the 2022 cooling-off periods; separates scheduled from discretionary.</td><td class="mono">Form 4 + 10-Q Item 5</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Footnote resolver</td><td>Parses footnotes for what the schema omits: weighted-average price ranges, plan references, indirect ownership chains, gift recipients.</td><td class="mono">Form 4 footnotes</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Distress-sale detector</td><td>A separate signal path that bypasses the routine down-weight: no plan, size above a holding or salary threshold, unusual timing. Prevents the system muting the one event it exists to catch.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Event latency ledger</td><td>Stamps every datum with event date, filing date, ingest date and age. Underpins every staleness badge in the product.</td><td class="mono">internal</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Bulk historical load</td><td>SEC DERA publishes Form 3/4/5 flattened to 2006 — 82 ZIPs, ~1.1GB, footnotes already structured. Minutes, versus weeks of crawling.</td><td class="mono">SEC DERA</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Pay-for-metric map</td><td>Parses iXBRL-tagged Item 402(v) Pay-versus-Performance and the CD&amp;A metric list into an incentive model: which metric, which period, which cliff, and what it rewards managing.</td><td class="mono">DEF 14A</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Form 144 early warning</td><td>Proposed-sale notices land 1–3 days ahead of the Form 4 that confirms them. Stateful matcher flags the abandoned-sale case.</td><td class="mono">EDGAR 144</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Pledged-share detector</td><td>Margin-loan pledges from the proxy — forced-sale risk that reads as insider selling when it fires.</td><td class="mono">DEF 14A</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Governance stress timeline</td><td>Chronological ribbon: 8-K 4.01 auditor changes, 4.02 non-reliance, 5.02 departures, NT 10-K late filings, Item 404 related-party.</td><td class="mono">EDGAR 8-K</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Person graph</td><td>Insider identity resolved across issuers — the same director on five boards — with per-filer forward-return history and an explicit sample-size warning.</td><td class="mono">CIK graph</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">13D/G activist watch</td><td>Exploits the post-2024 compressed 5-business-day deadline; parses Item 4 intent language for activist tells.</td><td class="mono">EDGAR 13D/G</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Buyback tracker</td><td>Announced vs executed under Rule 10b-18, Item 703 monthly-in-quarterly, and buyback-versus-insider-selling divergence.</td><td class="mono">10-Q/10-K</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Compensation peer graph</td><td>Every proxy declares a comp peer group — management's own declared comparator set, and a governance signal when it drifts toward richer payers.</td><td class="mono">DEF 14A</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Miner hedge-book reader</td><td>Producer hedge positions from filings — the bridge that turns equity disclosure into gold positioning.</td><td class="mono">10-K/40-F notes</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Global insider desk</td><td>Normalised PDMR feed across UK NSM/RNS, EU MAR Art.19, Japan EDINET, Canada SEDI, ASX 3Y, HKEX DI. Note the EU threshold rose to €50,000 in DE/FR/IT/DK on 2026-01-01 — a discontinuity in any cross-year comparison.</td><td class="mono">6 regimes</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Congressional trading</td><td>House Clerk and Senate eFD periodic transaction reports, 45-day deadline, joined to committee membership and contract awards.</td><td class="mono">STOCK Act filings</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Insider vs institution divergence</td><td>Ranks names where insiders buy while institutions distribute.</td><td class="mono">derived</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Filing punctuality score</td><td>Business days from transaction to filing per filer. Chronic lateness is a governance tell.</td><td class="mono">derived</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Ownership chain resolver</td><td>Reporting-owner CIK → person → indirect vehicles, trusts and family partnerships.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Insider sentiment aggregates</td><td>Market, sector and factor-level net insider buying ratios as a breadth measure.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p3">P3</span></td><td class="nm">Signal backtest harness</td><td>Read-only historical evaluation of incentive signals with survivorship-safe universes and point-in-time data.</td><td class="mono">local lake</td><td class="n mono">XL</td></tr>
+  </tbody></table></div>
+
+  <h3>Who owns it, and who is short it?</h3>
+  <p>Ownership data is a minefield of vintages. A 13F is 45 days late by law and can describe a position 135
+  days old; it shows longs only, no shorts, no derivatives. Shown honestly it is useful context. Shown as
+  though it were current it is a liability.
+  <br><br>The short side has a quiet scandal in it: the US number is bi-monthly and aggregate, while the
+  <strong>FCA and EU registers name the actual holder and update daily</strong>. Free, better, and almost
+  nobody outside institutions uses it.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Ownership map</td><td>Top holders, concentration, QoQ deltas, new and exited positions — each row stamped with its own vintage.</td><td class="mono">13F data sets</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">N-PX voting console</td><td>Machine-readable say-on-pay voting by manager, per issuer. The institutional counterpart to the pay-for-metric work — who voted against the plan you just decoded. Free and structured.</td><td class="mono">N-PX XML</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Ownership delta tape</td><td>13F changes as a flow tape rather than a static table: who added, who exited, who is new.</td><td class="mono">13F</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Dilution &amp; financing watch</td><td>Cover-page share counts, shelf capacity, ATM detection as a share of ADV, S-8 forward dilution, warrant overhang, lock-up expiries. <strong>In small caps, issuance is the dominant loss mechanism.</strong></td><td class="mono">EDGAR</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Free GEX engine</td><td>Full-chain gamma exposure, flip level, per-strike profile, max pain — from Cboe's public chain with Greeks, at no cost.</td><td class="mono">Cboe CDN</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Fund flow &amp; index events</td><td>ETF creation/redemption, index add/delete calendar, rebalance dates.</td><td class="mono">issuer files</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Ownership concentration screen</td><td>Structural setups: high insider ownership plus recent cluster buying plus low institutional saturation.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">HKEX CCASS monitor</td><td>Participant-level shareholding deltas for Hong Kong listings.</td><td class="mono">HKEX</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Short pressure console</td><td>FINRA bi-monthly short interest with an explicit age badge, days-to-cover, off-exchange share, fails-to-deliver.</td><td class="mono">FINRA · SEC</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Global net short register</td><td><strong>Names the actual short seller</strong>, daily, free — FCA, ESMA and national registers, JPX, ASIC. Strictly better than the US bi-monthly aggregate.</td><td class="mono">FCA · ESMA · JPX · ASIC</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Borrow fee &amp; availability</td><td>Annualised borrow cost and utilisation, with the provider's lag stamped.</td><td class="mono">ORTEX or IBKR SLB</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Reg SHO threshold list</td><td>Threshold securities and persistent fails.</td><td class="mono">SEC</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Cadence-agnostic ingest</td><td>FINRA has a pending proposal to move short interest to weekly with T+1 turnaround. Cadence is configuration, not an assumption.</td><td class="mono">internal</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Squeeze composite</td><td>Short interest, days to cover, borrow cost, float rotation and options positioning as one ranked measure.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p3">P3</span></td><td class="nm">Form SHO ingest</td><td><strong>Not buildable yet.</strong> Rule 13f-2 exemption runs to 2 Jan 2028; first filings ~Feb 2028. Rule 10c-1a securities-lending reporting slipped to Sept 2028 / Mar 2029. Do not architect around either.</td><td class="mono">SEC (future)</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>Is the company running out of money?</h3>
+  <p>In the small-cap universe where insider clusters actually appear, <strong>issuance is the dominant loss
+  mechanism</strong> — not being wrong about the business. A company with an open shelf, a cash runway under
+  eight quarters and language quietly dropped from its risk factors will sell stock into any strength you
+  create. This module exists to make you check that before you get excited about a cluster buy.
+  <br><br>The valuation work is deliberately Buffett-school: owner earnings with maintenance capex stated
+  rather than buried, reverse DCF so the market's assumption is explicit, and a capital-allocation record over
+  a decade. Multiples are a comparison tool, not an answer.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Point-in-time financial model</td><td>Normalised statements from XBRL <code>companyfacts</code>, keyed to accession and filed date, so no historical view is contaminated by a later restatement.</td><td class="mono">XBRL</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Filing diff &amp; materiality redline</td><td>Structure-aware 10-K vs 10-K by Item, ranked by materiality. <strong>Removed language is the signal</strong> — a dropped capital-sufficiency sentence outranks most additions.</td><td class="mono">EDGAR</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">TTM derivation</td><td>Q4 is never filed and cash-flow facts are YTD-cumulative, so trailing twelve months must be derived by differencing. XBRL also carries no statement structure — you cannot render a financial statement from <code>companyfacts</code> alone.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Quality-of-earnings panel</td><td>Sloan accruals, cash conversion (CFO/net income), DSO/DIO/DPO decomposition, capitalised-cost and inventory-build trends.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Red-flag scorecard</td><td>Beneish M, Altman Z, Piotroski F, Montier C, Novy-Marx gross profitability — computed deterministically, annotated by AI.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Filing phrase radar</td><td>Standing full-text queries across the universe: "material weakness", "going concern", "substantial doubt", "restatement".</td><td class="mono">EDGAR FTS</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">SEC comment letter watch</td><td>UPLOAD and CORRESP filings — the staff telling a company its accounting is questionable. Among the highest-signal free documents on EDGAR.</td><td class="mono">EDGAR</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">KPI &amp; guidance ledger</td><td>Operating metrics from 8-K Ex-99.1, MD&amp;A and IR decks with source spans, plus a <strong>metric-definition-change detector</strong>. The numbers that move stocks are not in XBRL.</td><td class="mono">8-K · IR</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Sector-specific templates</td><td>A bank, REIT, insurer, E&amp;P or miner is unanalysable on a generic template. Per-sector statement shapes and metric sets.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Segment &amp; SOTP workbench</td><td>Segment splits from <em>dimensional</em> XBRL — which <code>companyfacts</code> silently drops, so this needs the filing's own instance document.</td><td class="mono">instance docs</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Peer-set auto-construction</td><td>Peer sets from the free <code>frames</code> API — 3,555 entities in one call — refined by size, margin and growth similarity.</td><td class="mono">XBRL frames</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Transcript &amp; tone analysis</td><td>Earnings call ingested per speaker turn so citations resolve; tone shift versus prior calls.</td><td class="mono">vendor</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Non-US fundamentals</td><td><code>companyfacts</code> is us-gaap only and starts ~2010. IFRS/ESEF, EDINET and SEDAR+ need separate paths.</td><td class="mono">ESEF · EDINET · SEDAR+</td><td class="n mono">XL</td></tr>
+  </tbody></table></div>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Owner-earnings bridge</td><td>Buffett-school owner earnings with <strong>explicit maintenance capex</strong> as a stated assumption rather than a buried one.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Reverse DCF</td><td>Solves for the growth and margin path the current price implies — the honest way round.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">ROIC decomposition</td><td>ROIC versus WACC spread, decomposed to margin and turns, with the incremental-return trend.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Capital-allocation scorecard</td><td>Where cash went over ten years: capex, M&amp;A, buybacks, dividends, debt paydown — and what each returned.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Editable driver model</td><td>Your assumptions, reconciled to point-in-time actuals each quarter so drift is visible.</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Multiples with history bands</td><td>Current multiple against its own percentile history and sector-relative z-score.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">EV bridge &amp; sum-of-parts</td><td>Market cap to enterprise value with every adjustment itemised.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Buyback-vs-issuance scorecard</td><td>Net share count change against price paid — did buybacks create or destroy value.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>Who has to trade, and when?</h3>
+  <p>Forced flow. Somebody is going to transact on a known date for reasons unconnected to price: index
+  rebalances, lock-up expiries, shelf takedowns, expiry pinning, covenant hedging. This requires no prediction
+  and it is the most reliable content in the product.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Consensus snapshot vault</td><td><strong>Must start on day one.</strong> Snapshots consensus daily into local storage; point-in-time consensus cannot be reconstructed retroactively, and without it every surprise and drift study is look-ahead contaminated.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Corporate event calendar</td><td>Earnings with confirmed-versus-estimated dates flagged distinctly, guidance changes, investor days, index rebalances, lock-up expiries, IPO and secondary calendar.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Earnings run-book</td><td>T-5 prep card, T-0 automatic 8-K Ex-99.1 extraction with a headline-versus-consensus diff inside 60 seconds, guidance language diff, live call panel.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">PEAD &amp; surprise engine</td><td>Standardised unexpected earnings using point-in-time consensus; drift curves T-1 to T+60.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Legal &amp; regulatory catalysts</td><td>Court docket watch, securities class actions, SEC AAERs, FDA calendar (PDUFA, AdComm, warning letters, 483s). Frequently the entire thesis, and every source is free.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Event-study builder</td><td>Cumulative abnormal returns around any event type — 13D filings, insider clusters, guidance changes.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Deals &amp; event-driven</td><td>Deal register with terms, spread and implied probability, regulatory gate tracker.</td><td class="n mono">L</td></tr>
+  </tbody></table></div>
+
+  <h3>Who is positioned, and how crowded?</h3>
+  <p>Cohort positioning is the closest thing FX and metals have to insider filings, and the mapping is closer
+  than it looks: a miner selling forward production is disposing of an asset they produce with better
+  knowledge of its economics than anyone else — structurally the same act as a CFO selling stock.
+  <br><br>The same caveat applies too. Much producer hedging is project-finance covenant, not a price view,
+  exactly as most Form 4 selling is tax withholding. <strong>One decoder, two asset classes: separate the
+  mechanical from the discretionary and only score the discretionary.</strong>
+  <br><br>And the honest framing: positioning is <em>fuel, not a trigger</em>. Crowded gets more crowded.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Cohort positioning board</td><td>Disaggregated COT for commodities (producer/merchant, swap dealer, managed money) and TFF for financials (dealer, asset manager, leveraged funds), with 5-year percentile bands.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Producer hedge decoder</td><td>Separates mechanical hedging (project-finance covenants, scheduled programmes) from discretionary, cross-checked against miner hedge-book disclosures. The same insight as the Form 4 code decoder.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Sign-convention handling</td><td>The CME JPY contract is JPY/USD, so a long JPY future is <strong>short</strong> USDJPY. Getting this wrong inverts every reading.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Release-cadence discipline</td><td>COT describes Tuesday and releases Friday 15:30 ET — three days stale on arrival. Bank Participation is monthly. Rendered as regime tools, never timing tools.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Bullion bank monitor</td><td>Bank Participation Report, US versus non-US banks, monthly.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Counterparty awareness</td><td>Cohorts sum to zero by construction; swap dealers at an extreme short are usually the other side of managed money at an extreme long, not an independent vote.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Positioning event study</td><td>Forward return distributions conditioned on cohort percentile extremes.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>Where is the metal, and who is accumulating it?</h3>
+  <p>Gold has no consolidated tape, so the first job is refusing to pretend otherwise: your IC Markets XAUUSD
+  is a CFD dealer quote, and the only executable benchmarks are the two daily LBMA auctions. The panel shows
+  four venues and the basis between them.
+  <br><br>The second job is the regime. Gold traded inversely to real yields at about −0.73 for two decades and
+  then stopped, once central banks displaced ETFs as the marginal buyer. <strong>A terminal that plots gold
+  against TIPS and stops is showing you a dead model with a straight face.</strong> Every correlation here is
+  displayed beside its long-run value.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Four-venue price panel</td><td>Broker CFD quote, OTC aggregate mid, both LBMA auction fixes, COMEX front month, plus the basis between them. Gold is OTC; the only executable benchmarks are the 10:30 and 15:00 London auctions.</td><td class="mono">broker · LBMA · CME</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Driver regime panel</td><td>Rolling correlation to real yields, DXY, central-bank flow and ETF flow, each <strong>beside its long-run value</strong>. The gold/real-yield relationship ran ≈−0.73 from 2003–2022 and decoupled after 2024.</td><td class="mono">FRED · WGC</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Physical stock board</td><td>COMEX registered vs eligible, LBMA vault holdings including the Bank of England, global ETF tonnes, GLD daily. The float of the gold market.</td><td class="mono">CME · LBMA · WGC</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Official sector tracker</td><td>Central-bank buying and selling by country with the ~2-month reporting lag stamped. The marginal buyer since 2024, and therefore the structural floor.</td><td class="mono">WGC · IMF IFS</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Implied lease rate</td><td>Derived from SOFR less the forward-implied rate, with the working shown. <strong>GOFO was discontinued 30 Jan 2015</strong> — any live GOFO feed is a reconstruction.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Physical flow tracker</td><td>Shanghai premium to London, Swiss customs exports by destination, Indian import demand. Distinguishes consumption from vault rebuild — metal to China is demand, metal to the UK is replenishment.</td><td class="mono">SGE · Swiss BAZG</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Delivery &amp; auction calendar</td><td>COMEX first notice and delivery windows, both daily LBMA auctions, month and quarter-end fixing pressure.</td><td class="mono">CME · LBMA</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Silver &amp; ratio desk</td><td>The same board for silver, plus the gold/silver ratio with regime percentiles.</td><td class="mono">as above</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Miner cross-read</td><td>Producer hedge books and miner insider transactions surfaced on the gold desk — module 4's engine pointed at metals.</td><td class="mono">filings</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">PGM &amp; base metals</td><td>Platinum, palladium and copper on the same positioning-and-physical template.</td><td class="mono">CFTC · LME</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>What is driving this pair, and is that still true?</h3>
+  <p>Rate differentials, OIS-implied policy paths, carry, and the central bank reaction function. Plus the
+  unglamorous things that decide short-horizon outcomes on a CFD account: <strong>your broker's actual spread
+  by time of day</strong>, the rollover widening, and the session structure.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Driver stack</td><td>Per pair: 2y and 10y rate differentials, OIS-implied policy paths, real-yield spreads, carry from forward points, with rolling betas to each.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Venue-labelled quotes</td><td>No consolidated tape exists in FX. Every quote carries its source, and dealer prices are never merged with central-bank fixings into one "price".</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Session &amp; convention engine</td><td>Sunday 17:00 ET week open, Tokyo/London/NY overlaps with per-session ATR, rollover timing, pip/pipette three-tier rendering, JPY 2-dp handling.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Sterling rates panel</td><td>Bank Rate, SONIA, gilt curve and the effective exchange rate index over the Bank of England's CSV endpoint, free.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Spread monitor</td><td>Your broker's actual spread charted by time of day, with the rollover and release spikes marked. On a CFD account this is a material share of short-horizon edge.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Tick-volume honesty</td><td>Retail FX "volume" is tick count. The UI renders it labelled as tick count or not at all.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Central bank reaction tracker</td><td>Speech and meeting calendar, market-implied hike/cut odds from OIS, rhetoric-versus-balance-sheet divergence, intervention watch with its reporting lag explicit.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Correlation &amp; regime matrix</td><td>Rolling correlations across pairs, DXY, gold, oil, US10Y — <strong>each shown beside its long-run value</strong> so a regime break is visible rather than inferred.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Cross derivation</td><td>Crosses computed from the majors, so covering five majors covers a much larger tradeable set without a second driver build.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Vol surface &amp; risk reversals</td><td>ATM vol, 25-delta risk reversals and butterflies. The one genuinely awkward paid gap in FX.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">REER fair value</td><td>BIS real effective exchange rate deviation from long-run average.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">NDF &amp; EM handling</td><td>Non-deliverable forwards and the conventions that differ from majors.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>What is the price doing, and what does normal look like?</h3>
+  <p>Charting earns its place two ways: the <strong>incentives ribbon</strong>, which plots insider buys, 13D
+  crossings and plan adoptions on the price axis so "what were the people who knew doing here?" is answered by
+  looking; and levels and volatility, which is what you need to place a stop that isn't inside the noise.
+  <br><br>No oscillator buy-signals. ATR, session structure and visible levels are context for sizing, not
+  entries in themselves.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Virtualised blotter</td><td>5,000-row grid, column virtualisation, frozen columns, per-cell flash on change with decay.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Incentive columns</td><td>Insider net 30d, conviction score, cluster flag and hedge-direction sit in the watchlist itself, not a separate screen.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Column sets</td><td>Named, savable column layouts per workflow; switch without rebuilding.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Six-channel linking</td><td>Colour-coded symbol groups; change the symbol in one panel and every linked panel follows.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Flash governor</td><td>Caps per-cell animation at 3/sec (WCAG 2.3.1); degrades to steady tint above that rate.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Inline sparklines</td><td>In-cell intraday shape and relative-volume bars.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Heatmap view</td><td>Sector/size treemap with configurable colour metric.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Multi-list management</td><td>Import/export, dedupe, bulk tag, list arithmetic (A minus B).</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Mini-ticker / tray</td><td>Collapse to an always-on-top strip or the system tray.</td><td class="n mono">S</td></tr>
+  </tbody></table></div>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Streaming price chart</td><td>Candles plus tick tape on a fixed-capacity ring buffer; GPU path, 16ms frame budget.</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Incentives overlay ribbon</td><td><strong>The signature chart feature.</strong> Insider buys and sells, 13D/G threshold crossings, 10b5-1 adoptions, option grant dates and buyback windows plotted on the price axis.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Adjustment policy switch</td><td>Explicit unadjusted / split / split-and-dividend per chart. Prevents the classic double-adjustment bug.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Anchored VWAP</td><td>AVWAP anchored to any event — earnings, 13D filing, insider cluster, gap, index add, halt reopen.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Core studies</td><td>MAs, ATR bands, RSI, volume profile histogram, opening range, prior-period levels.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Drawing tools</td><td>Trendlines, boxes, Fibonacci, notes — persisted per symbol and synced to the journal.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Multi-timeframe sync</td><td>Linked crosshair and scroll across timeframes of the same instrument.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Comparison &amp; ratio</td><td>Overlay peers, plot ratios (gold/silver, stock/sector), relative strength.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Chart replay</td><td>Bar-by-bar replay with speed control for reviewing setups.</td><td class="n mono">XL</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Volume profile / TPO</td><td>Market profile with VPOC, VAH, VAL; footprint and cumulative delta.</td><td class="n mono">XL</td></tr>
+  </tbody></table></div>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Conflated tape &amp; book</td><td>Lock-free ingest to a last-value cache, UI sampled at frame rate. Never bind a raw tick stream to the UI thread.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Time &amp; sales with size filter</td><td>Block prints highlighted, off-exchange marked.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Halt, SSR &amp; reopening desk</td><td>Live LULD halt board with reason codes and indicative reopen prices; short-sale-restriction state per symbol.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Auction imbalance monitor</td><td>Opening and closing imbalance feed with indicative match price.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">RVOL by time of day</td><td>Per-symbol intraday volume seasonality from 20+ prior sessions, earnings days excluded.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>What is scheduled that could hurt me?</h3>
+  <p>Binary events are the cheapest money you will ever save. Knowing a print lands in forty minutes changes
+  whether you take the trade at all — and it is one of the few things a terminal can tell you with certainty.
+  <br><br>Macro is stored with <strong>vintages</strong>, so a historical study uses what was known then rather
+  than what was revised in later. Without that every backtest flatters you.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Economic calendar</td><td>Actual, consensus, prior and revision, with a countdown and a "do not carry size into this" marker for binary events.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Vintage-correct macro (ALFRED)</td><td>Series stored with vintages so historical studies use what was known then, not what was later revised in. Without this every macro backtest is contaminated.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Yield curves &amp; policy path</td><td>US, euro area, UK and Japan curves, inversion tracking, OIS-implied hike/cut odds, inflation breakevens.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Cross-asset cockpit</td><td>Credit spreads (HY OAS), VIX term structure, commodity curves, shipping and energy, as a single risk-appetite read.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Surprise index</td><td>Build-your-own Citi-CESI equivalent: z-scored actual-minus-consensus over a rolling window.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Market internals</td><td>Advance/decline, new highs-lows, % above 50/200DMA, McClellan. Note <code>$TICK</code>/<code>$TRIN</code>/<code>$ADD</code> are proprietary calculated indices — a paid feed or absent, never derivable from a consolidated tape.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Sector rotation (RRG)</td><td>Relative rotation graphs across sectors and factors.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Risk-appetite composite</td><td>Crypto as a sentiment proxy alongside HY OAS, VIX structure, USDJPY and equal-vs-cap-weight spread.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Filing stream</td><td>Every filing for the watchlist and universe, typed and routed, with form-specific parsing.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Untrusted-content firewall</td><td>Every ingested document parsed, stripped of hidden and zero-width characters, provenance-tagged as untrusted before it can reach a context window.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Wire &amp; RSS ingest</td><td>Business Wire, GlobeNewswire, PR Newswire, RNS, plus central bank feeds.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Headline-to-halt race</td><td>Correlates news arrival with halt and volume events so you can see which came first.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Sentiment scoring</td><td>Scored per source with the model's confidence exposed, never as a single blended number.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>How do I find it, and how do I get told?</h3>
+  <p>The screener compiles natural language into a query <em>you can read and edit</em>. The model writes the
+  query; the query produces the rows. Same screen twice gives the same answer.
+  <br><br>Two alerting details that most products get wrong: Form 4 filings land <strong>16:00–22:00 ET</strong>,
+  not intraday, so an insider alert built around market hours misses nearly everything. And the system shows
+  you <em>why a rule did not fire</em> — the silent non-firing case is what destroys trust in an alert engine.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">SQL screener over the lake</td><td>Analytical predicates across price, fundamentals, insider and positioning data in one query.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Natural-language compiler</td><td>NL compiles to a <em>readable, editable</em> query. The model writes the query; the query produces the rows — so the same screen twice gives the same answer and can be diffed over time.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Survivorship-safe universes</td><td>Every historical screen runs against a point-in-time universe including delisted names, or the results flatter.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">View-sets &amp; expression mode</td><td>Criteria rail and a monospace DSL that round-trip losslessly.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Incentive-native screens</td><td>Shipped screens the product exists for: cluster buys under $2B, discretionary buying into 52-week lows, insider buying against institutional distribution, pay-metric-at-risk names.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">FX &amp; metals screens</td><td>Positioning percentile extremes, carry rankings, regime-break candidates.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Streaming rule engine</td><td>Sandboxed expression language over a typed streaming context; every rule declares its evaluation clock.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Incentive-aware composites</td><td>One rule spanning price, filing and positioning predicates — "Form 4 code P over $250k, not on a plan, on a name I hold".</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Section 16 window awareness</td><td>Form 4 filings land <strong>16:00–22:00 ET</strong>, not intraday. An insider alert built around market hours misses almost everything.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Fatigue governor</td><td>Per-rule rate limits, noisy-rule detection with a "tighten this?" card, quiet hours, priority tiers.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">"Why not?" tracer</td><td>Per-rule evaluation trace showing each predicate pass/fail with the value observed. <strong>The non-firing case is what destroys trust</strong>, and most products ship only the firing case.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Alert audit trail</td><td>Every fire recorded with the data that triggered it, reviewable weeks later.</td><td class="n mono">S</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Three-lane authoring</td><td>Natural language, compiled rule tree and raw expression visible simultaneously and kept in sync.</td><td class="n mono">L</td></tr>
+  </tbody></table></div>
+
+  <h3>What should I size this at?</h3>
+  <p>Given an entry, a stop and a risk tolerance, the size is determined — it is arithmetic, and it is
+  arithmetic people do badly under pressure. The traps are real: contract sizes differ (100oz a lot on gold,
+  100,000 units on FX majors), P&amp;L lands in the quote currency so a sterling account needs a conversion on
+  every instrument, and broker volume steps must be <em>floored</em> so realised risk lands under target rather
+  than over.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">The Book</td><td>Live P&amp;L blotter: day and open P&amp;L, R to date, % of book, days held, next catalyst. The most-opened screen for anyone with money at risk.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Manual entry &amp; import</td><td>Manual positions plus CSV/statement import with a user-driven column mapper. No broker connection.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Position sizing</td><td>Size from account risk and stop distance, with contract-size, quote-currency and volume-step handling, and a leverage check.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Exposure decomposition</td><td>By sector, currency, factor and beta, with correlation-adjusted concentration.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Liquidity &amp; exit cost</td><td>ADV, spread cost and days-to-exit at participation bands, plus borrow availability for shorts.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Scenario shocks</td><td>What-if on rates, dollar, gold and sector moves across the whole book.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Factor attribution</td><td>Regress returns on Fama-French plus momentum. Note the Ken French library covers North America, Europe, Japan, Asia-Pacific and emerging — not US-only.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Tax lots &amp; records</td><td>Lot-level ledger with UK s.104 pooling, same-day and 30-day rules, base-currency P&amp;L.</td><td class="n mono">L</td></tr>
+  </tbody></table></div>
+
+  <h3>What does my own record say?</h3>
+  <p>The panel that tells you about you, and the one that looks least impressive. Most discretionary traders
+  do not lose for want of data; they lose to sizing drift, overtrading and holding through events.
+  <br><br>Design constraint learned the hard way: <strong>discipline features that lecture get switched off
+  within a week</strong>, taking the journal with them. Capture in under six seconds, statistics that are
+  genuinely interesting, and no adjectives. "Your last four trades after a losing day averaged −0.8R" is
+  useful. "Consider whether you are revenge trading" is how you get uninstalled.</p>
+<div class="tw"><table class="d"><thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th class="n">Eff</th></tr></thead><tbody>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Six-second capture</td><td><kbd>Ctrl</kbd>+<kbd>J</kbd> auto-captures symbol, panel command string, a snapshot and the levels on screen.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">R-multiples that are real</td><td>Initial risk captured <em>at entry</em>, not reconstructed later, so expectancy means something.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p0">P0</span></td><td class="nm">Thesis card</td><td>Structured thesis that <strong>cannot be saved without an invalidation condition</strong>. The only forced field in the product.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">"What changed my mind"</td><td>Versioned conviction with the evidence that moved it, so you can audit your own reasoning later.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Weekly review</td><td>Expectancy by setup, time of day, size band and post-loss state — stated without adjectives.</td><td class="n mono">M</td></tr>
+    <tr><td><span class="p1">P1</span></td><td class="nm">Research projects</td><td>Named containers with open questions, reading list, evidence board, coverage cadence and a memo output.</td><td class="n mono">L</td></tr>
+    <tr><td><span class="p2">P2</span></td><td class="nm">Approximate book from theses</td><td>When the manual ledger lapses, derive rough positions from open thesis cards, badged as approximate.</td><td class="n mono">M</td></tr>
+  </tbody></table></div>
+
+  <h3>Everything else that has to work</h3>
+  <p>The plumbing. Nothing here is exciting and all of it decides whether the product is trustworthy at 3am.</p>
+<div class="tw"><table class="d"><thead><tr><th>#</th><th>Module</th><th>Features</th></tr></thead><tbody>
+    <tr><td class="mono">20</td><td class="nm">Workspace, layouts &amp; linking</td><td><span class="p0">P0</span> Named workspaces with full dock-tree persistence · true multi-monitor tear-off with per-monitor DPI v2 · six colour linking channels · six shipped layouts (Pre-Market, Intraday, Insider Watch, Deep Research, FX/Gold Session, Post-Trade) · <span class="p1">P1</span> Fast Market Mode (collapse to three panels, suspend inference surfaces, kill animation) · The Book, Earnings Day and Weekend Desk layouts · <span class="p2">P2</span> layout export/import</td></tr>
+    <tr><td class="mono">21</td><td class="nm">Settings, entitlements &amp; cost</td><td><span class="p0">P0</span> Entitlement console modelling professional vs non-professional status as a <em>setting</em>, not an assumption · non-dismissible delay badging bound to entitlement · per-provider API cost meter · licence ledger recording the terms each datum arrived under · <span class="p1">P1</span> monthly spend caps with alerts · per-panel cost attribution</td></tr>
+    <tr><td class="mono">22</td><td class="nm">Export &amp; interop</td><td><span class="p0">P0</span> CSV and clipboard for derived values · snapshot-with-provenance (image carries symbol, timestamp, source and data vintage) · <span class="p1">P1</span> Excel live cells · <span class="p2">P2</span> read-only schema contract over the local lake so you can query your own data · <strong>never</strong> raw licensed tick export</td></tr>
+    <tr><td class="mono">23</td><td class="nm">Onboarding &amp; help</td><td><span class="p0">P0</span> command catalogue · <kbd>?</kbd> cheat-sheet overlay · six curated starter workspaces · first-run entity/status questionnaire that sets entitlements correctly · <span class="p1">P1</span> display calibration card (renders all palettes, link chips at true size, a 4.5:1 reference pair and a flash sample) · in-app assistant over the product's own docs</td></tr>
+    <tr><td class="mono">24</td><td class="nm">Diagnostics, data quality &amp; recovery</td><td><span class="p0">P0</span> provider health console with schema-drift detection · feed sequence-gap counters · cross-provider divergence alerts ("A and B disagree on this print") · degraded-mode rendering with last-known-good and age · <strong>backup &amp; escrow</strong> under a passphrase-only KDF with a tested restore and printed recovery code · <span class="p1">P1</span> trust incident log (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> flags any number as wrong, capturing its full provenance chain) · effort ledger · <span class="p2">P2</span> synthetic canaries</td></tr>
+  </tbody></table></div>
+
+  <h3>The module map</h3>
+  <p>
+    The questions above are how a trader reads this. Underneath, the same 182 features are 24 build modules —
+    which is how it gets estimated, sequenced and delivered. Both views describe the identical set; here is the
+    mapping, so nothing can quietly go missing between the two.
+  </p>
+  <div class="tw"><table class="d map">
+    <thead><tr><th class="n">Q</th><th>The question</th><th>Build modules</th><th class="n">Feat</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td class="nm">Who is buying it with their own money?</td><td>4 · Insiders &amp; incentives</td><td class="n mono">26</td></tr>
+      <tr><td class="mono">2</td><td class="nm">Who owns it, and who is short it?</td><td>5 · Ownership, voting &amp; flows<br>6 · Short side &amp; borrow</td><td class="n mono">15</td></tr>
+      <tr><td class="mono">3</td><td class="nm">Is the company running out of money?</td><td>7 · Company research &amp; fundamentals<br>8 · Valuation &amp; capital allocation</td><td class="n mono">21</td></tr>
+      <tr><td class="mono">4</td><td class="nm">Who has to trade, and when?</td><td>9 · Estimates, events &amp; catalysts</td><td class="n mono">7</td></tr>
+      <tr><td class="mono">5</td><td class="nm">Who is positioned, and how crowded?</td><td>12 · Positioning &amp; COT</td><td class="n mono">7</td></tr>
+      <tr><td class="mono">6</td><td class="nm">Where is the metal, and who is accumulating it?</td><td>11 · Gold &amp; metals desk</td><td class="n mono">10</td></tr>
+      <tr><td class="mono">7</td><td class="nm">What is driving this pair, and is that still true?</td><td>10 · FX desk</td><td class="n mono">12</td></tr>
+      <tr><td class="mono">8</td><td class="nm">What is the price doing, and what does normal look like?</td><td>1 · Market monitor &amp; watchlists<br>2 · Charting &amp; technical analysis<br>3 · Depth, tape &amp; microstructure</td><td class="n mono">24</td></tr>
+      <tr><td class="mono">9</td><td class="nm">What is scheduled that could hurt me?</td><td>13 · Macro &amp; economic calendar<br>14 · News, filings feed &amp; sentiment</td><td class="n mono">13</td></tr>
+      <tr><td class="mono">10</td><td class="nm">How do I find it, and how do I get told?</td><td>15 · Screeners &amp; scanners<br>16 · Alerts &amp; automation</td><td class="n mono">13</td></tr>
+      <tr><td class="mono">11</td><td class="nm">What should I size this at?</td><td>19 · Portfolio &amp; exposure</td><td class="n mono">8</td></tr>
+      <tr><td class="mono">12</td><td class="nm">What does my own record say?</td><td>18 · Journal, thesis &amp; review</td><td class="n mono">7</td></tr>
+      <tr><td class="mono">13</td><td class="nm">Everything else that has to work</td><td>20–24 · Platform</td><td class="n mono">5</td></tr>
+      <tr><td class="mono">—</td><td class="nm"><em>The knowledge layer</em> — <a href="#brain">BRAIN</a></td><td>17 · AI assistant &amp; knowledge packs</td><td class="n mono">14</td></tr>
+    </tbody>
+  </table></div>
+  <p class="mut" style="font-size:var(--t-sm)">
+    168 features across the twelve desk questions and the platform group, plus 14 in the knowledge layer =
+    <strong>182 across 24 modules</strong>. Every group is a whole number of modules; no module is split
+    across two questions and none is unassigned. These figures are counted from the tables themselves rather
+    than typed, because a scope claim nobody can reconcile is just a number.
+  </p>
+</section>

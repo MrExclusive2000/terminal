@@ -1,0 +1,167 @@
+<section id="break">
+  <div class="sec-head"><span class="sec-mn">BREAK</span><h2>What breaks it</h2>
+    <span class="sec-note">threat model, and one control that's theatre</span></div>
+
+  <p>
+    Being single-user deletes most of a normal threat model: no multi-tenancy, no account takeover, no
+    authentication surface, no session management. What's left is smaller but sharper, and one mitigation that
+    almost every desktop finance app ships is <strong>largely theatre against the adversary you actually
+    have</strong>. I'd rather say that plainly than let it sit in a security section looking like protection.
+  </p>
+
+  <h3>What's worth stealing</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Asset</th><th>Why it matters</th><th>Primary threat</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Provider API keys</td><td>Direct financial cost, plus access to your entitlements</td><td>Infostealer running as you</td></tr>
+      <tr><td class="nm">Watchlist &amp; theses</td><td><strong>This is your alpha.</strong> What you're <em>looking at</em> is more sensitive than what you hold — a position is a fact about the past, a watchlist is a statement about the future.</td><td>Exfiltration via the AI path or telemetry</td></tr>
+      <tr><td class="nm">Journal &amp; positions</td><td>Irreplaceable. Not reconstructible from any external source at any price.</td><td>Loss (hardware failure, TPM clear) rather than theft</td></tr>
+      <tr><td class="nm">Cached licensed data</td><td>Licence exposure if it escapes the machine</td><td>Accidental export; derived-works leakage</td></tr>
+      <tr><td class="nm">Knowledge packs</td><td>They feed the model's reasoning, so poisoned claims arrive through a <em>trusted</em> channel and get believed</td><td>Supply-chain compromise of the pack repo or its CI</td></tr>
+      <tr><td class="nm">The MT5 terminal itself</td><td>A logged-in terminal is an order-placing capability sitting on the same desktop</td><td>Any local process running as you</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call crit">
+    <p class="call-h">DPAPI is not protecting you, and I'd rather you knew</p>
+    <p>
+      <code>CryptProtectData</code> binds a secret to your user account — which means <em>any process running
+      as you can call <code>CryptUnprotectData</code></em> and get the plaintext. That is precisely, literally,
+      what the current infostealer families do; it is their main loop. Chrome's App-Bound Encryption tried to
+      fix this exact class of problem with an elevation-service identity check and was bypassed in about 45
+      days, then broken structurally.
+    </p>
+    <p>
+      What genuinely raises the bar: <strong>CNG with VBS / Credential-Guard-class key isolation, or the TPM
+      platform provider, plus a user passphrase</strong> (Argon2id) so the ciphertext isn't silently
+      machine-recoverable. SQLCipher, EFS and BitLocker protect you against a stolen laptop — a real threat,
+      but not this one.
+    </p>
+    <p>
+      <strong>And now the part I'd insist on saying, because it's narrower than it looks.</strong> VBS isolation
+      stops the key being <em>stolen</em>. It does not stop it being <em>used</em>. A CNG persisted key is
+      protected by a container ACL naming the creating user, so malware running as you can simply ask the key
+      to decrypt and read plaintext back out of the oracle. The real gain is defeating offline and passive file
+      theft, and forcing the attacker to stay resident on the machine — which only helps if something is
+      looking for residency. So: plan the detection, or don't claim the benefit. Half of security engineering
+      is refusing to bank a control you haven't finished building.
+    </p>
+  </div>
+
+  <h3>STRIDE, with residual risk stated</h3>
+  <p>The residual column is the one that matters. A mitigation with no stated residual is a mitigation nobody has thought about hard enough.</p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Threat</th><th>Category</th><th>Mitigation</th><th>Residual</th></tr></thead>
+    <tbody>
+      <tr><td>Infostealer harvests API keys</td><td class="mono">Info disclosure</td><td>TPM/VBS-wrapped DEK + passphrase; no plaintext keys at rest; per-provider scoping</td><td class="warn">Real — malware as user can drive the oracle</td></tr>
+      <tr><td>Malware uses the running MT5 terminal to trade</td><td class="mono">Elevation</td><td><strong>Argus cannot remove this.</strong> It refuses to widen it: the bridge exposes read functions only, and the AI has no path to the bridge at all</td><td class="crit">Accepted, documented</td></tr>
+      <tr><td>Poisoned filing steers the model</td><td class="mono">Tampering</td><td>Untrusted-content firewall, hidden-character stripping, provenance tagging, no tool authority</td><td class="mut">Low</td></tr>
+      <tr><td>Model-authored SQL escapes the sandbox</td><td class="mono">Elevation</td><td>See below — the sharpest hole review found</td><td class="mut">Low once sandboxed</td></tr>
+      <tr><td>Compromised pack repo ships poisoned claims</td><td class="mono">Tampering</td><td>Ed25519 verification fails closed; key unreachable from the authoring agent; protected workflows; adversarial eval gate</td><td class="warn">Medium — it's a trusted channel</td></tr>
+      <tr><td>Update channel delivers a malicious build</td><td class="mono">Tampering</td><td>Signed manifests, rollback protection, signature verified <em>on load</em> and not only at update</td><td class="mut">Low</td></tr>
+      <tr><td>Watchlist exfiltrated via a markdown image URL</td><td class="mono">Info disclosure</td><td>CSP-locked render surface, no remote image loads, egress allow-list</td><td class="mut">Low</td></tr>
+      <tr><td>Prompt redaction misses a key</td><td class="mono">Info disclosure</td><td>Pre-flight strip of keys, tokens, paths and machine identifiers, with a build-breaking egress test</td><td class="mut">Low</td></tr>
+      <tr><td>Journal lost to hardware failure</td><td class="mono">Denial</td><td>Passphrase-KDF backup independent of the TPM key, tested restore, printed recovery code</td><td class="mut">Low</td></tr>
+      <tr><td>Licensed data leaves via export</td><td class="mono">Repudiation</td><td>Licence ledger consulted by the export gate; raw ticks never exportable</td><td class="mut">Low</td></tr>
+      <tr><td>Dependency compromise</td><td class="mono">Tampering</td><td>SBOM, lockfiles, pinning, OSV scanning, and a lean dependency tree rather than a 200-package one</td><td class="mut">Low</td></tr>
+      <tr><td>Fake "Argus" installer distributed</td><td class="mono">Spoofing</td><td>Code signing. Note trading brands are actively impersonated — one vendor tracked 75+ malicious ad campaigns across 500+ domains for a single charting brand</td><td class="warn">Medium — your download path</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call crit">
+    <p class="call-h">The exploit chain adversarial review found, which I'd not have caught unprompted</p>
+    <p>
+      The natural-language screener compiles model output into SQL and runs it against DuckDB. Chain that to
+      untrusted content and you have <strong>injected filing text → model-authored query → database
+      engine</strong>. DuckDB by default can <code>INSTALL</code> and <code>LOAD</code> extensions, read
+      <code>http://</code> URLs, and <code>COPY TO</code> a UNC path. That's arbitrary read and exfiltration,
+      launched from a hostile footnote, through a feature that <em>looks like a safety property</em> because
+      "the model never produces the rows, it only produces the query".
+    </p>
+    <p>
+      The fix is cheap and has to be in from day one, because retrofitting it means auditing every query path:
+      generated SQL runs on a <strong>separate read-only connection</strong> with extension loading, external
+      filesystem and network access all disabled, against an allow-list of queryable <em>views</em> rather than
+      raw tables, with a statement timeout and a parsed-AST check that rejects anything which isn't a single
+      <code>SELECT</code>. Better still, compile to a restricted query AST rather than to SQL text at all —
+      then the dangerous constructs have no way to be expressed.
+    </p>
+  </div>
+
+  <h3>The LLM boundary</h3>
+  <p>
+    This is the largest genuinely new attack surface in the design, and it isn't hypothetical. Filings, RNS
+    announcements, news and PDFs are <strong>attacker-controlled text</strong> that you have asked the machine
+    to read carefully and act on. A hostile 8-K footnote is indirect prompt injection with a direct payoff.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Control</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">AI can read, cannot act</td><td>Architectural, not a prompt rule. The analysis service holds no credentials, no filesystem write, and <strong>no handle to the broker bridge</strong>. This matters more than credential scoping precisely because the bridge sits next to a trading-capable API.</td></tr>
+      <tr><td class="nm">Untrusted-content firewall</td><td>Every ingested document is parsed, stripped of hidden and zero-width characters, and provenance-tagged before it can reach a context window.</td></tr>
+      <tr><td class="nm">Sanitised render</td><td>Allow-listed markdown → HTML inside a restrictive CSP. No remote images, no script, no iframes.</td></tr>
+      <tr><td class="nm">Egress allow-list</td><td>Outbound hosts enumerated and enforced, with a live console showing every host, byte count and quota burn. A domain allow-list is not a confidentiality control for hosts that log requests — it's a blast-radius control. Different thing.</td></tr>
+      <tr><td class="nm">Purpose-tagged data flow</td><td>Every outbound request carries a purpose tag (Display / NonDisplay / LlmPrompt / Export) checked against the licence class of the data it carries, with a build-breaking test.</td></tr>
+      <tr><td class="nm">Query sandbox</td><td>As above. Non-negotiable, in from the first screener commit.</td></tr>
+      <tr><td class="nm">No third-party plugins or MCP</td><td>A non-goal precisely <em>because</em> it would puncture this boundary. Every extension point is a hole in the only thing keeping untrusted text safe.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Control checklist</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pri</th><th>Control</th></tr></thead>
+    <tbody>
+      <tr><td><span class="p0">P0</span></td><td>TPM/VBS-wrapped data encryption key, passphrase-derived (Argon2id) so ciphertext isn't machine-recoverable · encrypted user store physically separate from the data cache · no plaintext secrets on disk at any point · signature verified on binary load, not only at update · signed pack verification fails closed · untrusted-content firewall before any model call · query sandbox for generated SQL · egress allow-list · prompt redaction with a build-breaking test · structured logging with a field allow-list (keys, tokens, prompt text and quote data never loggable) · no admin rights required to run or update · backup under a passphrase-only KDF independent of the TPM · tested restore · printed recovery code</td></tr>
+      <tr><td><span class="p1">P1</span></td><td>Host preconditions gate that reports <em>actual</em> disk-encryption, VBS, TPM and admin state rather than claiming "best" protection on an unencrypted disk · assume-breach runbook: one action to revoke every provider key, rotate the pack trust root and rebuild from known-good · adversarial eval suite separate from the correctness golden set · signed provenance chain from claim to filing byte · SBOM per release with dependency pinning and OSV scanning · protected workflow files and restricted tag triggers so CI signing keys are unreachable from an authoring agent · key rotation console · Windows Hello as a local unlock factor, presented as convenience rather than security · certificate pinning to CA with a documented rotation path</td></tr>
+      <tr><td><span class="p2">P2</span></td><td>Reproducible builds · MAR Art.20 disclosure wrapper shipped dormant · data-protection register for third-party natural persons · retention policy on the insider archive · anomaly detection on provider request patterns</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Things I'd refuse to ship</h3>
+  <ul>
+    <li><strong>DPAPI alone for secrets, presented as protection.</strong> It isn't, against the realistic adversary, and describing it as protection is worse than having nothing because it stops you building the real control.</li>
+    <li><strong>A "not financial advice" disclaimer standing in for a design control.</strong> Disclaimers constrain nobody's behaviour. Architecture does.</li>
+    <li><strong>Trusting the model to obey a prompt-level rule that matters.</strong> If it matters, it's enforced in code. A prompt is a preference, not a boundary.</li>
+    <li><strong>Blanket telemetry with an opt-out.</strong> Local-only by default, explicit opt-in to send.</li>
+    <li><strong>Claiming zero data retention</strong> that the account tier does not actually provide.</li>
+    <li><strong>Storing the pack signing key anywhere an automated agent can reach it.</strong> The moment the thing that authors claims can also sign them, the signature stops meaning anything.</li>
+  </ul>
+
+  <h3>The regulatory perimeter, which is simpler than people fear and trickier than they assume</h3>
+  <p>
+    <strong>So long as it's your money and your eyes only, the advice perimeter doesn't bite.</strong> You
+    cannot advise yourself, so the Advisers Act, FCA Article 53, the financial promotions regime, MiFID II
+    advice and MAR Art.20 recommendation-disclosure are all inapplicable. That has a design consequence I'd
+    make the most of: the AI can be as opinionated and directive as you want it to be. This plan assumes it
+    should be. Hedged, lawyered output is worse than useless on a desk.
+  </p>
+  <p>
+    <strong>But the trigger is a second <em>person's money or eyes</em> — not a second install.</strong> A
+    family member's account, an informal partnership, a fund seeded later, or simply forwarding the AI's
+    output to a friend each cross that line while the software remains a single seat. An earlier draft of this
+    document got that wrong, which is exactly the sort of error that feels safe until it isn't.
+  </p>
+  <div class="call warn">
+    <p class="call-h">Two exposures the single-user framing does not clear</p>
+    <ul>
+      <li><strong>Data protection on third parties.</strong> The insider archive and person graph are, in plain
+          terms, a profiling database of named natural persons — directors, officers, PDMRs — held for years
+          and enriched with behavioural scoring. UK data protection has a personal-household exemption, but it
+          is read narrowly, and a systematic profiling database built for financial gain sits near its edge.
+          Concretely: keep a register of every table holding identified persons, set a retention policy, and
+          don't extend the graph to inferred personal attributes. There's also a <em>sui generis database
+          right</em> question over the archive itself.</li>
+      <li><strong>EU AI Act: out of scope, but only because you're UK-resident.</strong> Its transparency
+          duties attach to a <em>provider</em>, and "putting into service" expressly includes supply for one's
+          own use — so an EU-resident building this for himself could be caught at a single user. Revisit if
+          you relocate.</li>
+    </ul>
+  </div>
+  <p>
+    <strong>If a second user ever appears, everything changes at once</strong>: you become a redistributor,
+    exchange fees multiply per subscriber, vendor agreements and audit clauses attach, the advice perimeter
+    reappears, and you need an EULA, authentication and a support burden. That's why no-distribution is an
+    architectural invariant with a test rather than a line in a README, and why the MAR wrapper ships dormant
+    rather than absent — dormant is a day's work to enable, absent is a quarter.
+  </p>
+</section>

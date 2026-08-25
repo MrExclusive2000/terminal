@@ -1,0 +1,200 @@
+<section id="look">
+  <div class="sec-head"><span class="sec-mn">LOOK</span><h2>How it looks, and why</h2>
+    <span class="sec-note">density, provenance, and honest accessibility</span></div>
+
+  <p>
+    Financial UI is where designers who've never used the thing do the most damage. The instinct is to make it
+    calmer, lighter, more spacious — and every one of those moves costs the user information per glance. What
+    follows are the principles I'd hold the build to, each with the consequence that falls out of it, because
+    a principle without a consequence is a poster.
+  </p>
+
+  <h3>Twelve principles, and what each one forces</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Principle</th><th>Therefore</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Density is the feature</td><td>20–24px rows, hairline rules, no cards, no shadows, three density modes. Whitespace in a blotter is paid for in scroll events. Pros want density; "clean" is a failure mode here, and the people who ask for it are rarely the people using it at 09:30.</td></tr>
+      <tr><td class="nm">Every number carries provenance</td><td><kbd>F9</kbd> toggles a mode where every figure gains a dotted underline and becomes click-through to its source filing, with an as-of stamp on hover. If a number can't answer "where did you come from?", it shouldn't be on screen.</td></tr>
+      <tr><td class="nm">Staleness is never hidden</td><td>Per-row vintage badges. A 45-day-old 13F and a live Form 4 never share one "as of" header. This is the single decision that most separates a terminal you trust from one that's merely fast.</td></tr>
+      <tr><td class="nm">Fact and inference are different surfaces</td><td>Separate chrome, marked at <em>glyph</em> level rather than by background tint — users habituate to background colour inside a week, and tint survives neither a screenshot nor the clipboard.</td></tr>
+      <tr><td class="nm">Object first, then verb</td><td><code>CRSP US Equity OWN</code> — the Bloomberg grammar, and it endures because it matches how you actually think: name the thing, then ask the question.</td></tr>
+      <tr><td class="nm">No mouse required</td><td>Full keyboard map, focus rings that survive a dark theme, disciplined tab order, and a no-mouse audit as a release gate rather than an aspiration.</td></tr>
+      <tr><td class="nm">Degradation is designed</td><td>Every panel specifies its empty, loading, stale, unentitled and provider-down state. A dead provider greys and stamps an age. It never renders stale as live.</td></tr>
+      <tr><td class="nm">The app never lies to look complete</td><td>No FX "volume" invented from tick counts. No blended vintages. No silent provider substitution. No invented level. An honest gap builds more trust than a plausible fill.</td></tr>
+      <tr><td class="nm">Peak load is a different mode</td><td>Fast Market Mode collapses to three panels, suspends inference surfaces and kills animation. Density and fourteen semantic hues are actively counterproductive in the ninety seconds that decide an outcome.</td></tr>
+      <tr><td class="nm">Destructive actions are reversible</td><td>A global undo bus covering watchlist edits, alert deletion, layout resets and journal merges. A keyboard-first design with single-key verbs and no undo is a trap you build for yourself.</td></tr>
+      <tr><td class="nm">Discipline features earn their place</td><td>Capture in under six seconds, statistics that are genuinely interesting, and <em>no adjectives</em>. "Your last four trades after a losing day averaged −0.8R" is useful. "Consider whether you are revenge trading" gets the feature switched off within a week — and takes the journal with it.</td></tr>
+      <tr><td class="nm">The tool is auditable by its user</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> flags any number as wrong, capturing its full provenance chain. Every entry is either a data bug or a design bug, and it's the only feedback loop that actually tests whether the provenance design works.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Workspace model</h3>
+  <p>
+    Docked tiles with arbitrary splits, true tear-off to a native floating window on another monitor at a
+    different DPI, and full dock-tree persistence — panel identity, symbol binding, chart timeframe, indicator
+    state and scroll position. Six colour-coded <strong>linking channels</strong>: change the symbol in one
+    panel and every panel on that channel follows. Channel hues are reserved and never reused for direction,
+    selection or status; that constraint is trivially easy to violate by accident and immediately confusing
+    when you do.
+  </p>
+  <p>Nine workspaces ship configured, because an empty grid on first run is how good tools get abandoned:</p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Shipped workspace</th><th>Panels</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Pre-Market</td><td>Overnight index and FX context, gap scanner, filing tape since last close, economic calendar with countdowns, morning brief</td></tr>
+      <tr><td class="nm">Intraday</td><td>Chart with incentives ribbon, tape, spread monitor, session clock, ATR and levels, fast alerts, The Book</td></tr>
+      <tr><td class="nm">Insider Watch</td><td>Form 4 tape, cluster leaderboard, conviction decomposition, filing detail, person graph</td></tr>
+      <tr><td class="nm">Deep Research</td><td>Company dossier, ownership and voting, short side, filing diff, analyst pane, thesis card</td></tr>
+      <tr><td class="nm">FX &amp; Gold Session</td><td>Four-venue price, driver regime, cohort positioning, physical stocks, session board, spread by time of day</td></tr>
+      <tr><td class="nm">Post-Trade Review</td><td>Journal, expectancy by setup, R distribution, open theses with conviction history</td></tr>
+      <tr><td class="nm">The Book</td><td>Live P&amp;L blotter, exposure decomposition, liquidity and exit cost, next catalyst per position</td></tr>
+      <tr><td class="nm">Earnings Day</td><td>T-5 prep, 8-K extraction with consensus diff, guidance language diff, live call panel, peer reaction</td></tr>
+      <tr><td class="nm">Weekend Desk</td><td>Gap-risk table with historical weekend distributions, Sunday 17:00 ET FX open with thin-liquidity state, week-ahead calendar</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Command language</h3>
+  <p>
+    A mnemonic command line as primary, a fuzzy palette as the discoverability escape hatch. Sigils namespace
+    the palette: none for symbols, <code>&gt;</code> for verbs, <code>@</code> for function mnemonics,
+    <code>#</code> for screens, <code>?</code> to ask. Discoverability is handled by an always-available
+    catalogue, inline hints as you type, and did-you-mean on a near miss. <strong>Fuzzy match never
+    auto-executes on ambiguity</strong> — in a fast market, a fat-finger firing the wrong command is far worse
+    than one more keystroke.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Cmd</th><th>Opens</th><th>Cmd</th><th>Opens</th><th>Cmd</th><th>Opens</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">DES</td><td>Description</td><td class="mono">OWN</td><td>Ownership map</td><td class="mono">NPX</td><td>Voting record</td></tr>
+      <tr><td class="mono">INSD</td><td>Insider tape</td><td class="mono">CLUS</td><td>Cluster board</td><td class="mono">CONV</td><td>Conviction detail</td></tr>
+      <tr><td class="mono">COMP</td><td>Pay → behaviour</td><td class="mono">PVP</td><td>Pay vs performance</td><td class="mono">PLDG</td><td>Pledged shares</td></tr>
+      <tr><td class="mono">SI</td><td>Short pressure</td><td class="mono">BORR</td><td>Borrow &amp; lending</td><td class="mono">NSHT</td><td>Named shorts</td></tr>
+      <tr><td class="mono">DILU</td><td>Dilution watch</td><td class="mono">DIFF</td><td>Filing redline</td><td class="mono">FTS</td><td>Phrase radar</td></tr>
+      <tr><td class="mono">CMNT</td><td>Comment letters</td><td class="mono">GOV</td><td>Governance timeline</td><td class="mono">GRPH</td><td>Person graph</td></tr>
+      <tr><td class="mono">FA</td><td>Financials</td><td class="mono">QOE</td><td>Quality of earnings</td><td class="mono">RDCF</td><td>Reverse DCF</td></tr>
+      <tr><td class="mono">OE</td><td>Owner earnings</td><td class="mono">CAP</td><td>Capital allocation</td><td class="mono">KPI</td><td>KPI ledger</td></tr>
+      <tr><td class="mono">GEX</td><td>Gamma exposure</td><td class="mono">FLOW</td><td>Ownership deltas</td><td class="mono">EVT</td><td>Catalysts</td></tr>
+      <tr><td class="mono">COT</td><td>Cohort positioning</td><td class="mono">BPR</td><td>Bullion banks</td><td class="mono">PHYS</td><td>Physical stocks</td></tr>
+      <tr><td class="mono">DRIV</td><td>Driver stack</td><td class="mono">RGME</td><td>Regime panel</td><td class="mono">BASIS</td><td>Four-venue price</td></tr>
+      <tr><td class="mono">CB</td><td>Central banks</td><td class="mono">CAL</td><td>Economic calendar</td><td class="mono">CURV</td><td>Yield curves</td></tr>
+      <tr><td class="mono">SCRN</td><td>Screener</td><td class="mono">ALRT</td><td>Alerts</td><td class="mono">WHY</td><td>Alert tracer</td></tr>
+      <tr><td class="mono">JRNL</td><td>Journal</td><td class="mono">THES</td><td>Thesis card</td><td class="mono">REVW</td><td>Weekly review</td></tr>
+      <tr><td class="mono">BOOK</td><td>The Book</td><td class="mono">SIZE</td><td>Position sizing</td><td class="mono">EXPO</td><td>Exposure</td></tr>
+      <tr><td class="mono">KP</td><td>Knowledge diff</td><td class="mono">ASK</td><td>Analyst</td><td class="mono">HLTH</td><td>Provider health</td></tr>
+    </tbody>
+  </table></div>
+  <p class="mut" style="font-size:var(--t-sm)">
+    48 mnemonics — already past what most Bloomberg power users actually retain. Which is precisely why the
+    catalogue and the fuzzy palette aren't optional extras: they're the mechanism by which a surface this wide
+    stays learnable. Design for the command you've forgotten, not the one you use daily.
+  </p>
+
+  <h3>Keyboard map</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Key</th><th>Action</th><th>Key</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Focus command line</td><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td>Fuzzy palette</td></tr>
+      <tr><td><kbd>F9</kbd></td><td>Provenance mode</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>1..6</kbd></td><td>Link channel</td></tr>
+      <tr><td><kbd>Alt</kbd>+<kbd>1..9</kbd></td><td>Named workspace</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td><td>Density mode</td></tr>
+      <tr><td><kbd>Alt</kbd>+<kbd>P</kbd></td><td><strong>Freeze all live updates</strong></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td><td><strong>Fast Market Mode</strong></td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>J</kbd></td><td>Journal capture</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd></td><td>Flag a number as wrong</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo (global)</td><td><kbd>F1</kbd></td><td>Command catalogue</td></tr>
+      <tr><td><kbd>?</kbd></td><td>Cheat-sheet overlay</td><td><kbd>Esc</kbd></td><td>Cancel / close</td></tr>
+    </tbody>
+  </table></div>
+  <div class="call warn">
+    <p class="call-h">Two bindings that look obvious and are wrong</p>
+    <p>
+      <strong><kbd>Ctrl</kbd>+<kbd>Alt</kbd> must not be a modifier family.</strong> AltGr emits Ctrl+Alt on
+      international layouts, and Microsoft's own guidance is to avoid it. On <em>your</em> UK layout, AltGr+4
+      (the € key) would fire a link-channel change — a bug that presents as "the app randomly changes my
+      symbols" and takes a fortnight to attribute. <strong><kbd>Ctrl</kbd>+<kbd>Space</kbd> is the IME
+      toggle</strong> on CJK layouts, so the most obvious binding for a command line is the one that breaks it.
+      Both are avoided above, and a <strong>keyboard layout guard</strong> detects the active layout at first
+      run and on change, warning about collisions. Roughly twenty lines of code to prevent a silent
+      degradation that produces no error message.
+    </p>
+  </div>
+
+  <h3>Design system</h3>
+  <p>
+    Red/green fails for roughly <strong>1 in 12 men</strong>. So the default directional palette is
+    <strong>Okabe-Ito blue and vermilion</strong>, with classic red/green available as an opt-in rather than
+    the other way round. Direction is additionally encoded by glyph and by sign, so colour is never the sole
+    carrier of the most important thing on the screen.
+  </p>
+  <div class="swatches">
+    <div class="sw"><div class="sw-c" style="background:#0072B2"></div><div class="sw-l"><b>#0072B2</b><span>up · Okabe-Ito blue</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#D55E00"></div><div class="sw-l"><b>#D55E00</b><span>down · vermilion</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#35B5A8"></div><div class="sw-l"><b>#35B5A8</b><span>accent · interactive</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#E0A44B"></div><div class="sw-l"><b>#E0A44B</b><span>stale / warning</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#B49BE8"></div><div class="sw-l"><b>#B49BE8</b><span>AI inference</span></div></div>
+    <div class="sw"><div class="sw-c" style="background:#0C1013"></div><div class="sw-l"><b>#0C1013</b><span>ground · never pure black</span></div></div>
+  </div>
+  <p>
+    The accent sits in a different hue family from both directional colours, so "this is interactive" can never
+    be misread as "this went up". <strong>Contrast tables are generated from the tokens at build time, never
+    hand-written</strong> — adversarial review found a hand-written table in an earlier draft that was wrong in
+    <em>both</em> directions, which is what happens when nobody actually runs the numbers.
+  </p>
+  <p>
+    Typography: IBM Plex Sans Condensed for panel headers, because condensed reads as terminal chrome and buys
+    back column width; IBM Plex Sans for prose; IBM Plex Mono for all data, with tabular figures everywhere
+    digits need to align. FX prices use three-tier rendering — big figure de-emphasised, pip digits large,
+    pipette small — because that's how the number is actually read by someone who trades it. Uptick/downtick
+    flashing is capped at three per second and degrades to a steady tint above that rate.
+  </p>
+
+  <div class="call warn">
+    <p class="call-h">Where density and WCAG genuinely conflict — and I won't paper over it</p>
+    <p>
+      Most terminals claim both. They don't fully co-exist. <strong>WCAG 2.2's target-size criterion
+      effectively requires 24px between the centres of adjacent undersized targets.</strong> A 22px compact row
+      and an 18px dense row both fail it; only the 28px comfortable row passes. Two further traps worth naming:
+      as-of provenance stamps at 10–12px count as <em>normal</em> text under the guidelines rather than large
+      text, so they need the full 4.5:1 — which makes the trust layer the thing most likely to fail the audit —
+      and channel hues must not be reused for direction or status.
+    </p>
+    <p>
+      So the honest resolution is: <strong>Comfortable is the conformant default</strong>, and Compact and
+      Dense are an informed opt-out that the settings screen labels as exactly that. Claiming blanket AA while
+      shipping 20px rows is an accessibility statement that is technically a lie, and I'd rather ship a true
+      narrow claim than a false broad one.
+    </p>
+  </div>
+
+  <h3>Accessibility commitments</h3>
+  <ul>
+    <li><strong>Global Freeze</strong> (<kbd>Alt</kbd>+<kbd>P</kbd>) halts all animation and pins every visible value with its freeze timestamp. WCAG requires a pause mechanism for auto-updating content lasting over five seconds, so this is a requirement rather than a nicety — and it happens to be exactly what you want at 09:30 anyway. The copy must not promise buffered replay: dropped updates are dropped, and saying otherwise promises data the system threw away.</li>
+    <li><strong>Screen readers</strong> get UIA notification events with most-recent processing. Never a live region on the tape, which produces continuous unusable speech.</li>
+    <li><strong>200% font scaling</strong> without layout collapse; reduced-motion honoured throughout.</li>
+    <li><strong>Keyboard-only operation</strong> audited as a release gate, not asserted in a document.</li>
+    <li><strong>Colour-blind modes</strong>: Okabe-Ito default, plus cyan/magenta and classic red/green, with a display calibration card at onboarding that renders all palettes, link chips at true pixel size, a 4.5:1 reference pair and a flash sample — because WPF provides no colour-managed sRGB pipeline, and wide-gamut or HDR displays demonstrably shift these.</li>
+  </ul>
+
+  <h3>Onboarding and the error states nobody designs</h3>
+  <p>
+    First run asks only the questions that actually change behaviour — trading entity and employment status
+    (which sets your entitlements and therefore your data bill), account currency, instruments — then loads a
+    curated starter workspace rather than an empty grid. Progressive disclosure after that: the catalogue and
+    cheat sheet are always one key away.
+  </p>
+  <p>
+    The error states below are where most terminals reveal how much they respect the user. A bare dash is a
+    designer declining to answer a reasonable question.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>State</th><th>What the panel shows</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Loading</td><td>Skeleton with the source named, so you know what's being fetched and can judge whether to wait.</td></tr>
+      <tr><td class="nm">Empty</td><td>Why it's empty and what would fill it. Never a bare dash.</td></tr>
+      <tr><td class="nm">Stale</td><td>Last-known-good value, greyed, with its age in the header.</td></tr>
+      <tr><td class="nm">Unentitled</td><td>What subscription would supply it and what that costs. Not a generic error.</td></tr>
+      <tr><td class="nm">Provider down</td><td>Which provider, since when, retry state, and whether a fallback exists — never a silent substitution.</td></tr>
+      <tr><td class="nm">Rate limited</td><td>Quota consumed, reset time, and which panel is spending it.</td></tr>
+      <tr><td class="nm">Market closed</td><td>Session state and next open, in your timezone <em>and</em> the exchange's.</td></tr>
+      <tr><td class="nm">Symbol not found</td><td>Did-you-mean across ticker, FIGI, ISIN, CUSIP and company name.</td></tr>
+      <tr><td class="nm">Delisted / halted</td><td>A terminal state with its date and reason — not a coverage gap you're left to interpret.</td></tr>
+    </tbody>
+  </table></div>
+</section>

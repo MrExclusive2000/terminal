@@ -1,0 +1,185 @@
+<section id="cost">
+  <div class="sec-head"><span class="sec-mn">COST</span><h2>Money and time</h2>
+    <span class="sec-note">the arithmetic, unrounded</span></div>
+
+  <p>
+    Two numbers decide whether this is a project or a daydream: what it costs to run, and how long it takes to
+    build. The first is genuinely low, and that's the whole commercial argument. The second is large, and I'd
+    rather put it in front of you at full size than discover it together in year two.
+  </p>
+
+  <h3>Running cost</h3>
+  <p>
+    The reason this design is affordable is that <strong>the differentiating data is free at origin</strong>.
+    EDGAR, the CFTC, FRED, the FCA and EU short registers, the IMF, the World Gold Council and Swiss customs
+    all publish for nothing. The expensive feeds in a Bloomberg bill are price and news — the two things you
+    already have from your broker and the open web.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Line</th><th>What it buys</th><th class="n">Year one</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Disclosure data</td><td>EDGAR (Forms 3/4/5/144, 13D/G, 13F, N-PX, DEF 14A, 8-K), DERA bulk sets, FCA and EU short registers, comment letters</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Positioning &amp; macro</td><td>CFTC disaggregated and TFF, Bank Participation, FRED/ALFRED vintages, IMF, WGC, LBMA, Swiss customs</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">FX &amp; metals prices</td><td>Your existing IC Markets MT5 feed, via the bridge</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Equity prices</td><td>Delayed and EOD are free and sufficient for a research surface. Real-time US equity L1 is the first genuine bill, and only if you decide intraday equities matter — <strong>non-professional</strong> status is what keeps it small.</td><td class="n mono">$0–~$360</td></tr>
+      <tr><td class="nm">SciChart WPF v9 2D Pro</td><td>Perpetual, royalty-free, one year of updates</td><td class="n mono">~$899</td></tr>
+      <tr><td class="nm">Azure Artifact Signing</td><td>The only runtime integrity check on the binary</td><td class="n mono">~$120</td></tr>
+      <tr><td class="nm">AI inference</td><td>Overnight batch briefs plus interactive analysis, with prompt caching on the pack prefix and a live cost meter in the status bar</td><td class="n mono">~$120–600</td></tr>
+      <tr><td class="nm">Storage</td><td>Roughly 90GB at five years of bars, ticks, filings and the insider archive. Local disk.</td><td class="n mono">~$0</td></tr>
+    </tbody>
+  </table></div>
+  <p>
+    <strong>Realistic year one: roughly $1,150–2,000</strong>, of which about $1,020 is one-off licensing. A
+    comparable institutional seat is $24,000 a year and does not do the insider work at all.
+    <strong>Your professional/non-professional status is the single largest cost variable in the
+    document</strong> — it can multiply the market-data line several-fold — which is why it's a first-run
+    question and a console setting rather than an assumption.
+  </p>
+
+  <h3>Build time, stated honestly</h3>
+  <p>Sequenced so that every phase boundary leaves a product that works. The order is deliberate: the differentiating pillar ships <em>before</em> the commodity features, so if the project stalls you still own the thing nobody else sells.</p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Phase</th><th>Ships</th><th class="n">Wks</th><th class="n">Cum.</th><th>State after</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">0 · Foundation</td><td>WPF shell, docking, workspace persistence, provider abstraction with two adapters, DuckDB/Parquet lake, SQLite app store, encrypted user store, release-calendar scheduler, MT5 bridge, <strong>consensus vault and tick recorder running</strong>.</td><td class="n mono">10</td><td class="n mono">10</td><td>Skeleton walks. Critically, the two things that can never be backfilled are already recording.</td></tr>
+      <tr><td class="nm">1 · Insiders &amp; incentives</td><td>EDGAR pipeline with sub-60s detection, DERA bulk load, transaction-code decoder, footnote resolver, conviction score, cluster radar, routine/opportunistic classifier, 10b5-1 forensics, distress-sale detector, event latency ledger. <strong>Screen 02 and the filing tape.</strong></td><td class="n mono">16</td><td class="n mono">26</td><td class="acc">The pillar exists. Nothing else on the market does this.</td></tr>
+      <tr><td class="nm">2 · Equity research</td><td>Point-in-time XBRL model, filing diff, ownership map, N-PX voting, short console, global short registers, dilution watch, company dossier, watchlists and blotter, charting with the incentives ribbon.</td><td class="n mono">18</td><td class="n mono">44</td><td class="acc">A complete equity research terminal.</td></tr>
+      <tr><td class="nm">3 · FX &amp; metals</td><td>Cohort positioning, producer hedge decoder, four-venue price, driver regime panel, physical stocks, official sector, FX driver stacks for the majors, session and spread engine, sterling rates.</td><td class="n mono">14</td><td class="n mono">58</td><td class="acc">Both asset classes live. Free data throughout.</td></tr>
+      <tr><td class="nm">4 · Knowledge layer</td><td>Pack schema, authoring loop, golden and adversarial gates, signing, distribution, verification, hot-load, claim diff, approval gate, rollback, analyst pane, morning brief, evidence-locked answers.</td><td class="n mono">14</td><td class="n mono">72</td><td class="acc">The differentiator that's hardest to copy.</td></tr>
+      <tr><td class="nm">5 · Trading surface</td><td>The Book, position sizing, journal with real R-multiples, thesis cards, weekly review, alerts with the tracer, screeners with the NL compiler, macro and calendar.</td><td class="n mono">14</td><td class="n mono">86</td><td class="acc">Daily driver for both timeframes.</td></tr>
+      <tr><td class="nm">6 · Hardening</td><td>Security controls to P1, backup and escrow, accessibility pass, degraded-state completion, onboarding, diagnostics, provider health, Fast Market Mode, undo bus.</td><td class="n mono">10</td><td class="n mono">96</td><td class="acc"><strong>v1 complete.</strong></td></tr>
+      <tr><td class="nm">7 · Depth</td><td>Global insider desk (six regimes), person and entity graph, congressional trading, segment workbench, valuation and capital allocation, KPI ledger, sector templates, replay, microstructure, silver and PGM.</td><td class="n mono">40+</td><td class="n mono">136+</td><td>Depth no competitor has.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call crit">
+    <p class="call-h">The number I'd be sacked for hiding</p>
+    <p>
+      96 engineer-weeks to v1 is the <strong>irreducible</strong> figure — the work assuming nothing goes
+      wrong, which it will. Apply an honest solo multiplier of 1.6–2.5× and v1 is <strong>154–240
+      engineer-weeks</strong>. At a realistic solo throughput of about 0.65 productive weeks per calendar week,
+      that's <strong>four and a half to seven years</strong>. Full scope including phase 7 runs longer.
+    </p>
+    <p>
+      That is what "don't miss any features out" costs, stated plainly rather than buried in an appendix. It is
+      <em>not</em> an argument against the scope — it's the information you need in order to decide about the
+      scope, and that decision is yours, not mine. Three things make this estimate self-correcting rather than
+      a guess: an <strong>effort ledger</strong> from week one, so your real multiplier is known after ten
+      features; a <strong>feature ceiling</strong>, because solo maintenance at 182 features consumes 20–30
+      weeks a year against a capacity of roughly 34; and the phase boundaries above, every one of which is a
+      defensible place to stop and still own something.
+    </p>
+  </div>
+
+  <h3>Where estimates habitually break</h3>
+  <p>These are the five that have overrun on every desk system I've watched get built. Budgeting them at 1× is how a two-year plan becomes a five-year one.</p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Module</th><th>Typical overrun</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Symbology &amp; corporate actions</td><td class="n mono">3–5×</td><td>Endless edge cases and no glory whatsoever. Ticker reuse, spin-offs, delistings, double adjustment. Nobody budgets for it and everybody pays for it.</td></tr>
+      <tr><td class="nm">Charting</td><td class="n mono">3–4×</td><td>The last 10% of interaction polish is half the total work, and it's the half users notice.</td></tr>
+      <tr><td class="nm">Real-time infrastructure</td><td class="n mono">2–4×</td><td>Reconnect, gap-fill, backpressure, conflation. The happy path is a week; the unhappy paths are a quarter.</td></tr>
+      <tr><td class="nm">Entitlements</td><td class="n mono">2–3×</td><td>Every provider models them differently and none document them fully.</td></tr>
+      <tr><td class="nm">Release-calendar scheduler</td><td class="n mono">2–3×</td><td>Looks trivial. DST, holidays, delayed publications, revised vintages and half-days all land here.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="cut">
+  <div class="sec-head"><span class="sec-mn">CUT</span><h2>What I'd cut, and what I got wrong</h2>
+    <span class="sec-note">the part that decides whether this ships</span></div>
+
+  <p>
+    Everything above is the full scope you asked for, and it's all in. This section is the other half of the
+    job: telling you what I'd drop first if reality intervenes, and what earlier drafts of this plan got wrong
+    before review caught it.
+  </p>
+
+  <h3>If it has to be smaller</h3>
+  <p>
+    The minimum slice that delivers something nobody sells is <strong>Phase 0 + Phase 1 — 26 irreducible
+    weeks</strong>: a working insider and incentives engine on entirely free data. If your <em>trading</em>
+    matters more than the research surface, <strong>Phase 3 alone is a smaller alternative first target at 24
+    weeks</strong> — FX and metals positioning, which is closer to what you actually trade day to day. Those
+    are the two honest starting points; anything smaller is a toy.
+  </p>
+  <p>Cut candidates, in the order I'd drop them. None of them touches the pillar:</p>
+  <ol>
+    <li><strong>Microstructure and replay.</strong> Large build, real data cost, and the incentives work needs neither.</li>
+    <li><strong>Segment workbench.</strong> Genuinely useful, entirely deferrable.</li>
+    <li><strong>PGM and base metals.</strong> You trade gold. Silver is a cheap add later; platinum is not.</li>
+    <li><strong>The non-US insider regimes.</strong> These cost disproportionately: UK RNS is a commercial feed, and Canada and India have no bulk API — so three regimes consume most of the block's effort for a fraction of its value.</li>
+    <li><strong>Congressional trading.</strong> Popular, thin, and slow to file.</li>
+    <li><strong>The entity graph.</strong> The most impressive demo in the plan and the least load-bearing. It's also the piece that most enlarges the data-protection exposure in <a href="#break">BREAK</a>.</li>
+  </ol>
+
+  <h3>Risks, ranked by what they'd actually cost you</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Risk</th><th>Sev</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Scope defeats a solo builder</td><td><span class="p0">HIGH</span></td><td>The single largest risk in this document, by a distance. Phase boundaries are real stopping points; effort ledger from week one; feature ceiling with a displacement rule — new feature in, old feature out.</td></tr>
+      <tr><td class="nm">Consensus and tick history can't be backfilled</td><td><span class="p0">HIGH</span></td><td>Both recorders start in Phase 0, long before they're needed. Point-in-time consensus is unreconstructible at any price, and broker tick retention is the broker's to change without telling you.</td></tr>
+      <tr><td class="nm">A trading path exists on the host</td><td><span class="p0">HIGH</span></td><td>A logged-in MT5 terminal is an order-placing capability for any local process. Argus cannot remove that; it refuses to widen it, and the AI never reaches the bridge.</td></tr>
+      <tr><td class="nm">Query-sandbox escape</td><td><span class="p0">HIGH</span></td><td>Read-only connection, no extensions, no external filesystem or network, allow-listed views, AST check. In from day one — retrofitting means auditing every query path.</td></tr>
+      <tr><td class="nm">Professional status misjudged</td><td><span class="p1">MED</span></td><td>Changes the data bill several-fold. A console setting with a first-run questionnaire, re-checked if circumstances change.</td></tr>
+      <tr><td class="nm">Pack channel compromise</td><td><span class="p1">MED</span></td><td>Signing key unreachable from the authoring agent; protected workflows; restricted tag triggers; adversarial eval gate; verification fails closed.</td></tr>
+      <tr><td class="nm">AI inference read as fact</td><td><span class="p1">MED</span></td><td>Structural surface separation at glyph level, uncited-claim striking, trust incident log as a feedback loop. No amount of visual design fully eliminates this, and it's the failure mode that costs money rather than embarrassment.</td></tr>
+      <tr><td class="nm">Loss of irreplaceable local data</td><td><span class="p1">MED</span></td><td>Passphrase-KDF backup independent of the TPM key, tested restore, printed recovery code.</td></tr>
+      <tr><td class="nm">Provider breakage</td><td><span class="p1">MED</span></td><td>Contract tests against fixtures, nightly live canary, schema-drift quarantine. Expect it several times a year and design so each one is a one-file fix.</td></tr>
+      <tr><td class="nm">Model deprecation mid-build</td><td><span class="p1">MED</span></td><td>A multi-year build against a faster deprecation cycle. Pinned ids, behaviour inventory, re-eval gate before any swap.</td></tr>
+      <tr><td class="nm">Data protection on third parties</td><td><span class="p1">MED</span></td><td>Register of tables holding identified persons, retention policy, no inferred personal attributes.</td></tr>
+      <tr><td class="nm">23×5 session change, Dec 2026</td><td><span class="p2">LOW</span></td><td>Model sessions as intervals from the start. Cheap now, expensive to retrofit.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>What review changed my mind about</h3>
+  <p>
+    Four adversarial passes ran against earlier drafts — completeness, feasibility and cost, security and
+    legal, and UX — returning 121 gaps and 42 corrections. These are the ones that changed a
+    <em>conclusion</em> rather than adding detail. I'm listing them because a plan whose author claims to have
+    been right throughout is a plan nobody stress-tested.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>An earlier draft claimed</th><th>Corrected to</th></tr></thead>
+    <tbody>
+      <tr><td>The advice perimeter switches on at a second <em>user</em>.</td><td>It switches on at a second <em>person's money or eyes</em> — a family member's account crosses it with zero extra installs.</td></tr>
+      <tr><td>Professional status is essentially the LLC question.</td><td>Employment in a covered role, registration, or any business purpose each trigger it independently.</td></tr>
+      <tr><td>The incentives pillar is free, including non-US regimes.</td><td>Free for US and EU registers only. UK RNS is commercial, EDINET needs a key, SEDI has no bulk API.</td></tr>
+      <tr><td>Link channels on <kbd>Ctrl</kbd>+<kbd>Alt</kbd>.</td><td>Broken on UK layouts — AltGr emits Ctrl+Alt. Moved to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>.</td></tr>
+      <tr><td>Dense rows and WCAG AA together.</td><td>Only the 28px comfortable row meets the target-size criterion. Dense modes are an informed opt-out.</td></tr>
+      <tr><td>Code signing is a SmartScreen convenience.</td><td>It's the only runtime integrity check on the binary — a supply-chain control — and the per-user install path undercuts it unless you verify on load.</td></tr>
+      <tr><td>VBS/TPM isolation defeats the infostealer.</td><td>It defeats key <em>theft</em>, not key <em>use</em>. Malware running as you can still drive the decryption oracle.</td></tr>
+      <tr><td>NL→SQL is safe because the model never produces the rows.</td><td>Unhardened DuckDB turns that path into arbitrary read and exfiltration.</td></tr>
+      <tr><td>Crawl EDGAR for Form 4 history.</td><td>SEC DERA publishes it flattened back to 2006. Minutes, not weeks.</td></tr>
+      <tr><td>"Roughly half of Form 4 activity is mechanical."</td><td>Measured: <strong>67%</strong> non-discretionary, and code P is only 5.5% of rows.</td></tr>
+      <tr><td>Insider row count ~3.6M.</td><td>~11.6M transaction rows plus ~13M footnote rows. The original figure had never actually been computed.</td></tr>
+      <tr><td>Embed the full filing corpus.</td><td>~4.7M chunks makes retrieval a multi-second scan. Cap the corpus to the watchlist.</td></tr>
+      <tr><td>Contrast values quoted in the design system.</td><td>Wrong in both directions when recomputed. Generate them from the tokens at build time.</td></tr>
+      <tr><td>FX is the weak leg; demote it.</td><td>Right about the market, wrong about this user. Both asset classes carry full weight.</td></tr>
+      <tr><td>209 features across 24 modules.</td><td><strong>182.</strong> Recounted programmatically for this draft — the earlier figure didn't reconcile against the module tables.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Four questions only you can answer</h3>
+  <p>None of these block the plan; each one changes its size, so I'd want them settled before Phase 2 rather than during it.</p>
+  <ol>
+    <li><strong>Which equity universe?</strong> US-only is materially smaller than global, and the non-US insider regimes are the single most expensive optional block in the document.</li>
+    <li><strong>How much intraday equity depth do you actually need?</strong> Level 2 and microstructure carry a real data cost and a large build. The incentives pillar needs neither.</li>
+    <li><strong>Does the pack approval gate default to auto or review?</strong> Auto is convenient and means your knowledge base changes under you without asking. Review is safer and adds a daily task. I'd start on review and relax it once you trust the diffs.</li>
+    <li><strong>What's your appetite for phase 7 at all?</strong> Everything through phase 6 is a coherent, finished product. Phase 7 roughly doubles the build for depth you may never need.</li>
+  </ol>
+</section>
+
+<p class="foot">
+  Argus · build plan v2.0 · full scope · 2026-08-25 · <strong>plan only, nothing built</strong>.<br>
+  24 modules · 182 features · 9 rendered screens. Sources: nine domain research dossiers (201 findings,
+  live-verified 2026-08-24) and four adversarial review passes (121 gaps, 42 corrections), all in
+  <code>docs/research/</code>.<br>
+  Prices, regulations and API terms are time-sensitive and were current at that date. Claims that review could
+  not corroborate against a primary source are marked in the text — the CT Plan wording, exchange distribution
+  figures and token-accounting assumptions are the load-bearing ones to verify before contracting.<br>
+  Mockups use real tickers with illustrative data. No filing, price, holder or person shown is a real record.
+</p>
+
+</main>
+</div>

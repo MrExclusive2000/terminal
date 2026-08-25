@@ -53,4 +53,4 @@ Findings from the research that would cost you time to rediscover:
 - DPAPI does not protect against malware running as the user.
 
 Full detail in `docs/research/` (9 dossiers, 4 adversarial reviews) and
-`docs/plan/argus-design-plan.html`.
+`docs/plan/argus-build-plan-v2.html` (v1.0 kept alongside as `argus-design-plan.html`).
