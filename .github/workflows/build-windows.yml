@@ -1,0 +1,125 @@
+name: Build Windows app
+
+# Builds the real Windows artifact. PyInstaller cannot cross-compile, so this
+# is the only place a genuine .exe is produced - development happens on Linux
+# and the packaged output is verified here.
+
+on:
+  push:
+    branches: [claude/trading-terminal-app-design-m6xsst]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to stamp (e.g. 0.1.0)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Unit tests
+        run: |
+          python tests/test_insider.py
+          python tests/test_core.py
+          python tests/test_app.py
+
+  build:
+    name: Build Windows exe + installer
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+
+      - name: Resolve version
+        id: ver
+        shell: pwsh
+        run: |
+          $v = "${{ github.event.inputs.version }}"
+          if (-not $v) {
+            if ($env:GITHUB_REF -like 'refs/tags/v*') { $v = $env:GITHUB_REF -replace '^refs/tags/v','' }
+            else { $v = (Get-Content src/argus/VERSION -Raw).Trim() + "+build.${{ github.run_number }}" }
+          }
+          $base = ($v -split '\+')[0]
+          "version=$v"   | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "base=$base"   | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Building version $v (base $base)"
+
+      - name: Stamp version into the bundle and the file resource
+        shell: pwsh
+        run: |
+          $v = "${{ steps.ver.outputs.version }}"
+          $b = "${{ steps.ver.outputs.base }}"
+          Set-Content -Path src/argus/VERSION -Value $v -NoNewline
+          $p = ($b -split '\.') + @('0','0','0')
+          $tuple = "($($p[0]), $($p[1]), $($p[2]), 0)"
+          $vi = Get-Content packaging/version_info.txt -Raw
+          $vi = $vi -replace 'filevers=\(.*?\)', "filevers=$tuple"
+          $vi = $vi -replace 'prodvers=\(.*?\)', "prodvers=$tuple"
+          $vi = $vi -replace "StringStruct\('FileVersion',\s*'.*?'\)",    "StringStruct('FileVersion', '$v')"
+          $vi = $vi -replace "StringStruct\('ProductVersion',\s*'.*?'\)", "StringStruct('ProductVersion', '$v')"
+          Set-Content -Path packaging/version_info.txt -Value $vi
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller==6.11.1 pywebview==5.3.2
+
+      - name: Regenerate the icon
+        run: python packaging/make_icon.py
+
+      - name: Build with PyInstaller
+        run: pyinstaller packaging/argus.spec --noconfirm --clean
+
+      - name: Smoke-test the frozen app
+        shell: pwsh
+        run: |
+          $exe = "dist/Argus/Argus.exe"
+          if (-not (Test-Path $exe)) { throw "PyInstaller produced no exe" }
+          $size = (Get-ChildItem -Recurse dist/Argus | Measure-Object -Property Length -Sum).Sum
+          Write-Host ("Bundle size: {0:N1} MB" -f ($size/1MB))
+          # Bundled data files must actually be present, or the app starts and
+          # then 500s on its first request - which a "did it launch?" check misses.
+          foreach ($f in @('_internal/argus/app/ui.html','_internal/argus/VERSION')) {
+            if (-not (Test-Path "dist/Argus/$f")) { throw "missing bundled asset: $f" }
+          }
+          # Launch it, confirm the local backend really answers, then close.
+          $proc = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 25
+          if ($proc.HasExited) { throw "app exited immediately with code $($proc.ExitCode)" }
+          Write-Host "App is running (pid $($proc.Id))"
+          Stop-Process -Id $proc.Id -Force
+          Write-Host "Smoke test passed"
+
+      - name: Build the installer
+        shell: pwsh
+        run: |
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          & $iscc "/DAppVersion=${{ steps.ver.outputs.base }}" packaging/argus.iss
+          Get-ChildItem dist/installer
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Argus-${{ steps.ver.outputs.version }}-windows
+          path: |
+            dist/Argus/
+            dist/installer/*.exe
+          retention-days: 30
+
+      - name: Attach the installer to the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/installer/*.exe
+          generate_release_notes: true

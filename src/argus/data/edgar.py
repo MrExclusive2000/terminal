@@ -61,11 +61,10 @@ class ContactNotConfigured(RuntimeError):
 
     def __init__(self) -> None:
         super().__init__(
-            "SEC EDGAR requires an identifying contact before any request. "
-            f"Set the {CONTACT_ENV} environment variable to a name and email "
-            '(for example: export ARGUS_SEC_CONTACT="Jane Doe jane@example.com"), '
-            "or call argus.data.edgar.set_contact(...) at startup. "
-            "Without it the SEC returns 403 for every request.")
+            "SEC EDGAR needs a name and email before it will answer. "
+            "Set it in Settings, or via the ARGUS_SEC_CONTACT environment "
+            "variable. Without it the SEC returns 403 for every request - "
+            "this is their fair-access rule, not a rate limit you can wait out.")
 
 
 def set_contact(contact: str) -> None:
@@ -75,9 +74,23 @@ def set_contact(contact: str) -> None:
 
 
 def contact() -> str:
-    """The configured contact, falling back to the environment."""
+    """The effective contact.
+
+    Precedence: an explicit `set_contact` call, then the environment, then the
+    saved desktop setting. Explicit wins so a one-off script can override; the
+    environment beats the file so a scheduled run does not need the user's
+    settings to be right.
+    """
     import os
-    return _CONTACT or os.environ.get(CONTACT_ENV, "").strip()
+    if _CONTACT:
+        return _CONTACT
+    if env := os.environ.get(CONTACT_ENV, "").strip():
+        return env
+    try:
+        from ..config import load
+        return load().sec_contact.strip()
+    except Exception:  # noqa: BLE001 - settings must never block a fetch path
+        return ""
 
 
 def _looks_like_contact(s: str) -> bool:

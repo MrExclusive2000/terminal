@@ -17,7 +17,10 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
 
-UI = Path(__file__).with_name("ui.html")
+def _ui_path() -> Path:
+    """The UI file, in both source and frozen layouts."""
+    from argus.config import resource
+    return resource("app", "ui.html")
 
 _cache: dict[str, tuple[float, Any]] = {}
 _lock = threading.Lock()
@@ -176,6 +179,45 @@ def ep_card(q: dict[str, list[str]]) -> dict[str, Any]:
             "atr": round(a, inst.digits), "source": source, "currency": ccy, "stops": rows}
 
 
+def ep_settings() -> dict[str, Any]:
+    """Current settings, secrets excluded by construction."""
+    from argus import config
+    return config.load().public()
+
+
+def ep_settings_save(body: dict[str, Any]) -> dict[str, Any]:
+    """Persist settings from the UI.
+
+    Only whitelisted fields are writable, and any key that looks like a secret
+    is refused rather than silently ignored - a caller trying to POST an API key
+    should be told it is not stored, not left believing it was.
+    """
+    from argus import config
+
+    banned = {"api_key", "anthropic_api_key", "token", "secret", "password"}
+    offered = {k.lower() for k in body}
+    if offered & banned:
+        return {"ok": False,
+                "error": "Secrets are not stored in settings. Provide the API "
+                         "key via the ANTHROPIC_API_KEY environment variable; "
+                         "it is read at point of use and never written to disk."}
+
+    allowed = {"sec_contact", "professional", "account_currency", "risk_percent",
+               "balance", "insider_limit", "update_check", "onboarded", "window"}
+    changes = {k: v for k, v in body.items() if k in allowed}
+    if not changes:
+        return {"ok": False, "error": "Nothing recognised to save."}
+
+    s = config.update(**changes)
+    # Clear any cached insider pull: the contact may have changed, which changes
+    # whether the request succeeds at all.
+    if "sec_contact" in changes:
+        with _lock:
+            for k in [k for k in _cache if k.startswith("insider:")]:
+                _cache.pop(k, None)
+    return {"ok": True, "settings": s.public()}
+
+
 def ep_insider(q: dict[str, list[str]]) -> dict[str, Any]:
     """Scored Form 4 feed.
 
@@ -233,6 +275,7 @@ ROUTES: dict[str, Callable[[dict[str, list[str]]], Any]] = {
     "/api/quote": lambda q: ep_quote((q.get("symbol") or ["XAUUSD"])[0]),
     "/api/card": ep_card,
     "/api/insider": ep_insider,
+    "/api/settings": lambda q: ep_settings(),
 }
 
 
@@ -252,7 +295,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         u = urlparse(self.path)
         if u.path in ("/", "/index.html"):
-            self._send(200, UI.read_bytes(), "text/html; charset=utf-8"); return
+            self._send(200, _ui_path().read_bytes(), "text/html; charset=utf-8"); return
         fn = ROUTES.get(u.path)
         if not fn:
             self._send(404, {"error": "no such endpoint"}); return
@@ -270,6 +313,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(400, {"error": "invalid JSON"}); return
         if u.path == "/api/analyse":
             self._send(200, ep_analyse(body)); return
+        if u.path == "/api/settings":
+            self._send(200, ep_settings_save(body)); return
         self._send(404, {"error": "no such endpoint"})
 
 

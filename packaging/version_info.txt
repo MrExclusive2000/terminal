@@ -1,0 +1,27 @@
+# UTF-8
+# Windows file-version resource. The build workflow rewrites the four version
+# numbers and both version strings from the release tag; the values here are the
+# source-tree default so a local build still produces a valid resource.
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(0, 1, 0, 0),
+    prodvers=(0, 1, 0, 0),
+    mask=0x3f, flags=0x0, OS=0x40004, fileType=0x1, subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo([
+      StringTable('040904B0', [
+        StringStruct('CompanyName',      'Argus'),
+        StringStruct('FileDescription',  'Argus - trading research terminal'),
+        StringStruct('FileVersion',      '0.1.0'),
+        StringStruct('InternalName',     'Argus'),
+        StringStruct('LegalCopyright',   'Personal single-user build'),
+        StringStruct('OriginalFilename', 'Argus.exe'),
+        StringStruct('ProductName',      'Argus'),
+        StringStruct('ProductVersion',   '0.1.0'),
+      ])
+    ]),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)

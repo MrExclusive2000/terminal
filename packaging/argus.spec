@@ -1,0 +1,69 @@
+# -*- mode: python ; coding: utf-8 -*-
+"""
+PyInstaller spec for the Argus Windows build.
+
+onedir rather than onefile, deliberately. onefile unpacks the whole bundle to a
+temp directory on every launch, which costs seconds of startup and trips
+aggressive antivirus heuristics; onedir starts fast and gives the installer a
+normal directory to lay down and to patch on update.
+
+Run from the repository root:
+    pyinstaller packaging/argus.spec --noconfirm
+"""
+from pathlib import Path
+
+ROOT = Path(SPECPATH).parent          # noqa: F821 - SPECPATH is injected
+SRC = ROOT / "src"
+
+datas = [
+    (str(SRC / "argus" / "app" / "ui.html"), "argus/app"),
+    (str(SRC / "argus" / "VERSION"), "argus"),
+]
+# Knowledge packs ship with the app so a fresh install has something to reason
+# from before it has ever reached the network.
+packs = ROOT / "knowledge" / "packs"
+if packs.is_dir():
+    datas.append((str(packs), "knowledge/packs"))
+
+a = Analysis(                                     # noqa: F821
+    [str(ROOT / "run.py")],
+    pathex=[str(SRC)],
+    binaries=[],
+    datas=datas,
+    # pywebview resolves its GUI backend at runtime, so PyInstaller's static
+    # analysis cannot see these and the frozen app fails with "no GUI backend"
+    # unless they are named explicitly.
+    hiddenimports=[
+        "webview", "webview.platforms.edgechromium", "webview.platforms.winforms",
+        "clr_loader", "pythonnet",
+        "argus.insider.pipeline", "argus.data.edgar", "argus.config", "argus.update",
+    ],
+    hookspath=[],
+    runtime_hooks=[],
+    # Trim what a research terminal has no use for. Each of these drags in tens
+    # of megabytes and none is imported anywhere in this codebase.
+    excludes=["tkinter", "matplotlib", "numpy", "pandas", "scipy", "PIL",
+              "pytest", "setuptools", "pip", "test", "unittest"],
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure)                                 # noqa: F821
+
+exe = EXE(                                        # noqa: F821
+    pyz, a.scripts, [],
+    exclude_binaries=True,
+    name="Argus",
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,                 # UPX-packed binaries are a reliable AV false positive
+    console=False,             # no console window behind the app
+    disable_windowed_traceback=False,
+    icon=str(ROOT / "packaging" / "argus.ico"),
+    version=str(ROOT / "packaging" / "version_info.txt"),
+)
+
+coll = COLLECT(                                   # noqa: F821
+    exe, a.binaries, a.datas,
+    strip=False, upx=False, name="Argus",
+)

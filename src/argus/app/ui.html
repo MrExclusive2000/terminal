@@ -55,6 +55,16 @@ border-radius:2px;border:1px solid currentColor}
 .stat{display:flex;gap:18px;padding:9px 10px;border-bottom:1px solid var(--l);font-family:var(--mono);font-size:11px}
 .stat div span{display:block;color:var(--fg3);font-size:9px;letter-spacing:.07em;text-transform:uppercase}
 .stat div b{font-size:17px;font-family:var(--sans);font-variant-numeric:tabular-nums}
+.ovl{position:fixed;inset:0;background:rgba(8,11,13,.90);display:flex;align-items:center;
+justify-content:center;z-index:50}
+.card{background:var(--p);border:1px solid var(--l2);border-radius:3px;width:560px;max-width:92vw;
+max-height:88vh;overflow-y:auto}
+.card h2{font-family:var(--sans);font-size:17px;margin:0;padding:13px 16px;border-bottom:1px solid var(--l);
+background:var(--p2);letter-spacing:.02em}
+.card .bdy{padding:16px}
+.card p{color:var(--fg2);line-height:1.6;margin:0 0 13px;font-size:12.5px}
+.ok-msg{color:var(--acc)}.err-msg{color:var(--crit)}
+.fld{margin-bottom:13px}
 </style></head><body>
 <div class="top">
   <b>Argus</b>
@@ -62,6 +72,7 @@ border-radius:2px;border:1px solid currentColor}
     <button class="tab on" id="tabTrade">Trade</button>
     <button class="tab" id="tabIns">Insiders</button>
   </div>
+  <button class="tab" id="tabSet" style="margin-left:2px">Settings</button>
   <span id="stMt5"><span class="dot wn"></span>MT5 …</span>
   <span id="stCot"><span class="dot wn"></span>COT …</span>
   <span id="stMac"><span class="dot wn"></span>Macro …</span>
@@ -156,6 +167,54 @@ border-radius:2px;border:1px solid currentColor}
         <b>Every score decomposes.</b> Each factor below a row shows what it added and
         why. Nothing here is a number you have to take on trust.
       </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="ovl" id="setOvl" style="display:none">
+  <div class="card">
+    <h2 id="setTitle">Settings</h2>
+    <div class="bdy">
+      <p id="setIntro">
+        Argus reads public regulatory filings. The SEC requires anyone doing that
+        to say who they are — a name and an email address. It is their fair-access
+        rule, and without it every request is refused outright.
+      </p>
+      <div class="fld">
+        <label>SEC contact — name and email</label>
+        <input id="setContact" placeholder="Jane Doe  jane@example.com">
+        <div class="m" style="font-size:11px;margin-top:4px" id="setContactNote"></div>
+      </div>
+      <div class="row">
+        <div><label>Account currency</label>
+          <select id="setCcy"><option>GBP</option><option>USD</option><option>EUR</option></select></div>
+        <div><label>Default risk %</label><input id="setRisk" type="number" step="any"></div>
+      </div>
+      <div class="row">
+        <div><label>Balance</label><input id="setBal" type="number" step="any"></div>
+        <div><label>Market-data status</label>
+          <select id="setPro"><option value="false">Non-professional</option>
+          <option value="true">Professional</option></select></div>
+      </div>
+      <p class="m" style="font-size:11px">
+        Professional status multiplies exchange data fees several-fold. It is asked
+        rather than assumed because it is the largest cost variable in this system.
+      </p>
+      <div class="note ai" style="font-size:12px">
+        <b>Secrets are not stored here.</b> This file is plaintext JSON on your disk.
+        The Claude API key is read from the <code>ANTHROPIC_API_KEY</code> environment
+        variable at the moment it is used and is never written to disk — proper
+        key isolation is a build step that does not exist yet, and pretending
+        otherwise would be worse than saying so.
+      </div>
+      <div id="setMsg" class="m" style="margin:12px 0;min-height:17px"></div>
+      <div class="row">
+        <button id="setSave">SAVE</button>
+        <button class="ghost" id="setClose">CLOSE</button>
+      </div>
+      <div class="m" style="font-size:10.5px;margin-top:10px;font-family:var(--mono)"
+           id="setPath"></div>
     </div>
   </div>
 </div>
@@ -301,6 +360,50 @@ async function insider(){
     : '<div class="m">No clusters. One insider filing repeatedly is an execution schedule, not a cluster.</div>';
 }
 
+let SET={};
+async function loadSettings(){
+  SET=await j("/api/settings");
+  $("setContact").value=SET.sec_contact||"";
+  $("setCcy").value=SET.account_currency||"GBP";
+  $("setRisk").value=SET.risk_percent;
+  $("setBal").value=SET.balance;
+  $("setPro").value=String(!!SET.professional);
+  $("setPath").textContent="Settings file: "+SET.data_dir;
+  $("setContactNote").innerHTML = SET.contact_from_env
+    ? '<span class="w">Currently overridden by the ARGUS_SEC_CONTACT environment variable.</span>'
+    : (SET.contact_ok ? '<span class="ok-msg">Configured.</span>'
+                      : '<span class="err-msg">Not set — EDGAR will refuse every request.</span>');
+  return SET;
+}
+function openSettings(firstRun){
+  $("setOvl").style.display="flex";
+  $("setTitle").textContent = firstRun ? "Welcome to Argus — one thing to set" : "Settings";
+  $("setClose").style.display = firstRun ? "none" : "";
+  $("setContact").focus();
+}
+$("tabSet").onclick=async()=>{await loadSettings();openSettings(false);};
+$("setClose").onclick=()=>{$("setOvl").style.display="none";};
+$("setSave").onclick=async()=>{
+  const msg=$("setMsg"); msg.textContent="Saving…"; msg.className="m";
+  const body={sec_contact:$("setContact").value.trim(),
+              account_currency:$("setCcy").value,
+              risk_percent:parseFloat($("setRisk").value)||1,
+              balance:parseFloat($("setBal").value)||0,
+              professional:$("setPro").value==="true", onboarded:true};
+  try{
+    const r=await (await fetch("/api/settings",{method:"POST",
+      headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})).json();
+    if(!r.ok){msg.textContent=r.error;msg.className="err-msg";return;}
+    SET=r.settings;
+    msg.textContent = SET.contact_ok
+      ? "Saved."
+      : "Saved, but the contact still has no email address in it — EDGAR will refuse requests.";
+    msg.className = SET.contact_ok ? "ok-msg" : "err-msg";
+    await loadSettings();
+    if(SET.contact_ok){ $("setClose").style.display=""; setTimeout(()=>{$("setOvl").style.display="none";},700); }
+  }catch(e){ msg.textContent="Could not save: "+e; msg.className="err-msg"; }
+};
+
 function view(which){
   const t = which==="trade";
   $("viewTrade").style.display = t?"grid":"none";
@@ -312,6 +415,12 @@ $("tabTrade").onclick=()=>view("trade");
 $("tabIns").onclick=()=>{view("ins"); if(!$("insList").dataset.done){$("insList").dataset.done="1"; insider();}};
 $("insGo").onclick=insider;
 
-async function boot(){await status();positioning();macro();quote();card();}
+async function boot(){
+  try{
+    const s=await loadSettings();
+    if(!s.onboarded || !s.contact_ok) openSettings(!s.onboarded);
+  }catch(e){/* settings must never block the app starting */}
+  await status();positioning();macro();quote();card();
+}
 boot(); setInterval(()=>{status();quote()},15000); setInterval(()=>{positioning();macro()},600000);
 </script></body></html>
