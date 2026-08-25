@@ -319,7 +319,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 <div class="wrap">
 <nav class="rail" aria-label="Contents">
   <p class="rail-brand">Argus</p>
-  <p class="rail-sub">design plan · v0.2 · FX + XAUUSD</p>
+  <p class="rail-sub">design plan · v0.3 · a tool</p>
 
   <p class="rail-h">Case</p>
   <a href="#bet"><code>BET</code><span>The gap</span></a>
@@ -347,34 +347,38 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   <p class="eyebrow">Windows terminal · FX &amp; gold · information only · plan</p>
   <h1>Who is positioned, who is hedging their own production, and who is quietly accumulating.</h1>
   <p class="lede">
-    A native Windows research terminal for one person, built around <strong>FX and XAUUSD</strong>. No order
-    execution, no broker connectivity. Its lens is <strong>incentives</strong> — but translated out of the
-    equity world into the one you actually trade: cohort positioning, producer hedging, official-sector
-    accumulation and physical flow, sitting on a knowledge base I author, version and sign on a schedule.
+    A native Windows desk for one person trading <strong>FX and XAUUSD on IC Markets MT5</strong>. Read-only:
+    it never places an order. Its lens is <strong>incentives</strong>, translated out of the equity world into
+    the market you actually trade — cohort positioning, producer hedging, official-sector accumulation,
+    physical flow — with a knowledge base I author, version and sign on a schedule.
+  </p>
+  <p class="lede">
+    It is scoped as a <strong>tool, not a project</strong>. Every feature has to name the decision it changes,
+    or it does not ship.
   </p>
   <div class="hero-meta">
     <span><b>Codename</b> Argus</span>
     <span><b>Scope</b> single user · UK · IC Markets MT5</span>
     <span><b>Stack</b> .NET 10 LTS + WPF</span>
-    <span><b>To MVP</b> 30–48 eng-weeks</span>
-    <span><b>Data cost</b> ~$0/mo</span>
+    <span><b>First useful build</b> 10 wks</span>
+    <span><b>Data cost</b> $0 + AI</span>
     <span><b>Research</b> 9 dossiers · 4 red teams</span>
   </div>
 </header>
 
-<div class="call warn">
-  <p class="call-h">Version 0.2 — I had this pointed the wrong way</p>
+<div class="call dec">
+  <p class="call-h">Version 0.3 — scoped down deliberately</p>
   <p>
-    The previous draft argued FX was the weakest leg of the product and should be demoted to macro context. As
-    an argument about <em>the market</em> that was right — TradingView already owns cheap FX charting. As an
-    argument about <em>your terminal</em> it was wrong, because FX and gold are what you trade. This version
-    restructures around that, and the good news is that it makes the product substantially cheaper and
-    somewhat smaller: <strong>almost every data source the gold and FX lens needs is free at origin.</strong>
+    You said <em>tool</em>, and that you want it to help you trade. That answer should make this plan smaller,
+    so it has. <strong>I am recommending against building most of the equity kit you asked for</strong> — not
+    because you were wrong to want it, but because you asked for it before I asked what the thing was for. A
+    tool you use is worth more than a cathedral you are still building in 2029.
   </p>
   <p>
-    The equity insider engine is not deleted — it is demoted to an optional module with a genuine bridge into
-    gold (miner hedge books and miner insider transactions). See <a href="#feat">FEAT</a> for how much of it I
-    would still build, and the open question at the end.
+    Everything cut is documented, not deleted; the full inventory stays below and any of it can be switched
+    back on. But the plan now optimises for <strong>a working desk in front of you within a few months</strong>,
+    and applies one test to every feature: <em>name the decision this changes, or it does not ship.</em>
+    Overrule me on any specific cut and I will put it back.
   </p>
 </div>
 
@@ -1291,11 +1295,64 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <span class="sec-note">20 modules · 210 candidates · re-prioritised</span></div>
 
   <p>
-    The research produced 210 candidate features. 103 of them came back marked P0, which is what happens when
-    eight specialists each rank their own domain — it is not a credible plan. What follows is re-prioritised
-    against a single test: <em>does this serve the incentives lens or the knowledge layer, and would its
-    absence make the terminal not worth opening?</em> Everything else moved down.
+    The research produced 210 candidate features. 103 came back marked P0, which is what happens when eight
+    specialists each rank their own domain. Below is the full inventory — but read the cut first, because for
+    a tool most of it should not be built.
   </p>
+
+  <h3>The tool cut</h3>
+  <p>
+    One test: <strong>name the decision this changes.</strong> A feature that makes you better informed but
+    never alters what you do is a magazine, not a tool.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>In</th><th>The decision it changes</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Spread monitor</td><td>Whether to take a short-horizon trade <em>now</em> or wait twenty minutes. Directly saves money on every intraday entry.</td></tr>
+      <tr><td class="nm">COT cohort percentiles</td><td>Whether you are joining a crowded position. Managed money at the 97th percentile against producers at the 3rd is a "do not chase" you can act on.</td></tr>
+      <tr><td class="nm">Driver regime panel</td><td>Which mental model to apply. If the real-yield relationship has inverted, the trade you were about to justify with it is unjustified.</td></tr>
+      <tr><td class="nm">Release calendar + countdown</td><td>Whether to be in a position at all over the next two hours. Includes the COT and BPR release times themselves.</td></tr>
+      <tr><td class="nm">Session clock, ATR, levels, opening range</td><td>Where to place a stop and what a normal move looks like today.</td></tr>
+      <tr><td class="nm">Four-venue price panel</td><td>Whether your broker's quote has drifted from the underlying — a sanity check before sizing up.</td></tr>
+      <tr><td class="nm">Physical &amp; official sector</td><td>Whether the structural bid is still there. Slow, but it decides your directional bias for weeks.</td></tr>
+      <tr><td class="nm">Journal with R-multiples</td><td>Whether your edge is real. This is the only panel that tells you about <em>you</em>, and for a discretionary trader it is probably worth more than any data feed.</td></tr>
+      <tr><td class="nm">Pre-trade check</td><td>Whether this setup resembles ones that have worked for you before, and what is scheduled that could invalidate it.</td></tr>
+      <tr><td class="nm">Morning brief</td><td>What moved overnight and what to expect today — replaces twenty minutes of tab-opening.</td></tr>
+      <tr><td class="nm">Knowledge packs</td><td>Pair dossiers, event playbooks, gold regime history. The reference layer you would otherwise rebuild from memory each time.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call warn">
+    <p class="call-h">Cut — documented, not deleted</p>
+    <p>
+      <strong>The entire equity module.</strong> Form 4 decoder, conviction scoring, cluster radar, 13F
+      ownership, XBRL financial model, quality-of-earnings, reverse DCF, filing redline, pay-for-metric,
+      person graph, global insider desk, N-PX, comment letters, dilution watch, screeners. It is genuinely
+      good work and it is roughly <strong>70 engineer-weeks that will not change a single XAUUSD decision</strong>.
+    </p>
+    <p>
+      Also cut: options and gamma exposure, chart replay, footprint and volume profile, market microstructure,
+      the FX vol surface, segment analysis, funds and ETFs, issuer credit, tax lots, entity graphs, and the
+      non-US insider regimes.
+    </p>
+    <p>
+      <strong>The one piece I would keep a hook for</strong> is the miner bridge — gold producer hedge books
+      and producer insider transactions genuinely inform a gold view. But it is a later addition, and only
+      once the desk itself is earning its keep.
+    </p>
+  </div>
+
+  <div class="call">
+    <p class="call-h">A ceiling worth setting now</p>
+    <p>
+      Solo maintenance of a feature set costs roughly 20–30 engineer-weeks a year at 270 features, against a
+      realistic solo capacity of about 34. <strong>Target 50–60 shipped features and hold the line</strong>:
+      past that, the tool stops improving because you are spending the year keeping it alive. Adopt a
+      displacement rule — every addition after the ceiling retires something — and the tool stays a tool.
+    </p>
+  </div>
+
 
   <h3>Module 1 · Gold desk <span class="p0">FLAGSHIP</span></h3>
   <div class="tw"><table class="d">
@@ -1912,22 +1969,59 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </tbody>
   </table></div>
 
-  <h4>What goes in them</h4>
+  <h4>What goes in them — scoped to a tool</h4>
   <p>
-    Sector and industry primers; per-company dossiers (business model, what actually drives the number, which
-    metrics matter for <em>that</em> company); FX pair dossiers (drivers, correlations, session behaviour,
-    central-bank reaction functions); event playbooks for CPI, NFP, FOMC, earnings and OPEC; accounting
-    red-flag checklists; insider-signal interpretation guides; filing-reading guides ordered by what to read
-    first for a given company type; a historical analogue library; and the terminal's own documentation, so the
-    assistant can answer "how do I…" without a separate help system.
+    Not an encyclopaedia. Seven pack types, all of which exist to shorten the distance between a question you
+    have mid-session and an answer you can act on:
   </p>
+  <ul>
+    <li><strong>Pair dossiers</strong> — for each of the seven instruments: what actually drives it, current
+        correlation structure, session behaviour, typical ranges, what breaks the usual relationship.</li>
+    <li><strong>Gold regime history</strong> — the named regimes, what characterised each, what ended them.
+        The panel tells you the real-yield correlation has flipped; the pack tells you what happened the last
+        three times something like that happened.</li>
+    <li><strong>Event playbooks</strong> — NFP, CPI, FOMC, BoE, ECB, OPEC: what is typically priced in, the
+        historical distribution of the move, how the first print usually revises.</li>
+    <li><strong>Central-bank reaction functions</strong> — what each bank has actually done versus said, and
+        the conditions under which they change.</li>
+    <li><strong>Positioning interpretation</strong> — how to read cohort extremes, when producer hedging is a
+        signal versus a covenant, what percentile bands have historically preceded.</li>
+    <li><strong>Your own playbook</strong> — patterns extracted from your journal once there is enough of it.
+        The most valuable pack, and the only one that cannot be written in advance.</li>
+    <li><strong>The tool's own documentation</strong>, so "how do I…" needs no separate help system.</li>
+  </ul>
+
+  <div class="call dec">
+    <p class="call-h">Repointing the AI at trading rather than research</p>
+    <p>
+      For a research terminal the AI's job is synthesis. For a tool it is narrower and more useful — three
+      moments, and it should be quiet the rest of the time:
+    </p>
+    <ul>
+      <li><strong>Morning brief.</strong> What moved overnight and why, what is scheduled today, where
+          positioning sits, what changed in the packs. Replaces twenty minutes of opening tabs.</li>
+      <li><strong>Pre-trade check.</strong> You are about to take XAUUSD long: here is where cohort
+          positioning sits, what is scheduled in the next six hours, what your last five trades in a similar
+          configuration did, and what would invalidate the idea. Not approval — just the things you would
+          have wanted to remember.</li>
+      <li><strong>Weekly review.</strong> Pattern-finding across the journal. Which setups actually pay,
+          which times of day cost you, whether your losers cluster after a win, whether your size drifts.</li>
+    </ul>
+    <p>
+      <strong>The discipline features have to earn their place, not lecture.</strong> The UX review was blunt
+      that a non-dismissible review prompt or a moralising checklist gets switched off within a week, taking
+      the journal with it. So: capture in under six seconds, the stats have to be genuinely interesting, and
+      the tool states what happened without adjectives. "Your last four trades after a losing day averaged
+      −0.8R" is useful. "Consider whether you are revenge trading" is how you get uninstalled.
+    </p>
+  </div>
 
   <h3>Model routing</h3>
   <div class="tw"><table class="d">
     <thead><tr><th>Task</th><th>Where it runs</th><th>Why</th></tr></thead>
     <tbody>
       <tr><td>Any displayed number, ratio or score</td><td class="nm">Deterministic code</td><td>No model in the path. Ever. This is what makes a FACT panel a fact.</td></tr>
-      <tr><td>Pack authoring, filing redline, thesis red-team</td><td class="nm">Opus, batch overnight</td><td>Judgment and citation quality; batch pricing halves it.</td></tr>
+      <tr><td>Pack authoring, morning brief, weekly review</td><td class="nm">Opus, batch overnight</td><td>Judgment and citation quality; batch pricing halves it, and none of it is latency-sensitive.</td></tr>
       <tr><td>Interactive Q&amp;A</td><td class="nm">Opus with cached prefix</td><td>Cached input tokens do not count toward throughput limits, so caching buys speed as well as cost.</td></tr>
       <tr><td>Hover-translate, query rewriting, NER, offline mode</td><td class="nm">Local small model</td><td>Cheap, private, works with no network. Your watchlist is your alpha — it should not leave the machine for a definition lookup.</td></tr>
     </tbody>
@@ -2240,65 +2334,62 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <span class="sec-note">honest numbers, not encouraging ones</span></div>
 
   <div class="tw"><table class="d">
-    <thead><tr><th>Phase</th><th>Ships</th><th class="n">Eng-wks</th><th class="n">Cumulative</th><th>Why here</th></tr></thead>
+    <thead><tr><th>Step</th><th>Ships</th><th class="n">Wks</th><th class="n">Cum.</th><th>State after</th></tr></thead>
     <tbody>
-      <tr><td class="nm">0 · Skeleton</td><td>WPF shell, docking, MT5 Python bridge (bundled embeddable runtime), DuckDB/SQLite store, provider abstraction, release-calendar scheduler, tick recorder running.</td><td class="n mono">7</td><td class="n mono">7</td><td>The recorder starts now because tick history you did not capture is gone.</td></tr>
-      <tr><td class="nm">1 · Gold desk</td><td>COT cohorts with percentiles, producer hedge decoder, Bank Participation, COMEX and LBMA stocks, ETF and official-sector tracking, physical flow, four-venue price panel, driver regime panel.</td><td class="n mono">12</td><td class="n mono">19</td><td>Your stated focus, free data, and the thing nobody sells. Usable on its own.</td></tr>
-      <tr><td class="nm">2 · Intraday</td><td>Session engine, spread monitor, ATR and opening range, fast alerts, Fast Market Mode, charting, the seven instruments, journal with R-multiples.</td><td class="n mono">11</td><td class="n mono">30</td><td>Makes it a daily tool rather than a research toy. <strong>First genuinely complete product.</strong></td></tr>
-      <tr><td class="nm">3 · FX drivers</td><td>Driver stacks for the five majors, FX positioning, sterling rates panel, correlation and regime matrix, macro calendar with vintages.</td><td class="n mono">10</td><td class="n mono">40</td><td>Swing half of the FX book. Still $0 in data.</td></tr>
-      <tr><td class="nm">4 · Knowledge layer</td><td>Pack schema, authoring job, signing, hot-load, claim diff, evidence-locked answers, golden-set gate, thesis cards.</td><td class="n mono">12</td><td class="n mono">52</td><td>Hardest to copy, and it needs real surfaces underneath it to be worth anything.</td></tr>
-      <tr><td class="nm">5 · Insiders, miner-first</td><td>EDGAR pipeline, DERA bulk load, Form 4 decoder, footnote resolver, conviction score, cluster radar, 10b5-1 forensics, distress-sale detector — over ~40 gold producers. Hedge-book reader.</td><td class="n mono">16</td><td class="n mono">68</td><td>Full engine, small universe. Hardens the pipeline and feeds the gold thesis at the same time.</td></tr>
-      <tr><td class="nm">6 · Equities, full market</td><td>Universe widening and backfill, XBRL point-in-time model, ownership map, short pressure, N-PX voting, dilution watch, comment letters, pay-for-metric, filing diff, quality-of-earnings, screeners.</td><td class="n mono">30</td><td class="n mono">98</td><td>Where the market-data bill starts. Configuration and backfill, not a rewrite.</td></tr>
-      <tr><td class="nm">7 · Full kit</td><td>Global insider desk (six regimes), person and entity graph, segment workbench, comp peer graph, governance timeline, valuation and capital allocation, KPI ledger, credit, funds/ETFs, replay.</td><td class="n mono">40+</td><td class="n mono">138+</td><td>The destination you asked for.</td></tr>
+      <tr><td class="nm">1 · Desk</td><td>MT5 bridge with bundled Python runtime, local store, <strong>tick recorder running from day one</strong>, single workspace: price, spread monitor, session clock, ATR and levels, opening range, release calendar with countdowns, journal quick-capture with R-multiples.</td><td class="n mono">10</td><td class="n mono">10</td><td class="acc"><strong>You open it every morning.</strong> Genuinely useful, and the recorder is banking tick history you cannot buy back later.</td></tr>
+      <tr><td class="nm">2 · Context</td><td>COT cohorts with percentile bands across the seven instruments, producer hedge read, physical stocks, official-sector tracking, four-venue price panel, driver regime panel, FX driver stacks for the five majors, sterling rates.</td><td class="n mono">10</td><td class="n mono">20</td><td class="acc">The positioning and regime lens is live. Still $0 in data. This is the part nobody sells you.</td></tr>
+      <tr><td class="nm">3 · Brain</td><td>Knowledge packs (pair dossiers, event playbooks, gold regime history), signing and hot-load, claim diff, morning brief, pre-trade check, weekly review, thesis cards, alerts maturity.</td><td class="n mono">10</td><td class="n mono">30</td><td class="acc"><strong>Complete tool.</strong> The AI layer works because there are real surfaces under it.</td></tr>
+      <tr><td class="nm">— stop here —</td><td colspan="4" class="mut">Everything below is optional and should only start once the desk above has been earning its keep for a few months.</td></tr>
+      <tr><td class="mut">4 · Polish</td><td class="mut">Multi-monitor tear-off, workspace variety, backup and escrow, accessibility pass, degraded-state hardening, Fast Market Mode.</td><td class="n mono mut">6</td><td class="n mono mut">36</td><td class="mut">Comfort, not capability.</td></tr>
+      <tr><td class="mut">5 · Miner bridge</td><td class="mut">EDGAR pipeline over ~40 gold producers: hedge books, Form 4 decoder, cluster radar. The only equity work that informs a gold view.</td><td class="n mono mut">12</td><td class="n mono mut">48</td><td class="mut">Only if the gold thesis work is genuinely paying.</td></tr>
+      <tr><td class="mut">6 · Equity kit</td><td class="mut">The full inventory, if you ever want it.</td><td class="n mono mut">70+</td><td class="n mono mut">118+</td><td class="mut">Documented, not recommended.</td></tr>
     </tbody>
   </table></div>
 
-  <div class="call crit">
-    <p class="call-h">The number you need to hear before you commit to the full kit</p>
+  <div class="call dec">
+    <p class="call-h">What this actually means in calendar time</p>
     <p>
-      138 engineer-weeks is the <strong>irreducible</strong> figure — the work assuming nothing goes wrong.
-      Apply the honest multiplier for a solo build (1.6–2.5×, until you have measured your own) and the full
-      kit is <strong>220–345 engineer-weeks</strong>. At a realistic solo throughput of roughly 0.65 productive
-      weeks per calendar week, that is <strong>six to ten years</strong>.
+      30 irreducible engineer-weeks to the complete tool. Apply the honest solo multiplier (1.6–2.5×, until
+      you have measured your own) and that is <strong>48–75 weeks of real elapsed effort</strong> for all
+      three steps — but you are not waiting that long to get value, because <strong>Step 1 lands at 16–25
+      weeks</strong> and you use it from that day forward.
     </p>
     <p>
-      I am not saying that to talk you out of it. I am saying it because "full kit" as a <em>destination</em>
-      is a perfectly good answer, and as a <em>v1 scope</em> it guarantees you spend three years without a
-      working tool. The sequencing above exists so that every phase boundary is a usable product:
-    </p>
-    <ul>
-      <li><strong>Phase 2 — about 30 irreducible weeks, call it 48–75 real.</strong> A complete gold and FX
-          desk, intraday and swing, running on free data. If you build nothing else, this is already something
-          you cannot buy.</li>
-      <li><strong>Phase 4 — about 52 weeks, call it 83–130 real.</strong> Adds the knowledge layer. This is
-          the natural "finished" point for the FX and gold product.</li>
-      <li><strong>Phase 5 — about 68 weeks.</strong> The insider engine exists, proven on miners, feeding
-          gold. Widening it later is a decision you make with the tool already in hand.</li>
-    </ul>
-    <p>
-      The modules that habitually run 3–5× over, in order: <strong>equity symbology and corporate
-      actions</strong> (endless edge cases, no glory — and it only appears in Phase 6, which is another reason
-      to put it there), <strong>charting</strong>, <strong>the MT5 bridge's reconnect and gap-fill</strong>,
-      and <strong>the release-calendar scheduler</strong>, which looks trivial and is not.
+      Compare with where the previous version had you: 220–345 weeks, six to ten years, for a full kit whose
+      equity half would never have touched a gold trade. That is the whole difference between a tool and a
+      project, and it came entirely from one answer you gave.
     </p>
     <p>
-      Keep the effort ledger from week one. After ten features your real multiplier is known, and every number
-      above becomes a calculation instead of my guess.
+      The modules that still habitually overrun, now that equity symbology and corporate actions are out of
+      scope: <strong>the MT5 bridge's reconnect and gap-fill</strong>, <strong>charting</strong>, and
+      <strong>the release-calendar scheduler</strong> — DST, holidays, delayed publications and revised
+      vintages all land there and it looks trivial until it is not.
     </p>
   </div>
 
-  <h3>If it has to be smaller</h3>
-  <p>
-    The minimum slice that still delivers something nobody sells you is <strong>Phase 0 plus Phase 1 — about
-    19 irreducible weeks</strong>, on free data: an integrated positioning, physical and regime desk for gold.
-    Add Phase 2 and you have a daily tool for both timeframes.
-  </p>
-  <p>
-    Things I would drop before dropping anything above: silver, the vol surface, chart replay, the segment
-    workbench, funds and ETFs, and the non-US legs of the global insider desk — UK RNS is a commercial feed
-    and Canada and India have no bulk API, so those three are disproportionately expensive for what they
-    return.
-  </p>
+  <div class="call warn">
+    <p class="call-h">If you only build one thing, build the first six weeks of Step 1</p>
+    <p>
+      MT5 bridge, local store, tick recorder, and a single screen with price, spread, session clock, ATR and
+      levels, plus journal capture. That is a real trading aid, it is a fraction of the work, and critically
+      <strong>the tick recorder starts banking history immediately</strong> — the one asset in this whole plan
+      that gets more valuable the earlier you start and cannot be reconstructed later.
+    </p>
+  </div>
+
+  <h3>Guardrails that keep it a tool</h3>
+  <ul>
+    <li><strong>The decision test.</strong> Every feature names the decision it changes before it enters the
+        backlog. No exceptions, including for features I proposed.</li>
+    <li><strong>A 50–60 feature ceiling</strong> with a displacement rule. Past that, solo maintenance eats
+        the year and the tool stops improving.</li>
+    <li><strong>Effort ledger from week one.</strong> Estimated versus actual per feature. After ten features
+        your real multiplier is known and every number here becomes a calculation rather than my guess.</li>
+    <li><strong>Use it before extending it.</strong> After Step 1, trade with it for a month before writing
+        anything new. The features you miss in practice will not be the ones on this list — they never are.</li>
+    <li><strong>The tick recorder runs from day one</strong>, whatever else slips.</li>
+  </ul>
+
 </section>
 
 <section id="risk">
@@ -2344,25 +2435,17 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </tbody>
   </table></div>
 
-  <h3>The one question left</h3>
+  <h3>Nothing is blocking</h3>
   <p>
-    Not a technical one. <strong>Is this a tool you want, or a project you want?</strong> Those need different
-    plans and both are legitimate.
+    You answered the last one: <strong>a tool, to help you trade.</strong> That resolved more than the roadmap
+    — it is why the equity kit is cut, why the AI layer is repointed at three moments instead of general
+    research, why there is a feature ceiling, and why Step 1 is deliberately the smallest thing that is
+    genuinely useful rather than the most impressive thing that demos well.
   </p>
   <p>
-    If it is a tool — you want something that makes you better at trading gold and FX — then stop at Phase 2,
-    or Phase 4 with the knowledge layer, and treat the equity kit as something you may never actually need.
-    Roughly a year of real solo effort for a desk that does not exist commercially.
-  </p>
-  <p>
-    If it is a project — you want to build the thing, and the trading is partly the excuse — then the full kit
-    is a fine multi-year endeavour and the sequencing above still holds, because every phase leaves you with
-    something working rather than a half-finished cathedral.
-  </p>
-  <p>
-    <strong>Tell me which and I will re-cut the plan to match.</strong> The difference is not what gets built
-    first — that order is right either way — it is how much scaffolding is worth putting in early, how hard
-    the maintenance ceiling binds, and whether the effort ledger is a discipline or a formality.
+    The plan is complete enough to build from. What it needs now is not more planning — it is Step 1 in front
+    of you, and a month of using it, because the features you actually miss will not be the ones on this list.
+    They never are.
   </p>
 
   <h3>What the adversarial review changed</h3>
@@ -2382,6 +2465,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <tr><td>Code signing is a SmartScreen convenience.</td><td>It is the only runtime integrity check on the binary — a supply-chain control.</td></tr>
       <tr><td>VBS/TPM key isolation defeats the infostealer.</td><td>It defeats key <em>theft</em>, not key <em>use</em>. Malware as you can still drive the decryption oracle.</td></tr>
       <tr><td>NL→SQL is safe because the model never produces the rows.</td><td>Unhardened DuckDB turns that path into arbitrary read and exfiltration.</td></tr>
+      <tr><td>Full equity insider kit in scope.</td><td>Cut. ~70 engineer-weeks that would not change an XAUUSD decision. Documented, reversible, and the miner bridge keeps the useful part.</td></tr>
       <tr><td>Price-only broker credentials make a compromised app unable to trade.</td><td>True of the app's own secrets, but a logged-in MT5 terminal is already a trading path for any local process. Overstated; corrected in ARCH.</td></tr>
       <tr><td>Crawl EDGAR for Form 4 history.</td><td>SEC DERA publishes it flattened back to 2006. Minutes, not weeks.</td></tr>
       <tr><td>~66 engineer-weeks to v1.</td><td>105–165, pending your own measured multiplier.</td></tr>
@@ -2403,7 +2487,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 </section>
 
 <p class="foot">
-  Argus · design plan v0.2 · FX &amp; XAUUSD · 2026-08-25 · plan only, nothing built.<br>
+  Argus · design plan v0.3 · FX &amp; XAUUSD · scoped as a tool · 2026-08-25 · plan only, nothing built.<br>
   Sources: 9 domain research dossiers (201 findings, live-verified 2026-08-24) plus four adversarial review
   passes (121 gaps, 42 corrections). Prices, regulations and API terms are time-sensitive and were current at
   that date. Claims the review could not corroborate against a primary source are marked as such in the text —

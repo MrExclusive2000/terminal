@@ -3,7 +3,7 @@
 Design plan for a single-user Windows research terminal — **FX and XAUUSD**,
 information only, no order execution and no broker connectivity.
 
-**Status: plan only (v0.2). Nothing is built.**
+**Status: plan only (v0.3). Nothing is built.**
 
 The distinguishing lens is *incentives*, translated out of the equity world
 into the markets actually traded: cohort positioning (CFTC COT), producer
@@ -16,8 +16,22 @@ combination means the exchange-licensing cliff and the EU AI Act both fall out
 of scope, and the positioning and physical layer is free at origin — the only
 recurring cost is the AI layer.
 
-An equity insider module is retained as optional, pointed at gold producers
-(hedge books and insider transactions) as a sentiment channel into gold.
+Scoped as a tool rather than a project: every feature must name the decision
+it changes, or it does not ship. The full equity insider module is documented
+but cut - roughly 70 engineer-weeks that would not change an XAUUSD decision.
+A miner bridge (gold producer hedge books and insider transactions) is kept as
+a later hook, since that is the only equity work that informs a gold view.
+
+Three steps, 30 irreducible engineer-weeks to a complete tool:
+
+1. **Desk** (10w) - MT5 bridge, local store, tick recorder, price, spread
+   monitor, session clock, ATR and levels, release calendar, journal.
+2. **Context** (10w) - COT cohort percentiles, physical stocks, official
+   sector, four-venue price panel, driver regime panel, FX driver stacks.
+3. **Brain** (10w) - knowledge packs, morning brief, pre-trade check,
+   weekly review.
+
+Data cost is zero for steps 1 and 2; the only recurring spend is the AI layer.
 
 ## Contents
 
