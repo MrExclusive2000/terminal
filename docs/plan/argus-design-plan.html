@@ -356,9 +356,9 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <span><b>Codename</b> Argus</span>
     <span><b>Scope</b> single user, read-only</span>
     <span><b>Stack</b> .NET 10 LTS + WPF</span>
-    <span><b>To MVP</b> ~34 eng-weeks</span>
-    <span><b>Run cost</b> $190–560/mo</span>
-    <span><b>Research</b> 8 dossiers · 201 findings</span>
+    <span><b>To MVP</b> 55–85 eng-weeks</span>
+    <span><b>Run cost</b> $60–560/mo</span>
+    <span><b>Research</b> 9 dossiers · 4 red teams</span>
   </div>
 </header>
 
@@ -460,8 +460,10 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <p>
       <strong>Argus must never become a distributor.</strong> One person seeing full-depth Nasdaq TotalView
       pays $15.00/month as a non-professional subscriber. An external distributor of the identical feed pays
-      $4,230/month plus per-subscriber fees. That is not a pricing tier, it is a category change, and the
-      trigger is a second human seeing the screen. The architecture treats this as a tested invariant — no
+      a four-figure monthly distribution fee plus per-subscriber charges. That is not a pricing tier, it is a
+      category change, and the trigger is a second human seeing the screen. (The $15.00 non-professional rate
+      is confirmed against Nasdaq's published price list; cite the distribution figure to a specific line of
+      the distributor list before leaning on it.) The architecture treats this as a tested invariant — no
       network listener, no export of raw licensed ticks, no hosted view, no screenshot bot — not as a policy
       note in a README.
     </p>
@@ -490,7 +492,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <span class="ui-cmd-txt">INSIDER CLUSTER</span>
       <span class="ui-cmd-ghost">&nbsp;mcap&lt;2B&nbsp; window=30d&nbsp; code=P&nbsp; officers&gt;=2</span><span class="ui-caret"></span>
       <span class="ui-go">GO</span>
-      <span class="ui-cmd-ghost" style="margin-left:auto">F1 help &nbsp;·&nbsp; ⌥1-4 panel &nbsp;·&nbsp; SPACE freeze</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">F1 help &nbsp;·&nbsp; Alt+1-9 workspace &nbsp;·&nbsp; Alt+P freeze</span>
     </div>
     <div class="ui-status">
       <span><span class="ui-dot ok"></span>MASSIVE rt</span>
@@ -1091,7 +1093,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
     <tbody>
       <tr><td><span class="p0">P0</span></td><td class="nm">Insider Tape</td><td>Live filterable stream of every Form 3/4/5 and 144 as it hits EDGAR.</td><td class="mono">EDGAR daily index + Atom</td><td class="n mono">M</td></tr>
-      <tr><td><span class="p0">P0</span></td><td class="nm">Form 4 Signal Decoder</td><td>Normalises by transaction code — P open-market buy vs F tax withholding vs M+S exercise-and-sell vs G gift. The single highest-value normalisation in the product.</td><td class="mono">Form 345 XML</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Form 4 Signal Decoder</td><td>Normalises by transaction code — P open-market buy vs F tax withholding vs M+S exercise-and-sell vs G gift. Measured on a recent quarter of SEC bulk data, <strong>67% of Form 4 rows are non-discretionary</strong> (A 24.5%, F 26.6%, M 15.5%) and <strong>code P is only 5.5%</strong> — about 22,700 open-market buys a year, market-wide. That ratio is the whole argument for this module.</td><td class="mono">Form 345 XML</td><td class="n mono">M</td></tr>
       <tr><td><span class="p0">P0</span></td><td class="nm">Conviction Score</td><td>0–100 per transaction: code, role weight, size vs holdings and vs salary, discretionary vs planned, buying into weakness.</td><td class="mono">derived</td><td class="n mono">L</td></tr>
       <tr><td><span class="p0">P0</span></td><td class="nm">Cluster Radar</td><td>Multiple distinct insiders, same issuer, same direction, inside a window. The strongest documented insider signal.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
       <tr><td><span class="p0">P0</span></td><td class="nm">10b5-1 Forensics</td><td>Reads the document-level <code>aff10b5One</code> flag plus Item 408(a) adoption dates; separates scheduled from discretionary.</td><td class="mono">Form 4 + 10-Q Item 5</td><td class="n mono">L</td></tr>
@@ -1192,6 +1194,82 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </ul>
   </div>
 
+
+  <h3>Added after adversarial review</h3>
+  <p>
+    Four red-team passes went at the draft above. The completeness critic's verdict was blunt and correct:
+    what I had written was <em>"a strong plan for a US-equities single-stock desk with a world-class insider
+    layer bolted on — and not the plan the brief describes."</em> These are the gaps that judgment exposed.
+  </p>
+
+  <h4>Free sources I should have found first time</h4>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pri</th><th>Feature</th><th>Why it belongs</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td><span class="p0">P0</span></td><td class="nm">N-PX Voting Console</td><td>Machine-readable say-on-pay voting by institution, per issuer. This is the <em>institutional counterpart to the Pay-versus-Performance work</em> — who actually voted against the comp plan you just decoded. Free and structured, and its absence was the most surprising hole in the draft.</td><td class="mono">N-PX XML · $0</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Global Net Short Register</td><td><strong>Names the actual short seller</strong>, updates daily, and is free — strictly better than the bi-monthly US aggregate the plan proposed paying ORTEX to supplement.</td><td class="mono">FCA · ESMA · NCAs · JPX · ASIC · $0</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Dilution &amp; Financing Watch</td><td>Cover-page share-count series, shelf capacity, ATM detection as a share of ADV, S-8 forward dilution, warrant overhang. <strong>In the small-cap insider universe this product targets, issuance is the dominant loss mechanism</strong> — and the draft tracked it nowhere.</td><td class="mono">EDGAR · $0</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">SEC Comment Letter Watch</td><td>UPLOAD and CORRESP filings — the SEC staff telling a company its accounting is questionable. Among the highest-signal free documents on EDGAR, and it pairs directly with the pay-metric work.</td><td class="mono">EDGAR · $0</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Compensation Peer Graph</td><td>Every proxy declares a comp peer group. That is <em>management's own declared comparator set</em> — better than SIC-based comps, and a governance signal when the group drifts toward richer payers.</td><td class="mono">DEF 14A · $0</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Bulk dataset ingest</td><td>An architecture fix, not a feature. SEC DERA publishes <strong>flattened quarterly Form 3/4/5 datasets back to 2006</strong> — roughly 1 GB of ZIPs with footnotes already structured. The draft designed a multi-million-document XML crawl at 3 req/s to obtain what downloads in minutes.</td><td class="mono">SEC DERA · $0</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>A correctness inversion worth fixing before it costs money</h4>
+  <div class="call crit">
+    <p class="call-h">The distress-sale detector</p>
+    <p>
+      The conviction model down-weights routine selling, the default filters hide it, and sales render in a
+      low-contrast neutral. Those three sensible decisions compose into one bad outcome: <strong>the terminal
+      systematically mutes the single event a research tool exists to catch</strong> — a large, discretionary,
+      off-plan insider sale immediately before bad news. Sales need a separate signal path that bypasses the
+      routine down-weight entirely: no 10b5-1 plan, size above a holding or salary threshold, unusual timing.
+    </p>
+  </div>
+
+  <h4>Modules the first pass missed entirely</h4>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Module</th><th>What it covers</th><th>Why it is not optional</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Funds &amp; ETFs</td><td>Fund dossier, holdings look-through, effective single-name exposure, creation/redemption.</td><td>The draft was single-stock-centric to the point that a book holding any ETF or investment trust had no screen at all.</td></tr>
+      <tr><td class="nm">Valuation &amp; capital allocation</td><td>Editable driver model reconciled to point-in-time actuals, <strong>owner-earnings bridge with explicit maintenance capex</strong>, ROIC decomposition, buyback-vs-issuance scorecard.</td><td>This is the entire working method of the Buffett-school analyst the brief invokes. The draft offered a reverse DCF and a comps grid and called it research.</td></tr>
+      <tr><td class="nm">KPI &amp; guidance ledger</td><td>Per-company operating metrics from 8-K Ex-99.1, MD&amp;A and IR decks, with source spans and a <strong>metric-definition-change detector</strong>.</td><td>The numbers that actually move stocks are not in XBRL. A company quietly redefining its headline KPI is a first-class governance signal.</td></tr>
+      <tr><td class="nm">Issuer credit</td><td>Cap stack from the debt footnote, maturity wall vs liquidity, TRACE prints on the issuer's own bonds, covenant and rating actions.</td><td>Credit leads equity into distress. The draft analysed leverage without ever looking at how the issuer's own debt was priced.</td></tr>
+      <tr><td class="nm">Futures &amp; index context</td><td>Contract master, expiry and first-notice calendar, continuous-series roll rule and back-adjustment as explicit config, overnight index context.</td><td>A pre-market screen with no overnight index context is not a pre-market screen. Back-adjustment is a silent-corruption class the plan claims to care about.</td></tr>
+      <tr><td class="nm">Research projects</td><td>Named containers with open questions, reading list, evidence board, thesis versioning with "what changed my mind", coverage cadence, <strong>memo output</strong>.</td><td>The journal captures moments. Nothing captured the multi-week project — and for this style of investor, writing the memo <em>is</em> the analytical process.</td></tr>
+      <tr><td class="nm">Legal &amp; regulatory catalysts</td><td>Docket watch, securities class actions, SEC AAERs, FDA calendar (PDUFA, AdComm, warning letters).</td><td>Frequently the entire thesis, and every source is free with a documented API.</td></tr>
+      <tr><td class="nm">Backup &amp; escrow</td><td>Encrypted backup under a passphrase-only KDF, tested restore, printed recovery code.</td><td>The design sealed the only irreplaceable data behind a hardware-bound key with no backup path. A TPM clear destroys your journal.</td></tr>
+      <tr><td class="nm">Tax lots &amp; records</td><td>Lot-level ledger with jurisdiction-selectable matching (UK s.104 pooling with same-day and 30-day rules; US FIFO/specific-ID/wash sale), base-currency P&amp;L.</td><td>A real recurring obligation for one person trading their own money, and it supplies the base-currency P&amp;L the portfolio module lacked.</td></tr>
+      <tr><td class="nm">Local analysis sandbox</td><td>A documented, versioned read-only schema contract over your own Parquet lake.</td><td>Banning third-party plugins is right. Banning you from your own data is not.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Workspaces and lifecycle states that were missing</h4>
+  <ul>
+    <li><strong>The Book</strong> — a live P&amp;L blotter with day and open P&amp;L, R-multiple to date, % of book, days held, next catalyst. <em>The single most-opened screen for anyone with money at risk, and it was not among the six shipped workspaces.</em></li>
+    <li><strong>Earnings Day</strong> — T-5 prep card, T-0 automatic 8-K Ex-99.1 extraction with a headline-vs-consensus diff inside 60 seconds, guidance language diff, live call panel. Named in the roadmap, absent from the workspace set.</li>
+    <li><strong>Weekend Desk</strong> — gap-risk table with historical weekend gap distributions, and the Sunday 17:00 ET FX open with an explicit thin-liquidity state.</li>
+    <li><strong>Delisting to Chapter 11.</strong> Halt → suspension → Form 25 → Form 15 → bankruptcy. At Form 15 the filings stop permanently, and the draft would have rendered a dead company as a coverage gap rather than a terminal state.</li>
+    <li><strong>The closing auction</strong>, and <strong>returning after two weeks away</strong> — a "what did I miss" digest rather than an unreadable backlog.</li>
+  </ul>
+
+  <div class="call warn">
+    <p class="call-h">A claim in my draft that was wrong</p>
+    <p>
+      I priced the incentives pillar at <strong>$0</strong> including the non-US regimes. That is only true for
+      the US and the EU national registers. <strong>UK regulatory news is distributed via RNS, a commercial LSE
+      feed</strong> (the FCA's National Storage Mechanism is free but is an unstructured document store);
+      <strong>Japan's EDINET requires a registered API key</strong> and returns Japanese-language XBRL;
+      <strong>Canada's SEDI has no documented bulk API</strong>; India's disclosures land as per-exchange HTML
+      and PDF. Read that row as "free at origin for US and EU; commercial or scrape-only elsewhere".
+    </p>
+    <p>
+      Related: <code>companyfacts</code> is <strong>us-gaap only and starts around 2010</strong>. A "global
+      equities" fundamentals claim needs a separate IFRS/ESEF, EDINET and SEDAR+ path — and a 20-year
+      owner-earnings series needs a source the plan has not named.
+    </p>
+  </div>
+
   <h3>Non-goals</h3>
   <p>
     Deliberately excluded, each for a reason: <strong>order execution and broker connectivity</strong> (a
@@ -1217,7 +1295,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <tr><td class="mono">Analytics store</td><td class="nm">DuckDB 1.5 + hive-partitioned Parquet</td><td>Analytical engine with Arrow streaming and allocation-free append. Ticks land in daily Parquet.</td><td class="n mono">$0</td></tr>
       <tr><td class="mono">OLTP + vectors</td><td class="nm">SQLite (WAL) + <code>sqlite-vec</code></td><td>App state, watchlists, journal, alerts, and the embedding index. <strong>Avoid DuckDB VSS</strong> — HNSW persistence is still experimental with known WAL-recovery data-loss risk.</td><td class="n mono">$0</td></tr>
       <tr><td class="mono">Packaging</td><td class="nm">Velopack, portable + delta</td><td>MSIX's per-user-only model and sideload friction buy nothing for a single-user app.</td><td class="n mono">$0</td></tr>
-      <tr><td class="mono">Signing</td><td class="nm">Azure Artifact Signing Basic</td><td>SmartScreen convenience, not a legal requirement here. OV + cloud HSM as fallback if the 3-year-entity eligibility rule blocks you.</td><td class="n mono">$9.99/mo</td></tr>
+      <tr><td class="mono">Signing</td><td class="nm">Azure Artifact Signing Basic</td><td>Not a legal requirement for personal use, but <strong>it is the only runtime integrity check on the binary</strong> — treat it as a supply-chain control, not a UX nicety. Note the per-user install location means malware running as you can overwrite signed binaries without elevation, so verify signatures on load, not only at update time.</td><td class="n mono">$9.99/mo</td></tr>
     </tbody>
   </table></div>
   <p><strong>Year-one licence total: roughly $1,020.</strong></p>
@@ -1305,10 +1383,22 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <p>
       In plain terms: <strong>if you trade your own money in your own name, you are non-professional</strong> —
       roughly $2.70/month of tape fees and $15/month for full Nasdaq depth. <strong>If you route through a
-      company or LLC, or you are employed by a financial entity, you are professional</strong> — roughly
-      $73/month in tape fees plus per-device charges, before vendor markups. Same software, same screen.
-      Given the Rothschild background, if that is current rather than past, assume the professional column.
-      This is worth confirming before you sign a single data contract.
+      company or LLC, you are professional</strong> — roughly $73/month in tape fees plus per-device charges,
+      before vendor markups. Same software, same screen.
+    </p>
+    <p>
+      <strong>But the LLC question is not the whole test, and this is where the plan's first draft was too
+      narrow.</strong> Employment by a financial firm in a covered role, registration with any regulator or
+      exchange, and use of the data for <em>any</em> business purpose each independently make you professional
+      regardless of whose money you trade. Given the Rothschild background, if that is current rather than
+      past, you are likely professional already, whatever the account structure.
+    </p>
+    <p class="mono" style="font-size:var(--t-xs);color:var(--text-3)">
+      Verification status: the $15.00 non-professional and $80.50–$84.00 professional TotalView rates are
+      confirmed against Nasdaq's published 2025–2027 price list. The CT Plan's July 2026 approval and its
+      use-based professional definition are <strong>reported but not confirmed against the primary Federal
+      Register order</strong> — read it before treating the entitlement design as settled, because the whole
+      pro/non-pro console rests on that wording.
     </p>
   </div>
 
@@ -1348,6 +1438,13 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       a Routine on your account, operating on a private repo, publishing signed packs the terminal then pulls.
       That is a better design anyway — the signing key never ships in the app — but it does mean the update
       loop lives beside the product rather than inside it.
+    </p>
+    <p>
+      <strong>There is a second constraint that kills the obvious design.</strong> Routines are capped at
+      single-digit-to-low-tens of runs per day depending on plan. A "one Routine per pack class" architecture
+      across hundreds of packs is therefore impossible. The pipeline has to be a <strong>plain scheduled job
+      (GitHub Action or equivalent) calling the Batch API</strong>, which is where the batch discount lives
+      anyway. One job, many packs per run, batched overnight.
     </p>
   </div>
 
@@ -1395,12 +1492,14 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   <div class="call">
     <p class="call-h">Two API facts that shape the build</p>
     <ul>
-      <li><strong>Citations and structured outputs are mutually exclusive</strong> — requesting both returns a
-          400. Since "no citation, no claim" is the core guarantee, citations win, and the pack schema is
-          enforced by validation on the way out rather than by a structured-output constraint.</li>
-      <li><strong>The current tokenizer emits roughly 30% more tokens</strong> for the same text than older
-          ones. Any cost model built on older token counts is wrong by a third — the figures in the cost table
-          already account for this.</li>
+      <li><strong>Citations and structured outputs may be mutually exclusive</strong> — a 400 on requesting
+          both was reported during research but not confirmed against the current API. It matters, because if
+          true, cited JSON costs two calls instead of one. <em>Verify before designing around it.</em> Either
+          way "no citation, no claim" wins: the pack schema is enforced by validation on the way out.</li>
+      <li><strong>Do not trust any token-count assumption, including mine.</strong> Research reported the
+          current tokenizer emitting ~30% more tokens for identical text, but sourced it to nothing primary.
+          Baseline empirically with the token-counting endpoint on your own representative payloads before
+          committing to an AI budget. The cost table below is an estimate, not a quote.</li>
     </ul>
   </div>
 </section>
@@ -1423,10 +1522,18 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       check and was bypassed in about 45 days, then broken structurally.
     </p>
     <p>
-      What actually raises the bar: <strong>CNG with VBS/Credential-Guard-class key isolation, or the TPM
-      platform crypto provider, plus a user passphrase</strong> (Argon2id) so the ciphertext is not silently
+      What raises the bar: <strong>CNG with VBS/Credential-Guard-class key isolation, or the TPM platform
+      crypto provider, plus a user passphrase</strong> (Argon2id) so the ciphertext is not silently
       machine-recoverable. SQLCipher, EFS and BitLocker protect against a stolen laptop — not against malware
-      running as you. This distinction should drive the design rather than being discovered later.
+      running as you.
+    </p>
+    <p>
+      <strong>Be precise about what that buys, because it is narrower than it first appears.</strong> VBS
+      isolation stops the key <em>being stolen</em>; it does not stop the key <em>being used</em>. A CNG
+      persisted key is protected by a container ACL that by default names the creating user, so malware running
+      as you can simply ask the key to decrypt and read the plaintext out of the oracle. The real gain is that
+      it defeats offline and passive file theft and forces the attacker to stay resident on the box — which is
+      only an advantage if something detects residency. Plan the detection, or do not claim the benefit.
     </p>
     <p>
       Worth knowing: trading brands are actively impersonated. One vendor tracked 75+ malicious
@@ -1451,19 +1558,91 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <tr><td class="nm">Egress allow-list</td><td>Outbound hosts are enumerated and enforced, with a live console showing every host, byte count and quota burn.</td></tr>
       <tr><td class="nm">Prompt redaction</td><td>Pre-flight strip of keys, tokens, file paths, machine identifiers from anything sent to a hosted model.</td></tr>
       <tr><td class="nm">Pack channel integrity</td><td>The knowledge-pack repo is a supply-chain target. Signature verification is mandatory and fails closed; a compromised repo cannot push an unsigned pack.</td></tr>
+      <tr><td class="nm">Query sandbox</td><td>See below — the sharpest hole the red team found.</td></tr>
     </tbody>
   </table></div>
 
-  <h3>Regulatory perimeter</h3>
+  <div class="call crit">
+    <p class="call-h">The exploit chain I had left open</p>
+    <p>
+      The natural-language screener compiles model output into SQL and runs it against DuckDB. Chain that to
+      the untrusted-content problem and you get: <strong>injected filing text → model-authored query →
+      database engine</strong>. DuckDB by default can <code>INSTALL</code> and <code>LOAD</code> extensions,
+      read <code>http://</code> URLs, and <code>COPY TO</code> a UNC path. That is arbitrary read and
+      exfiltration from a hostile footnote, straight through a feature I had listed as a safety property
+      because "the model never produces the rows".
+    </p>
+    <p>
+      The fix is cheap and must be in from the start: run all generated SQL on a <strong>separate read-only
+      connection</strong> with extension loading, external filesystem and network access disabled, an
+      allow-list of queryable views rather than raw tables, a statement timeout, and a parsed-AST check that
+      rejects anything that is not a single <code>SELECT</code>. Compiling to a restricted query AST rather
+      than to raw SQL text is better still.
+    </p>
+  </div>
+
+  <div class="call">
+    <p class="call-h">Controls I had missing entirely</p>
+    <ul>
+      <li><strong>Assume-breach runbook.</strong> The security posture says assume compromise and optimise for
+          cheap recovery, then never writes the recovery. One action to revoke every vendor key, rotate the
+          pack trust root, and rebuild from a known-good backup — written down and rehearsed.</li>
+      <li><strong>Backup and escrow.</strong> The design seals your only irreplaceable data — journal, theses,
+          watchlists — behind a hardware-bound key. A TPM clear or a dead motherboard destroys it. Scheduled
+          encrypted backup under a <em>passphrase-only</em> KDF, plus a printed recovery code, with a restore
+          actually tested rather than assumed.</li>
+      <li><strong>Host preconditions gate.</strong> Reporting "VBS — best protection" on an unencrypted disk
+          is a false assurance. Check and display the real state: disk encryption, VBS availability, TPM
+          presence, whether you are running as admin.</li>
+      <li><strong>Adversarial eval suite, separate from the correctness golden set.</strong> Regenerated
+          poisoned filings and hidden-instruction fixtures per run. A correctness eval detects regressions; it
+          does not detect attacks.</li>
+      <li><strong>Model-deprecation runbook.</strong> The build window is years; models deprecate faster. Pin
+          model IDs in config, keep an inventory of every behaviour that is model-specific, and gate swaps
+          behind a re-eval. Do not make any single model's behaviour a load-bearing security invariant.</li>
+      <li><strong>CI trust root.</strong> If an autonomous agent has write access to the pack repo, it can
+          commit a workflow file and tag it — and a tag-triggered workflow runs with the signing secret. "The
+          agent commits, only CI signs" is false unless workflow files are protected and tag triggers are
+          restricted to a branch the agent cannot write.</li>
+    </ul>
+  </div>
+
+  <h3>Regulatory perimeter — corrected</h3>
   <p>
-    Because it is only you, the advice perimeter does not bite — you cannot advise yourself, so the Advisers
-    Act, FCA Article 53 and financial promotions, MiFID II advice and MAR Art.20 recommendation-disclosure
-    rules are all inapplicable. <strong>The AI can be as opinionated and directive as you want.</strong> The
-    binding constraint is the market-data licensing cliff, which is why the no-distribution invariant is
-    architectural. One dormant control is worth keeping: a MAR Art.20 disclosure wrapper, shipped disabled, so
-    that if you ever add an export or share feature the compliance shape already exists rather than needing a
-    retrofit.
+    My first pass framed this as "the perimeter switches on when a second <em>user</em> appears". That is
+    wrong, and the red team was right to catch it. <strong>The trigger for the Advisers Act, FCA Article 53
+    and MiFID II is advising on or managing another <em>person's</em> money, or communicating a recommendation
+    to another person — which can happen with zero additional installs.</strong> A family member's account, an
+    informal partnership, a fund seeded later, or forwarding the AI's output to a friend all cross it while
+    the software remains a single-seat install.
   </p>
+  <p>
+    Stated correctly: <strong>so long as it is your money and your eyes only, the advice perimeter does not
+    bite and the AI can be as opinionated and directive as you want.</strong> The binding constraint is the
+    market-data licensing cliff, which is why no-distribution is architectural. Keep the MAR Art.20 disclosure
+    wrapper shipped-but-dormant so the compliance shape exists if that ever changes.
+  </p>
+
+  <div class="call warn">
+    <p class="call-h">Two exposures the single-user framing does not clear</p>
+    <ul>
+      <li><strong>Data protection on third-party individuals.</strong> This is the regime that genuinely
+          applies to you, and I missed it entirely first time. The insider archive and person graph are a
+          <em>profiling database of named natural persons</em> — directors, officers, PDMRs — held for years
+          and enriched with behavioural scoring. UK/EU data protection has a personal-household exemption, but
+          it is read narrowly and a systematic profiling database built for financial gain sits close to its
+          edge. Concretely: keep a register of every table holding identified persons, set a retention policy,
+          and do not extend the graph to inferred personal attributes. There is also a <em>sui generis
+          database right</em> question over the archive itself.</li>
+      <li><strong>Jurisdiction is unfixed, and it changes the answer.</strong> The EU AI Act's transparency
+          duties attach to a <em>provider</em>, and "putting into service" expressly includes supply for your
+          own use — so building this for yourself can make you the provider. The personal/non-professional
+          exemption is read restrictively and regular economic benefit reads as professional activity. Net: if
+          you are EU-resident, some Art. 50 duties may attach at one user; if UK-resident, the AI Act does not
+          apply to you at all. <strong>Tell me which and I will resolve this properly</strong> — the plan
+          currently assumes UK.</li>
+    </ul>
+  </div>
 </section>
 
 <section id="ux">
@@ -1502,10 +1681,28 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </div>
   <p>
     The accent is deliberately a different hue family from both directional colours, so "this is interactive"
-    never reads as "this went up". Every text token in this document was solved numerically to clear
+    never reads as "this went up". Every text token in <em>this document</em> was solved numerically to clear
     <strong>WCAG AA (4.5:1) on all four surface levels in both themes</strong> — four values failed the first
-    pass and were corrected rather than asserted.
+    pass and were corrected rather than asserted. Contrast tables should be generated from the tokens at build
+    time, never hand-written; the red team found the draft's hand-written table wrong in both directions.
   </p>
+
+  <div class="call warn">
+    <p class="call-h">Where "density" and "WCAG AA" genuinely conflict</p>
+    <p>
+      I claimed both. They do not fully co-exist, and the honest version is worth stating. <strong>WCAG 2.2's
+      target-size criterion effectively requires 24px between the centres of adjacent undersized targets.</strong>
+      A 22px compact row and an 18px dense row both fail it; only the 28px comfortable row passes. Two further
+      traps: as-of provenance stamps at 10–12px are <em>normal</em> text under the guidelines, not large text,
+      so they need the full 4.5:1 — which makes the trust layer the thing most likely to fail; and link-channel
+      hues must not be reused for direction or status, which is easy to violate by accident.
+    </p>
+    <p>
+      So: <strong>Comfortable is the conformant default</strong>, and Compact and Dense are an informed
+      opt-out that the settings screen should label as such. Claiming blanket AA while shipping 20px rows
+      would be the kind of accessibility statement that is technically a lie.
+    </p>
+  </div>
 
   <h3>Type</h3>
   <p>
@@ -1543,12 +1740,44 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <thead><tr><th>Key</th><th>Action</th><th>Key</th><th>Action</th></tr></thead>
     <tbody>
       <tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td>Fuzzy palette</td><td><kbd>Alt</kbd>+<kbd>1..9</kbd></td><td>Named workspace</td></tr>
-      <tr><td><kbd>Ctrl</kbd>+<kbd>/</kbd></td><td>Provenance mode</td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>1..6</kbd></td><td>Link channel</td></tr>
+      <tr><td><kbd>F9</kbd></td><td>Provenance mode</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>1..6</kbd></td><td>Link channel</td></tr>
       <tr><td><kbd>Alt</kbd>+<kbd>P</kbd></td><td><strong>Freeze all live updates</strong></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td><td>Density mode</td></tr>
-      <tr><td><kbd>Ctrl</kbd>+<kbd>J</kbd></td><td>Journal quick-capture</td><td><kbd>?</kbd></td><td>Cheat-sheet overlay</td></tr>
-      <tr><td><kbd>F1</kbd></td><td>Command catalogue</td><td><kbd>Esc</kbd></td><td>Cancel / close</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td><td><strong>Fast Market Mode</strong></td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo (global)</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>J</kbd></td><td>Journal quick-capture</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd></td><td>Flag a number as wrong</td></tr>
+      <tr><td><kbd>F1</kbd></td><td>Command catalogue</td><td><kbd>?</kbd></td><td>Cheat-sheet overlay</td></tr>
     </tbody>
   </table></div>
+
+  <div class="call crit">
+    <p class="call-h">A binding bug in my first draft</p>
+    <p>
+      I originally bound link channels to <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>1..6</kbd> and provenance mode to
+      <kbd>Ctrl</kbd>+<kbd>/</kbd>. Both are wrong on a UK keyboard, which is presumably yours.
+      <strong>AltGr emits Ctrl+Alt on international layouts</strong> — Microsoft's own guidance is to avoid
+      Ctrl+Alt as a shortcut modifier — so AltGr+4 (the € sign) would have fired a link-channel change. And
+      <kbd>Ctrl</kbd>+<kbd>Space</kbd>, the obvious binding for a command line, is the IME toggle on CJK
+      layouts. Corrected above. A <strong>keyboard layout guard</strong> that detects the active layout at
+      first run and on change, and warns about collisions, is about twenty lines of code and belongs in v1.
+    </p>
+  </div>
+
+  <div class="call">
+    <p class="call-h">Three interaction modes the draft was missing</p>
+    <ul>
+      <li><strong>Fast Market Mode.</strong> The design optimises for sustained reading and never for peak
+          cognitive load. One key collapses to three pinned panels — chart, tape, alerts — suspends every
+          inference surface, kills animation, and widens rows. Density and fourteen semantic hues are
+          actively counterproductive in the ninety seconds that decide an outcome.</li>
+      <li><strong>Global undo.</strong> A keyboard-first design with single-key destructive verbs and no undo
+          is a trap. One bus covering watchlist edits, alert deletion, layout resets and journal merges.</li>
+      <li><strong>Trust incident log.</strong> Flag any number as "looks wrong" and capture its value, full
+          provenance chain and panel command into a local list. The product's central claim is auditability;
+          this is the only feedback loop that tests whether the provenance design actually works. Every entry
+          is either a data bug or a design bug.</li>
+      <li><strong>"Why not?" alert tracer.</strong> The plan argues an alert with an invisible evaluation
+          clock is undebuggable, then ships only the firing case. The non-firing case is what destroys trust.</li>
+    </ul>
+  </div>
 
   <div class="call">
     <p class="call-h">Freeze is mandatory, not a nicety</p>
@@ -1583,14 +1812,26 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   <div class="call warn">
     <p class="call-h">Where this estimate will be wrong</p>
     <p>
-      The research put a solo build at 80–125 engineer-weeks to v1; I have it at ~66 because single-user
-      removes accounts, billing, onboarding-for-strangers and multi-tenant security. I would still treat 66 as
-      optimistic. The modules that habitually run 3–5× their estimate in this product class are, in order:
-      <strong>symbology and corporate actions</strong> (endless edge cases, no glory), <strong>charting</strong>
-      (the last 10% of interaction polish is half the work), <strong>real-time infrastructure</strong>
-      (reconnect, gap-fill, backpressure), and <strong>entitlements</strong>. Budget accordingly, and note that
-      Phase 1 is deliberately sequenced before charting so that if the project stalls you still own the thing
-      nobody else has.
+      I first put v1 at ~66 engineer-weeks against the research's 80–125. The feasibility critic went at a
+      fuller version of this scope and returned <strong>380–520 engineer-weeks</strong> — arguing that at a
+      realistic solo throughput of about 0.65 productive weeks per calendar week, that is over a decade.
+    </p>
+    <p>
+      That number is for a considerably larger feature set than the one above, so I do not accept it directly.
+      But the direction is right and I was too optimistic. <strong>Treat the table as ~66 weeks of
+      <em>irreducible</em> work and assume a 1.6–2.5× multiplier until you have measured your own</strong> —
+      so roughly <strong>105–165 weeks to v1</strong>, with the MVP at 34 weeks becoming 55–85. The modules
+      that habitually run 3–5× over are, in order: <strong>symbology and corporate actions</strong> (endless
+      edge cases, no glory), <strong>charting</strong> (the last 10% of interaction polish is half the work),
+      <strong>real-time infrastructure</strong>, and <strong>entitlements</strong>.
+    </p>
+    <p>
+      Three cheap mechanisms make this self-correcting rather than a guess: an <strong>effort ledger</strong>
+      recording estimated versus actual per feature, so your real multiplier is known after about ten features;
+      a <strong>feature ceiling with a displacement rule</strong> — past roughly 120 shipped features, solo
+      maintenance consumes the entire year, so every addition must retire something; and a <strong>hardware
+      line in the budget</strong>, which the cost table omits entirely despite committing to GPU chart panes
+      and a large local lake.
     </p>
   </div>
 
@@ -1616,6 +1857,11 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <tr><td class="nm">Scope collapse under solo build</td><td><span class="p1">MED</span></td><td>Phase 1 before charting. Ship the differentiator first.</td></tr>
       <tr><td class="nm">Pack channel compromise</td><td><span class="p1">MED</span></td><td>Ed25519 verification fails closed; key never in the binary; rollback one click.</td></tr>
       <tr><td class="nm">AI inference read as fact</td><td><span class="p1">MED</span></td><td>Structural surface separation plus uncited-claim striking. Worth watching in real use — this is the failure mode that costs money, and no amount of visual design fully eliminates it.</td></tr>
+      <tr><td class="nm">Query-sandbox escape</td><td><span class="p0">HIGH</span></td><td>Model-authored SQL reaching an unhardened DuckDB is arbitrary read and exfiltration from a hostile filing. Read-only connection, no extensions, no external FS or network, allow-listed views, AST check. Must be in from day one.</td></tr>
+      <tr><td class="nm">Data protection on third parties</td><td><span class="p1">MED</span></td><td>The insider archive profiles named individuals. Keep a register, set retention, do not infer personal attributes. The household exemption is read narrowly.</td></tr>
+      <tr><td class="nm">Loss of irreplaceable local data</td><td><span class="p1">MED</span></td><td>Journal and theses sealed behind a hardware-bound key with no backup path. Passphrase-KDF backup plus a tested restore.</td></tr>
+      <tr><td class="nm">Model deprecation mid-build</td><td><span class="p1">MED</span></td><td>Multi-year build, faster deprecation cycle. Pin model IDs, inventory model-specific behaviours, gate swaps behind re-eval. Never make one model's behaviour a security invariant.</td></tr>
+      <tr><td class="nm">Maintenance exceeds capacity</td><td><span class="p1">MED</span></td><td>Feature ceiling with a displacement rule. Past ~120 features, solo upkeep consumes the year.</td></tr>
       <tr><td class="nm">23×5 session change, Dec 2026</td><td><span class="p2">LOW</span></td><td>Session-as-interval from the start. Cheap now, expensive to retrofit.</td></tr>
     </tbody>
   </table></div>
@@ -1633,7 +1879,34 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <li><strong>Do you want the FX charting after all?</strong> I have argued for FX as macro/positioning
         context. Say the word and I will add the charting surface — I just will not pretend it is a
         differentiator.</li>
+    <li><strong>Where are you resident?</strong> The plan assumes UK. If you are EU-resident, some EU AI Act
+        transparency duties may attach even at one user, because building software for your own use can make
+        you its provider. If UK, that regime does not apply to you at all. It is a small change to the plan
+        and a large change to the answer.</li>
   </ol>
+
+  <h3>What the adversarial review changed</h3>
+  <p>
+    Four red-team passes ran against this plan — completeness, feasibility and cost, security and legal, and
+    UX. They returned 121 gaps and 42 corrections. The ones that changed a conclusion rather than adding
+    detail:
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>I had written</th><th>Corrected to</th></tr></thead>
+    <tbody>
+      <tr><td>The advice perimeter switches on when a second <em>user</em> appears.</td><td>It switches on at a second <em>person's money or eyes</em> — a family member's account or a forwarded AI output crosses it with zero extra installs.</td></tr>
+      <tr><td>Professional status is essentially the LLC question.</td><td>Employment in a covered role, regulatory registration, or any business purpose each trigger it independently.</td></tr>
+      <tr><td>The incentives pillar is $0 including non-US regimes.</td><td>Free for US and EU registers only. UK RNS is commercial; EDINET needs a key; SEDI has no bulk API.</td></tr>
+      <tr><td>Link channels on <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>1..6</kbd>.</td><td>Broken on UK layouts — AltGr emits Ctrl+Alt. Moved to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>.</td></tr>
+      <tr><td>Dense rows and WCAG AA.</td><td>Only the 28px comfortable row meets the target-size criterion. Dense modes are an informed opt-out.</td></tr>
+      <tr><td>Code signing is a SmartScreen convenience.</td><td>It is the only runtime integrity check on the binary — a supply-chain control.</td></tr>
+      <tr><td>VBS/TPM key isolation defeats the infostealer.</td><td>It defeats key <em>theft</em>, not key <em>use</em>. Malware as you can still drive the decryption oracle.</td></tr>
+      <tr><td>NL→SQL is safe because the model never produces the rows.</td><td>Unhardened DuckDB turns that path into arbitrary read and exfiltration.</td></tr>
+      <tr><td>Crawl EDGAR for Form 4 history.</td><td>SEC DERA publishes it flattened back to 2006. Minutes, not weeks.</td></tr>
+      <tr><td>~66 engineer-weeks to v1.</td><td>105–165, pending your own measured multiplier.</td></tr>
+      <tr><td>Token and API constraints stated as fact.</td><td>Downgraded to unverified. Baseline empirically before budgeting.</td></tr>
+    </tbody>
+  </table></div>
 
   <div class="call dec">
     <p class="call-h">If a second person ever uses this</p>
@@ -1649,9 +1922,11 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 
 <p class="foot">
   Argus · design plan v0.1 · 2026-08-25 · plan only, nothing built.<br>
-  Sources: 8 domain research dossiers, 201 findings, live-verified 2026-08-24. Prices, regulations and API
-  terms are time-sensitive and were current at that date. Anything a researcher marked medium or low
-  confidence is flagged in the dossiers and should be re-verified before you contract on it.<br>
+  Sources: 9 domain research dossiers (201 findings, live-verified 2026-08-24) plus four adversarial review
+  passes (121 gaps, 42 corrections). Prices, regulations and API terms are time-sensitive and were current at
+  that date. Claims the review could not corroborate against a primary source are marked as such in the text —
+  the CT Plan wording, the tokenizer and citation-API constraints, and the exchange distribution figure are
+  the load-bearing ones to verify yourself before contracting.<br>
   Mockups use real tickers with illustrative data; no filing, price or person shown is a real record.
 </p>
 
