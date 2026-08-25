@@ -1332,18 +1332,51 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </tbody>
   </table></div>
 
-  <h3>Module 3 · Equities &amp; insiders <span class="p2">OPTIONAL</span></h3>
+  <div class="call dec">
+    <p class="call-h">Which pairs — you said no idea, so I am choosing</p>
+    <p>
+      Start with <strong>five majors plus two metals</strong>: <code>XAUUSD</code>, <code>EURUSD</code>,
+      <code>GBPUSD</code>, <code>USDJPY</code>, <code>AUDUSD</code>, <code>XAGUSD</code>, with DXY as
+      context. Each earns its place by adding a <em>distinct driver axis</em>, not another chart:
+    </p>
+    <ul>
+      <li><strong>XAUUSD</strong> — the stated focus, and the whole physical/official-sector layer.</li>
+      <li><strong>EURUSD</strong> — deepest liquidity and tightest spread; the benchmark everything else is
+          measured against.</li>
+      <li><strong>GBPUSD</strong> — your home currency. You will have native intuition for the news flow, and
+          the Bank of England gives you Bank Rate, SONIA, gilts and the effective index free.</li>
+      <li><strong>USDJPY</strong> — the cleanest expression of rate differentials and carry, and the main
+          channel through which real yields reach gold.</li>
+      <li><strong>AUDUSD</strong> — the risk and commodity proxy, and the most gold-correlated major, since
+          Australia is a major producer.</li>
+      <li><strong>XAGUSD</strong> — silver, mainly for the gold/silver ratio as a regime signal.</li>
+    </ul>
+    <p>
+      <strong>Why this is less limiting than it looks:</strong> the expensive part of a pair is not the chart,
+      it is the driver stack — curve sources, OIS-implied path, dossier, correlation history. But
+      <em>crosses are combinations of majors</em>. Cover EUR, GBP, JPY and AUD against USD and you have the
+      inputs for EURGBP, EURJPY, GBPJPY, AUDJPY and the rest without a second driver build. Seven instruments
+      of work, a much larger tradeable set.
+    </p>
+    <p>
+      Revisit once you have traded with it for a month. Adding a pair should be a deliberate act with a
+      written reason, not drift.
+    </p>
+  </div>
+
+  <h3>Module 3 · Equities &amp; insiders <span class="p0">FULL KIT</span></h3>
   <p>
-    This was the flagship in v0.1. Given FX and gold are what you trade, it is now optional — but it is not
-    wasted, and I would still build a reduced version for two reasons. First, <strong>gold miners are a real
-    sentiment channel</strong>: hedge books and insider transactions at forty producers tell you what the
-    people closest to the metal are doing. Second, the filings engine is the same machinery either way.
+    You asked for the full kit, so it is in scope in full — every module below, plus the additions the red
+    team found. That is the right call for the <em>destination</em>. It cannot be the v1 <em>scope</em>,
+    because equities and gold/FX are close to two products sharing a shell, and building both at once means
+    shipping neither for years. See <a href="#plan">PLAN</a> for the sequencing.
   </p>
   <p>
-    <strong>My recommendation:</strong> build the Form 4 decoder, conviction score and cluster radar, but point
-    them at a gold-miner universe rather than the whole market — roughly a third of the original effort for
-    most of the value <em>to you</em>. The full equity module below stays in the plan for reference and can be
-    switched on later; nothing about it is thrown away.
+    The sequencing has a natural seam that costs you nothing: <strong>build the equity engine miner-first.</strong>
+    Gold producers are simultaneously the bridge into the gold thesis (hedge books and insider transactions at
+    the companies closest to the metal) and a small, real universe to harden the pipeline against — about
+    forty names instead of six thousand. Every component is identical; only the universe is smaller. When it
+    is solid, widening to the full market is a configuration change and a backfill, not a rewrite.
   </p>
 
   <h4>The full equity insider module, for reference</h4>
@@ -1398,6 +1431,35 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <tr><td><span class="p2">P2</span></td><td class="nm">Peer-Set Auto-Construction</td><td>Peer sets from the free <code>frames</code> API — 3,555 entities in one call.</td><td class="mono">XBRL frames</td><td class="n mono">M</td></tr>
     </tbody>
   </table></div>
+
+  <h3>Intraday and swing, as two explicit modes</h3>
+  <p>
+    You trade both, which is a design constraint rather than a preference. The failure mode is a single
+    compromise UI that serves neither. The answer is two <em>modes</em> sharing one shell, command line and
+    linking model — and being honest that the positioning layer belongs to only one of them.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th></th><th>Intraday</th><th>Swing / research</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Primary question</td><td>What is happening in this session?</td><td>What regime am I in, and who is positioned?</td></tr>
+      <tr><td class="nm">Data cadence</td><td>Streaming ticks, seconds to minutes</td><td>Weekly COT, monthly vaults, quarterly filings</td></tr>
+      <tr><td class="nm">Core panels</td><td>Price, spread monitor, session clock, ATR/opening range, news-time countdown, level context</td><td>Cohort positioning, physical stocks, official sector, driver regime, filings</td></tr>
+      <tr><td class="nm">Alert class</td><td>Fast: price, volatility, spread blowout, session boundary</td><td>Slow: scheduled release, percentile threshold crossed, new filing</td></tr>
+      <tr><td class="nm">Journal shape</td><td>R-multiple, entry/exit, execution quality</td><td>Thesis card with invalidation condition, reviewed over weeks</td></tr>
+      <tr><td class="nm">AI role</td><td>Mostly silent. Fast Market Mode suspends inference surfaces entirely.</td><td>Full: regime read, thesis red-team, filing redline, morning brief</td></tr>
+    </tbody>
+  </table></div>
+  <p>
+    <strong>The honest boundary:</strong> COT is three days stale and vault data is monthly, so the positioning
+    and physical layer is <em>context you carry into</em> an intraday session, never an intraday signal. The
+    mode split exists partly to stop that data appearing where it would be misread as timing.
+  </p>
+  <p>
+    Intraday adds one feature that matters specifically on a CFD account and was not in the earlier draft: a
+    <strong>spread monitor</strong>. IC's spread widens at rollover and around releases, and on XAUUSD that
+    movement is a material share of a short-horizon edge. Charting your own broker's spread by time-of-day,
+    with the multiplied-swap day marked, tells you when your costs are structurally worst.
+  </p>
 
   <h3>Supporting modules · condensed</h3>
   <div class="tw"><table class="d">
@@ -1604,6 +1666,23 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </ul>
   </div>
 
+  <div class="call dec">
+    <p class="call-h">Python bridge or MQL5 pipe — you said you did not mind, so: Python</p>
+    <p>
+      It is MetaQuotes' own package, it is documented, and it gives you <code>copy_ticks_range</code> and the
+      server-side history download directly. The MQL5 pipe alternative has no documented async support, which
+      makes robust reconnect genuinely awkward — and reconnect is the thing that has to work at 3am, not the
+      thing that has to be elegant.
+    </p>
+    <p>
+      <strong>Ship it without a Python dependency on your machine.</strong> Bundle the embeddable Python
+      distribution and a pinned <code>MetaTrader5</code> package inside the application directory, launch it
+      as a child process, and talk to it over local IPC. No system Python, no PATH surprises, no version drift,
+      and the whole thing is deleted when you uninstall. The bridge sits behind an interface, so swapping to
+      an MQL5 pipe later is a contained change if the Python process ever annoys you.
+    </p>
+  </div>
+
   <h4>What MT5 gives you that cTrader could not</h4>
   <p>
     One clear win: <strong>the one-week tick cap disappears.</strong> MT5 downloads real tick history from the
@@ -1722,35 +1801,37 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 
   <h3>What this actually costs</h3>
   <p>
-    This is the headline change from v0.1. The gold and FX incentives layer is <strong>almost entirely free at
-    origin</strong>, because it is public regulatory and official-sector data rather than licensed exchange
-    feeds. Your price feed is your own broker's, which you already have.
+    Two figures, because the full kit changes the answer. The gold and FX layer is essentially free; the full
+    equity module is not, mainly because intraday equities need real-time prices and any credible estimate
+    work needs point-in-time consensus.
   </p>
 
   <div class="tw"><table class="d">
-    <thead><tr><th>Component</th><th>Source</th><th>Cadence</th><th class="n">Cost</th></tr></thead>
+    <thead><tr><th>Component</th><th>Source</th><th class="n">Gold + FX only</th><th class="n">Full kit</th></tr></thead>
     <tbody>
-      <tr><td class="nm">FX + XAUUSD quotes</td><td class="mono">IC Markets MT5 via read-only bridge (deep tick history included)</td><td class="mono">streaming</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">Official FX reference</td><td class="mono">ECB Data Portal</td><td class="mono">daily fix</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">Gold benchmarks</td><td class="mono">LBMA auction prices</td><td class="mono">2× daily</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">Positioning</td><td class="mono">CFTC COT + Bank Participation (Socrata)</td><td class="mono">weekly / monthly</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">Physical stocks</td><td class="mono">CME warehouse reports, LBMA vault data</td><td class="mono">daily / monthly</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">ETF &amp; official sector</td><td class="mono">World Gold Council, IMF IFS, issuer files</td><td class="mono">daily / weekly / monthly</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">Physical flow</td><td class="mono">Swiss customs (SwissImpex), Shanghai Gold Exchange</td><td class="mono">monthly / daily</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">Rates &amp; macro</td><td class="mono">FRED/ALFRED, Bank of England database, ECB, BIS</td><td class="mono">daily</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">COMEX futures</td><td class="mono">CME settlements (delayed)</td><td class="mono">daily</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">Filings (miner bridge)</td><td class="mono">SEC EDGAR + SEDAR+</td><td class="mono">continuous</td><td class="n mono">$0</td></tr>
-      <tr><td class="nm">FX vol surface</td><td class="mono">vendor — the one awkward gap</td><td class="mono">daily</td><td class="n mono">$0–150</td></tr>
-      <tr><td class="nm">AI layer</td><td class="mono">Claude API, batched overnight</td><td class="mono">nightly + interactive</td><td class="n mono">$60–250</td></tr>
-      <tr><td><strong>Realistic monthly</strong></td><td class="mono">everything above</td><td class="mono">—</td><td class="n mono"><strong>$60–250</strong></td></tr>
+      <tr><td class="nm">FX + metals quotes</td><td class="mono">IC Markets MT5 bridge</td><td class="n mono">$0</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Positioning</td><td class="mono">CFTC COT + Bank Participation</td><td class="n mono">$0</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Physical &amp; official sector</td><td class="mono">CME, LBMA, WGC, IMF, Swiss customs, SGE</td><td class="n mono">$0</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Rates &amp; macro</td><td class="mono">FRED/ALFRED, Bank of England, ECB, BIS</td><td class="n mono">$0</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Filings &amp; insiders</td><td class="mono">SEC EDGAR + DERA bulk, N-PX, global short registers</td><td class="n mono">$0</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">US equity real-time</td><td class="mono">vendor, non-professional rate</td><td class="n mono">—</td><td class="n mono">$79–199</td></tr>
+      <tr><td class="nm">Nasdaq depth (non-pro)</td><td class="mono">TotalView via vendor</td><td class="n mono">—</td><td class="n mono">$15</td></tr>
+      <tr><td class="nm">Consensus estimates</td><td class="mono">vendor — the one unavoidable paid dataset</td><td class="n mono">—</td><td class="n mono">$50–100</td></tr>
+      <tr><td class="nm">Borrow / short</td><td class="mono">ORTEX (optional; free registers cover much of it)</td><td class="n mono">—</td><td class="n mono">$0–149</td></tr>
+      <tr><td class="nm">AI layer</td><td class="mono">Claude API, batched overnight</td><td class="n mono">$60–250</td><td class="n mono">$120–350</td></tr>
+      <tr><td><strong>Monthly</strong></td><td class="mono">—</td><td class="n mono"><strong>$60–250</strong></td><td class="n mono"><strong>$264–813</strong></td></tr>
     </tbody>
   </table></div>
 
   <p>
-    Effectively <strong>the entire data cost of this product is the AI layer</strong>. That is a much better
-    place to be than v0.1, where real-time equity depth and consensus estimates dominated the bill. It also
-    means you can build and run the full positioning and physical stack for nothing while you decide whether
-    the AI spend is worth it.
+    <strong>Non-professional status is what keeps the full-kit column survivable.</strong> The same real-time
+    entitlements at professional rates would multiply the market-data lines several-fold. Keep the entitlement
+    console honest, and re-check status if you ever incorporate or take a covered role.
+  </p>
+  <p>
+    Note the ordering this implies: <strong>you can build and run the entire gold and FX product for the price
+    of the AI layer alone</strong>, and only start paying market-data fees when the equity module actually
+    ships. That is a good reason to sequence it the way the roadmap does.
   </p>
 
   <h3>Time-sensitive facts a naive gold or FX plan gets wrong</h3>
@@ -2159,67 +2240,70 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     <span class="sec-note">honest numbers, not encouraging ones</span></div>
 
   <div class="tw"><table class="d">
-    <thead><tr><th>Phase</th><th>Ships</th><th class="n">Eng-wks</th><th>Proves</th></tr></thead>
+    <thead><tr><th>Phase</th><th>Ships</th><th class="n">Eng-wks</th><th class="n">Cumulative</th><th>Why here</th></tr></thead>
     <tbody>
-      <tr><td class="nm">0 · Walking skeleton</td><td>WPF shell, docking, one workspace, broker FX/XAUUSD stream, DuckDB/SQLite store, provider abstraction, release-calendar scheduler.</td><td class="n mono">6</td><td>The stack holds together.</td></tr>
-      <tr><td class="nm">1 · The pillar</td><td>Full positioning and physical layer: COT cohorts with percentiles, producer hedge decoder, Bank Participation, COMEX and LBMA stocks, ETF and official-sector tracking, physical flow, four-venue price panel, driver regime panel. <strong>The Gold Desk.</strong></td><td class="n mono">12</td><td>The reason the product exists — and it costs $0 in data to run.</td></tr>
-      <tr><td class="nm">2 · MVP</td><td>FX desk: driver stack, FX positioning, session engine, sterling rates panel, correlation matrix. Charting, watchlists, alerts on release and percentile conditions.</td><td class="n mono">12</td><td>Daily-usable across both markets. <strong>~30 weeks to here.</strong></td></tr>
-      <tr><td class="nm">3 · Knowledge layer</td><td>Pack schema, authoring job, signing and distribution, hot-load, claim diff, evidence-locked answers, golden-set gate. Packs: pair dossiers, gold regime histories, event playbooks, central-bank reaction functions.</td><td class="n mono">12</td><td>The differentiator that is hardest to copy.</td></tr>
-      <tr><td class="nm">4 · v1</td><td>Macro and calendar, journal and thesis cards, The Book, backup and escrow, diagnostics, accessibility pass, miner bridge (Form 4 decoder over ~40 producers).</td><td class="n mono">16</td><td>Complete product. <strong>~58 weeks total.</strong></td></tr>
-      <tr><td class="nm">5 · v2</td><td>Silver and ratio desk, vol surface, full equity insider module if wanted, entity graph, replay.</td><td class="n mono">20+</td><td>Optional depth.</td></tr>
+      <tr><td class="nm">0 · Skeleton</td><td>WPF shell, docking, MT5 Python bridge (bundled embeddable runtime), DuckDB/SQLite store, provider abstraction, release-calendar scheduler, tick recorder running.</td><td class="n mono">7</td><td class="n mono">7</td><td>The recorder starts now because tick history you did not capture is gone.</td></tr>
+      <tr><td class="nm">1 · Gold desk</td><td>COT cohorts with percentiles, producer hedge decoder, Bank Participation, COMEX and LBMA stocks, ETF and official-sector tracking, physical flow, four-venue price panel, driver regime panel.</td><td class="n mono">12</td><td class="n mono">19</td><td>Your stated focus, free data, and the thing nobody sells. Usable on its own.</td></tr>
+      <tr><td class="nm">2 · Intraday</td><td>Session engine, spread monitor, ATR and opening range, fast alerts, Fast Market Mode, charting, the seven instruments, journal with R-multiples.</td><td class="n mono">11</td><td class="n mono">30</td><td>Makes it a daily tool rather than a research toy. <strong>First genuinely complete product.</strong></td></tr>
+      <tr><td class="nm">3 · FX drivers</td><td>Driver stacks for the five majors, FX positioning, sterling rates panel, correlation and regime matrix, macro calendar with vintages.</td><td class="n mono">10</td><td class="n mono">40</td><td>Swing half of the FX book. Still $0 in data.</td></tr>
+      <tr><td class="nm">4 · Knowledge layer</td><td>Pack schema, authoring job, signing, hot-load, claim diff, evidence-locked answers, golden-set gate, thesis cards.</td><td class="n mono">12</td><td class="n mono">52</td><td>Hardest to copy, and it needs real surfaces underneath it to be worth anything.</td></tr>
+      <tr><td class="nm">5 · Insiders, miner-first</td><td>EDGAR pipeline, DERA bulk load, Form 4 decoder, footnote resolver, conviction score, cluster radar, 10b5-1 forensics, distress-sale detector — over ~40 gold producers. Hedge-book reader.</td><td class="n mono">16</td><td class="n mono">68</td><td>Full engine, small universe. Hardens the pipeline and feeds the gold thesis at the same time.</td></tr>
+      <tr><td class="nm">6 · Equities, full market</td><td>Universe widening and backfill, XBRL point-in-time model, ownership map, short pressure, N-PX voting, dilution watch, comment letters, pay-for-metric, filing diff, quality-of-earnings, screeners.</td><td class="n mono">30</td><td class="n mono">98</td><td>Where the market-data bill starts. Configuration and backfill, not a rewrite.</td></tr>
+      <tr><td class="nm">7 · Full kit</td><td>Global insider desk (six regimes), person and entity graph, segment workbench, comp peer graph, governance timeline, valuation and capital allocation, KPI ledger, credit, funds/ETFs, replay.</td><td class="n mono">40+</td><td class="n mono">138+</td><td>The destination you asked for.</td></tr>
     </tbody>
   </table></div>
 
-  <div class="call warn">
-    <p class="call-h">Where this estimate will be wrong</p>
+  <div class="call crit">
+    <p class="call-h">The number you need to hear before you commit to the full kit</p>
     <p>
-      Refocusing on gold and FX cut real scope, not just presentation: no XBRL financial model, no equity
-      symbology and corporate-actions layer, no consensus estimates, no market-wide universe. Those were four
-      of the five things most likely to overrun. The v1 figure drops from ~66 to ~58 irreducible weeks, and
-      the risky portion of it shrinks considerably.
+      138 engineer-weeks is the <strong>irreducible</strong> figure — the work assuming nothing goes wrong.
+      Apply the honest multiplier for a solo build (1.6–2.5×, until you have measured your own) and the full
+      kit is <strong>220–345 engineer-weeks</strong>. At a realistic solo throughput of roughly 0.65 productive
+      weeks per calendar week, that is <strong>six to ten years</strong>.
     </p>
     <p>
-      The feasibility critic went at a fuller version of the old scope and returned <strong>380–520
-      engineer-weeks</strong>, arguing that at a realistic solo throughput of about 0.65 productive weeks per
-      calendar week that is over a decade.
+      I am not saying that to talk you out of it. I am saying it because "full kit" as a <em>destination</em>
+      is a perfectly good answer, and as a <em>v1 scope</em> it guarantees you spend three years without a
+      working tool. The sequencing above exists so that every phase boundary is a usable product:
+    </p>
+    <ul>
+      <li><strong>Phase 2 — about 30 irreducible weeks, call it 48–75 real.</strong> A complete gold and FX
+          desk, intraday and swing, running on free data. If you build nothing else, this is already something
+          you cannot buy.</li>
+      <li><strong>Phase 4 — about 52 weeks, call it 83–130 real.</strong> Adds the knowledge layer. This is
+          the natural "finished" point for the FX and gold product.</li>
+      <li><strong>Phase 5 — about 68 weeks.</strong> The insider engine exists, proven on miners, feeding
+          gold. Widening it later is a decision you make with the tool already in hand.</li>
+    </ul>
+    <p>
+      The modules that habitually run 3–5× over, in order: <strong>equity symbology and corporate
+      actions</strong> (endless edge cases, no glory — and it only appears in Phase 6, which is another reason
+      to put it there), <strong>charting</strong>, <strong>the MT5 bridge's reconnect and gap-fill</strong>,
+      and <strong>the release-calendar scheduler</strong>, which looks trivial and is not.
     </p>
     <p>
-      That number is for a considerably larger feature set than the one above, so I do not accept it directly.
-      But the direction is right and I was too optimistic. <strong>Treat the table as ~66 weeks of
-      <em>irreducible</em> work and assume a 1.6–2.5× multiplier until you have measured your own</strong> —
-      so roughly <strong>93–145 weeks to v1</strong>, with the MVP at 30 weeks becoming 48–75. The modules
-      that habitually run 3–5× over are, in order: <strong>charting</strong> (the last 10% of interaction
-      polish is half the work), <strong>real-time infrastructure</strong> (reconnect, gap-fill, backpressure),
-      and <strong>the release-calendar scheduler</strong>, which looks trivial and is not — DST, holidays,
-      delayed publications and revised vintages all land here.
-    </p>
-    <p>
-      Three cheap mechanisms make this self-correcting rather than a guess: an <strong>effort ledger</strong>
-      recording estimated versus actual per feature, so your real multiplier is known after about ten features;
-      a <strong>feature ceiling with a displacement rule</strong> — past roughly 120 shipped features, solo
-      maintenance consumes the entire year, so every addition must retire something; and a <strong>hardware
-      line in the budget</strong>, which the cost table omits entirely despite committing to GPU chart panes
-      and a large local lake.
+      Keep the effort ledger from week one. After ten features your real multiplier is known, and every number
+      above becomes a calculation instead of my guess.
     </p>
   </div>
 
-  <h3>What I would cut first</h3>
+  <h3>If it has to be smaller</h3>
   <p>
-    If this has to be smaller: drop the equity module entirely, drop silver, drop the vol surface, drop chart
-    replay. The minimum slice that still delivers the differentiating value is <strong>Phase 0 plus Phase
-    1</strong> — about 18 weeks — because an integrated positioning, physical and regime desk for gold is
-    already something nobody sells, and it runs on free data.
+    The minimum slice that still delivers something nobody sells you is <strong>Phase 0 plus Phase 1 — about
+    19 irreducible weeks</strong>, on free data: an integrated positioning, physical and regime desk for gold.
+    Add Phase 2 and you have a daily tool for both timeframes.
   </p>
   <p>
-    That is a meaningfully better position than v0.1 offered. The old minimum slice was 26 weeks and carried a
-    real monthly data bill before it showed you anything. This one is shorter, cheaper, and the thing it
-    proves first is the thing you would actually use every day.
+    Things I would drop before dropping anything above: silver, the vol surface, chart replay, the segment
+    workbench, funds and ETFs, and the non-US legs of the global insider desk — UK RNS is a commercial feed
+    and Canada and India have no bulk API, so those three are disproportionately expensive for what they
+    return.
   </p>
 </section>
 
 <section id="risk">
-  <div class="sec-head"><span class="sec-mn">RISK</span><h2>Risks &amp; open questions</h2>
-    <span class="sec-note">what I would want answered before writing code</span></div>
+  <div class="sec-head"><span class="sec-mn">RISK</span><h2>Risks &amp; decisions</h2>
+    <span class="sec-note">everything blocking is now settled</span></div>
 
   <div class="tw"><table class="d">
     <thead><tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr></thead>
@@ -2242,27 +2326,44 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </tbody>
   </table></div>
 
-  <h3>Open questions for you</h3>
+  <h3>Decisions taken</h3>
   <p>
-    The three that mattered most are now answered — <strong>non-professional, UK, FX and XAUUSD</strong> —
-    and each closed favourably. What is left is narrower.
+    Everything that was blocking is now settled. Recording them here because a plan whose assumptions are
+    invisible is a plan nobody can argue with later.
   </p>
-  <ol>
-    <li><strong>How much of the equity insider engine do you actually want?</strong> My recommendation is the
-        reduced version: Form 4 decoder, conviction score and cluster radar pointed at a gold-miner universe,
-        as a sentiment channel into gold. That is roughly a third of the effort. Say if you want the full
-        market version instead — it is a real fork in the roadmap, not a setting.</li>
-    <li><strong>Which pairs, and how many?</strong> A sterling-centric book (GBP crosses plus EURUSD, USDJPY,
-        XAUUSD) is a materially smaller build than global coverage, mainly because each pair's driver stack
-        needs its own curve sources and its own dossier.</li>
-    <li><strong>Do you want the Python dependency, or an MQL5 pipe?</strong> The official Python bridge is the
-        supported, best-documented path and I would start there. An MQL5 service pushing over a named pipe
-        removes the Python process at the cost of clumsier reconnect handling. Not urgent — the bridge sits
-        behind an interface either way, so this is swappable later.</li>
-    <li><strong>Intraday or swing?</strong> The positioning and physical layer is inherently multi-day — COT
-        is weekly, vault data monthly. If you are trading XAUUSD intraday, that layer is context rather than
-        signal, and the balance of the workspaces should shift toward session structure and the driver panel.</li>
-  </ol>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Question</th><th>Answer</th><th>Consequence</th></tr></thead>
+    <tbody>
+      <tr><td>Subscriber status</td><td class="nm">Non-professional</td><td>Full-kit market data stays affordable. Re-check if you incorporate or take a covered role.</td></tr>
+      <tr><td>Jurisdiction</td><td class="nm">UK</td><td>EU AI Act out of scope. UK data protection still applies to the person graph.</td></tr>
+      <tr><td>Markets</td><td class="nm">FX + XAUUSD, equities in full</td><td>Two products sharing a shell. Sequenced, not parallel.</td></tr>
+      <tr><td>Broker / platform</td><td class="nm">IC Markets, MT5</td><td>Bundled Python bridge. A logged-in terminal is a standing threat-model assumption.</td></tr>
+      <tr><td>Bridge</td><td class="nm">Python <span class="mut">(my call)</span></td><td>Embeddable runtime shipped inside the app. Swappable behind an interface.</td></tr>
+      <tr><td>Instruments</td><td class="nm">7 <span class="mut">(my call)</span></td><td>XAUUSD, EURUSD, GBPUSD, USDJPY, AUDUSD, XAGUSD, DXY context. Crosses derive from these.</td></tr>
+      <tr><td>Timeframes</td><td class="nm">Intraday and swing</td><td>Two explicit modes, one shell. Positioning data is context, never an intraday signal.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The one question left</h3>
+  <p>
+    Not a technical one. <strong>Is this a tool you want, or a project you want?</strong> Those need different
+    plans and both are legitimate.
+  </p>
+  <p>
+    If it is a tool — you want something that makes you better at trading gold and FX — then stop at Phase 2,
+    or Phase 4 with the knowledge layer, and treat the equity kit as something you may never actually need.
+    Roughly a year of real solo effort for a desk that does not exist commercially.
+  </p>
+  <p>
+    If it is a project — you want to build the thing, and the trading is partly the excuse — then the full kit
+    is a fine multi-year endeavour and the sequencing above still holds, because every phase leaves you with
+    something working rather than a half-finished cathedral.
+  </p>
+  <p>
+    <strong>Tell me which and I will re-cut the plan to match.</strong> The difference is not what gets built
+    first — that order is right either way — it is how much scaffolding is worth putting in early, how hard
+    the maintenance ceiling binds, and whether the effort ledger is a discipline or a formality.
+  </p>
 
   <h3>What the adversarial review changed</h3>
   <p>
