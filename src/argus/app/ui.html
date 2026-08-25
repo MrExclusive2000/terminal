@@ -1,0 +1,180 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Argus</title>
+<style>
+:root{--bg:#0C1013;--p:#12181A;--p2:#171F21;--l:#26312F;--l2:#35443F;--fg:#DFE6E4;--fg2:#AEBAB7;--fg3:#8B9996;
+--acc:#35B5A8;--up:#5B9DEA;--dn:#E0913F;--warn:#E0A44B;--crit:#E0707E;--ai:#B49BE8;
+--mono:"Cascadia Mono",Consolas,ui-monospace,monospace;--sans:"Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:13px}
+.top{display:flex;align-items:center;gap:14px;background:var(--p);border-bottom:1px solid var(--l);padding:7px 12px;font-family:var(--mono);font-size:11px}
+.top b{font-family:var(--sans);font-size:14px;letter-spacing:.06em;text-transform:uppercase}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
+.ok{background:var(--acc)}.bad{background:var(--crit)}.wn{background:var(--warn)}
+.grid{display:grid;grid-template-columns:300px 1fr 1fr;gap:1px;background:var(--l);height:calc(100vh - 35px)}
+@media(max-width:1100px){.grid{grid-template-columns:1fr;height:auto}}
+.pane{background:var(--p);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.hd{background:var(--p2);border-bottom:1px solid var(--l);padding:6px 10px;font-family:var(--mono);font-size:10px;
+letter-spacing:.09em;text-transform:uppercase;color:var(--fg2);display:flex;gap:8px;align-items:center}
+.hd b{color:var(--fg)}.hd .r{margin-left:auto;color:var(--fg3);text-transform:none;letter-spacing:0}
+.bd{padding:10px;overflow-y:auto;flex:1;min-height:0}
+label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);margin:0 0 3px}
+input,select,button,textarea{width:100%;background:#0A0E10;border:1px solid var(--l2);border-radius:2px;color:var(--fg);
+font-family:var(--mono);font-size:13px;padding:6px 7px}
+button{cursor:pointer;background:var(--acc);color:#06201E;border-color:var(--acc);font-weight:600;letter-spacing:.04em}
+button.ghost{background:#0A0E10;color:var(--fg2);border-color:var(--l2);font-weight:400}
+button:hover{filter:brightness(1.1)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}.row.one{grid-template-columns:1fr}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);font-weight:500;
+padding:4px 6px;border-bottom:1px solid var(--l);background:var(--p2);white-space:nowrap}
+td{padding:4px 6px;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap}
+td.n,th.n{text-align:right}
+tr.sel td{background:rgba(53,181,168,.10);box-shadow:inset 2px 0 0 var(--acc)}
+.u{color:var(--up)}.d{color:var(--dn)}.a{color:var(--acc)}.w{color:var(--warn)}.c{color:var(--crit)}.m{color:var(--fg3)}
+.note{border-left:2px solid var(--warn);background:rgba(224,164,75,.08);padding:7px 9px;margin-top:8px;font-size:12px;color:var(--fg2)}
+.note.bad{border-left-color:var(--crit);background:rgba(224,112,126,.08)}
+.note.ai{border-left-color:var(--ai);background:rgba(180,155,232,.07)}
+#ai{white-space:pre-wrap;line-height:1.6;font-size:13px}
+.big{font-family:var(--sans);font-size:2rem;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+</style></head><body>
+<div class="top">
+  <b>Argus</b>
+  <span id="stMt5"><span class="dot wn"></span>MT5 …</span>
+  <span id="stCot"><span class="dot wn"></span>COT …</span>
+  <span id="stMac"><span class="dot wn"></span>Macro …</span>
+  <span class="m" style="margin-left:auto" id="clock">—</span>
+</div>
+
+<div class="grid">
+  <div class="pane">
+    <div class="hd"><b>Trade</b><span class="r" id="src">—</span></div>
+    <div class="bd">
+      <div class="row one"><div><label>Instrument</label><select id="sym">
+        <option>XAUUSD</option><option>XAGUSD</option><option>EURUSD</option>
+        <option>GBPUSD</option><option>AUDUSD</option><option>USDJPY</option></select></div></div>
+      <div class="row"><div><label>Direction</label><select id="dir"><option value="long">LONG</option><option value="short">SHORT</option></select></div>
+        <div><label>Risk %</label><input id="risk" type="number" step="any" value="1"></div></div>
+      <div class="row"><div><label>Entry (blank=live)</label><input id="entry" type="number" step="any" placeholder="live"></div>
+        <div><label>ATR (blank=live)</label><input id="atr" type="number" step="any" placeholder="live"></div></div>
+      <div class="row"><div><label>Spread (blank=live)</label><input id="spread" type="number" step="any" placeholder="live"></div>
+        <div><label>Balance</label><input id="bal" type="number" step="any" value="25000"></div></div>
+      <div class="row"><div><label>Currency</label><select id="ccy"><option>GBP</option><option>USD</option><option>EUR</option></select></div>
+        <div><label>Quote→acct FX</label><input id="fx" type="number" step="any" value="0.79"></div></div>
+      <div class="row one"><button id="go">REFRESH CARD</button></div>
+      <div id="quote" class="m" style="font-family:var(--mono);font-size:11px;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div class="pane">
+    <div class="hd"><b>Stops &amp; size</b><span class="r">click a row to pick</span></div>
+    <div class="bd">
+      <table><thead><tr><th>Method</th><th class="n">Stop</th><th class="n">Dist</th><th class="n">×ATR</th>
+        <th class="n">Lots</th><th class="n">Risk</th><th class="n">Spr%</th><th>Verdict</th></tr></thead>
+        <tbody id="stops"><tr><td colspan="8" class="m">loading…</td></tr></tbody></table>
+      <div id="warn"></div>
+      <div class="hd" style="margin:12px -10px 0"><b>Targets</b></div>
+      <table><thead><tr><th>R</th><th class="n">Price</th><th class="n">Profit</th></tr></thead>
+        <tbody id="tgts"></tbody></table>
+      <div class="hd" style="margin:12px -10px 0"><b>Positioning</b><span class="r" id="cotAge"></span></div>
+      <table><thead><tr><th>Cohort</th><th class="n">Net</th><th class="n">Δwk</th><th class="n">%ile</th><th>Flag</th></tr></thead>
+        <tbody id="cot"></tbody></table>
+      <div class="hd" style="margin:12px -10px 0"><b>Macro</b></div>
+      <table><thead><tr><th>Series</th><th class="n">Level</th><th class="n">30d</th><th class="n">90d</th></tr></thead>
+        <tbody id="macro"></tbody></table>
+    </div>
+  </div>
+
+  <div class="pane">
+    <div class="hd"><b>Analyst</b><span class="r" id="cost">—</span></div>
+    <div class="bd">
+      <div class="row one"><div><label>Ask</label>
+        <textarea id="q" rows="2">Long or short here, and why? Be specific about entry timing.</textarea></div></div>
+      <div class="row"><button id="ask">ASK CLAUDE</button><button class="ghost" id="clr">CLEAR</button></div>
+      <div id="ai" class="m" style="margin-top:10px">Fill the card, then ask. Claude sees only the numbers on this screen.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=i=>document.getElementById(i); let CARD=null, PICK=0;
+const f=(v,d=2)=>v==null?"—":Number(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});
+const j=async(u,o)=>(await fetch(u,o)).json();
+setInterval(()=>$("clock").textContent=new Date().toUTCString().slice(17,25)+" UTC",1000);
+
+function dot(el,ok,txt){$(el).innerHTML=`<span class="dot ${ok?'ok':'bad'}"></span>${txt}`}
+
+async function status(){
+  try{const s=await j("/api/status");dot("stMt5",s.mt5.ok,"MT5 "+(s.mt5.ok?"ready":"offline"))}
+  catch{dot("stMt5",false,"MT5 offline")}
+}
+async function positioning(){
+  const p=await j("/api/positioning?symbol="+$("sym").value);
+  const tb=$("cot");
+  if(p.error){dot("stCot",false,"COT n/a");tb.innerHTML=`<tr><td colspan="5" class="m">${p.error}</td></tr>`;return}
+  dot("stCot",true,"COT ok"); $("cotAge").textContent=p.staleness;
+  tb.innerHTML=p.cohorts.map(c=>`<tr><td>${c.name}</td><td class="n">${c.net.toLocaleString()}</td>
+    <td class="n ${c.change>0?'u':'d'}">${c.change==null?'—':(c.change>0?'+':'')+c.change.toLocaleString()}</td>
+    <td class="n">${c.percentile??'—'}</td><td class="${/extreme/.test(c.flag||'')?'c':'w'}">${c.flag||''}</td></tr>`).join("");
+}
+async function macro(){
+  const m=await j("/api/macro"); const tb=$("macro"); let ok=false;
+  tb.innerHTML=Object.entries(m).map(([k,v])=>{
+    if(v.error)return `<tr><td>${k}</td><td colspan="3" class="m">${v.error}</td></tr>`;
+    ok=true;
+    return `<tr><td>${k}</td><td class="n">${f(v.value,3)}</td>
+      <td class="n ${v.d30>0?'u':'d'}">${v.d30==null?'—':(v.d30>0?'+':'')+f(v.d30,3)}</td>
+      <td class="n ${v.d90>0?'u':'d'}">${v.d90==null?'—':(v.d90>0?'+':'')+f(v.d90,3)}</td></tr>`}).join("");
+  dot("stMac",ok,"Macro "+(ok?"ok":"n/a"));
+}
+async function quote(){
+  const q=await j("/api/quote?symbol="+$("sym").value);
+  $("quote").textContent=q.ok?`bid ${q.bid} / ask ${q.ask} · spread ${q.spread_price} (${q.spread_points} pts) · ${q.t}`
+                             :`no live quote — ${q.error}`;
+}
+async function card(){
+  const p=new URLSearchParams({symbol:$("sym").value,direction:$("dir").value,risk:$("risk").value,
+    balance:$("bal").value,currency:$("ccy").value,fx:$("fx").value,
+    entry:$("entry").value,atr:$("atr").value,spread:$("spread").value});
+  const c=await j("/api/card?"+p); CARD=c; $("src").textContent=c.source||"";
+  if(c.error){$("stops").innerHTML=`<tr><td colspan="8" class="c">${c.error}</td></tr>`;return}
+  $("stops").innerHTML=c.stops.map((s,i)=>s.error?`<tr><td>${s.method}</td><td colspan="7" class="c">${s.error}</td></tr>`:
+    `<tr class="${i===PICK?'sel':''}" onclick="PICK=${i};draw()">
+      <td>${s.method}</td><td class="n">${f(s.stop,3)}</td><td class="n">${f(s.distance,3)}</td>
+      <td class="n">${s.atr_multiple??'—'}</td><td class="n">${f(s.lots,2)}</td>
+      <td class="n">${f(s.risk_actual)}</td>
+      <td class="n ${s.spread_pct_of_risk>=10?'c':s.spread_pct_of_risk>=5?'w':'a'}">${f(s.spread_pct_of_risk,1)}%</td>
+      <td class="${s.inside_noise?'c':''}">${s.inside_noise?'inside noise':s.cost_verdict}</td></tr>`).join("");
+  draw();
+}
+function draw(){
+  if(!CARD||!CARD.stops||!CARD.stops[PICK])return;
+  const s=CARD.stops[PICK];
+  document.querySelectorAll("#stops tr").forEach((r,i)=>r.classList.toggle("sel",i===PICK));
+  $("tgts").innerHTML=(s.targets||[]).map(t=>`<tr><td>${t.r}R</td><td class="n">${f(t.price,3)}</td>
+    <td class="n u">${CARD.currency} ${f(t.profit)}</td></tr>`).join("");
+  let w="";
+  (s.warnings||[]).forEach(x=>w+=`<div class="note bad">${x}</div>`);
+  if(s.inside_noise)w+=`<div class="note bad"><b>Stop inside normal noise.</b> At ${s.atr_multiple}× ATR the market
+    is likely to take it out at random.</div>`;
+  if(s.spread_pct_of_risk>=10)w+=`<div class="note"><b>${f(s.spread_pct_of_risk,1)}% of your risk is spread.</b>
+    You pay that the moment you click.</div>`;
+  if(s.lots&&s.risk_target&&s.risk_actual/s.risk_target<0.9)w+=`<div class="note">Lot steps are coarse here —
+    you're risking ${f(100-s.risk_actual/s.risk_target*100,0)}% less than intended (${CARD.currency}
+    ${f(s.risk_actual)} vs ${f(s.risk_target)}). Safe, but not what you set.</div>`;
+  $("warn").innerHTML=w;
+}
+$("ask").onclick=async()=>{
+  $("ai").textContent="thinking…"; $("ai").className="";
+  const facts={card:CARD,positioning:await j("/api/positioning?symbol="+$("sym").value),macro:await j("/api/macro")};
+  const r=await j("/api/analyse",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({instrument:$("sym").value,question:$("q").value,facts})});
+  if(r.error){$("ai").innerHTML=`<div class="note bad">${r.error}<br><span class="m">${r.hint||""}</span></div>`;return}
+  if(r.refused){$("ai").innerHTML=`<div class="note bad">Declined: ${r.detail||""}</div>`;return}
+  $("ai").textContent=r.text;
+  $("cost").textContent=r.usage?`$${r.cost_usd} · ${r.usage.output} out · ${r.usage.cache_read} cached`:"";
+};
+$("clr").onclick=()=>{$("ai").textContent="";$("cost").textContent="—"};
+$("go").onclick=()=>{PICK=0;card();quote()};
+$("sym").onchange=()=>{PICK=0;positioning();card();quote()};
+async function boot(){await status();positioning();macro();quote();card();}
+boot(); setInterval(()=>{status();quote()},15000); setInterval(()=>{positioning();macro()},600000);
+</script></body></html>

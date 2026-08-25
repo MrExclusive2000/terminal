@@ -1,0 +1,6 @@
+# Core app
+pywebview>=5.0          # native Windows window (optional; browser fallback works)
+anthropic>=1.0          # Claude analysis layer
+
+# Windows only - the MT5 bridge. Silently skipped on other platforms.
+MetaTrader5>=5.0.45 ; sys_platform == "win32"

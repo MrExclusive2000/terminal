@@ -1,57 +1,90 @@
 # Argus
 
-Design plan for a single-user Windows research terminal — **FX and XAUUSD**,
-information only, no order execution and no broker connectivity.
+A Windows desktop app that sits **next to MT5** and helps you decide: direction,
+entry, stop, size, and what the trade actually costs. It never places an order.
 
-**Status: plan only (v0.3). Nothing is built.**
+Built for one person trading **FX and XAUUSD on IC Markets MT5** from the UK.
 
-The distinguishing lens is *incentives*, translated out of the equity world
-into the markets actually traded: cohort positioning (CFTC COT), producer
-hedging, bullion-bank books, official-sector accumulation, physical stocks and
-flow — sitting on a knowledge base that is authored, versioned and signed on a
-schedule.
+## Run it
 
-Scope confirmed: single user, UK-resident, non-professional subscriber. That
-combination means the exchange-licensing cliff and the EU AI Act both fall out
-of scope, and the positioning and physical layer is free at origin — the only
-recurring cost is the AI layer.
+Double-click **`run_argus.bat`**. First run makes a virtualenv and installs
+dependencies; after that it just opens.
 
-Scoped as a tool rather than a project: every feature must name the decision
-it changes, or it does not ship. The full equity insider module is documented
-but cut - roughly 70 engineer-weeks that would not change an XAUUSD decision.
-A miner bridge (gold producer hedge books and insider transactions) is kept as
-a later hook, since that is the only equity work that informs a gold view.
+Or manually:
 
-Three steps, 30 irreducible engineer-weeks to a complete tool:
+```
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python argus.py
+```
 
-1. **Desk** (10w) - MT5 bridge, local store, tick recorder, price, spread
-   monitor, session clock, ATR and levels, release calendar, journal.
-2. **Context** (10w) - COT cohort percentiles, physical stocks, official
-   sector, four-venue price panel, driver regime panel, FX driver stacks.
-3. **Brain** (10w) - knowledge packs, morning brief, pre-trade check,
-   weekly review.
+Opens a native window. If `pywebview` isn't installed it falls back to your
+browser, so it always runs.
 
-Data cost is zero for steps 1 and 2; the only recurring spend is the AI layer.
+### For live prices
 
-## Contents
+Open MT5, log in, and put your symbols in Market Watch. Argus reads it through
+MetaQuotes' official Python API. Without MT5 running, everything else still
+works — you just type the entry, ATR and spread yourself.
 
-| Path | What it is |
+### For the AI analyst
+
+Set an Anthropic API key:
+
+```
+setx ANTHROPIC_API_KEY sk-ant-...
+```
+
+Uses `claude-opus-5`. Cost is shown after each answer — typically a few pence.
+
+## What each panel does
+
+| Panel | Answers |
 |---|---|
-| `docs/plan/argus-design-plan.html` | The plan. Concepts, rendered mockups, feature inventory, architecture, data economics, AI knowledge layer, security, design system, roadmap. |
-| `docs/mockups/` | The five UI mockups as standalone HTML fragments. |
-| `docs/plan/*.css` | Design tokens and stylesheets. Every text token is solved to clear WCAG AA (4.5:1) on all four surface levels in both themes. |
-| `docs/research/` | Eight domain research dossiers — 201 findings, 210 candidate features, with per-finding confidence labels and sources. |
+| **Trade** | Your setup. Blank fields pull live from MT5. |
+| **Stops & size** | Three stops with lot size, risk, and **spread as a % of your risk** — the number that decides short-horizon trades. Flags stops sitting inside normal noise. |
+| **Targets** | 1R/2R/3R prices and profit. |
+| **Positioning** | Live CFTC cohort positioning with 5-year percentiles. Who's crowded. |
+| **Macro** | Real yields, dollar, breakevens — live from FRED. |
+| **Analyst** | Claude, given exactly the numbers on screen. Direction and timing, with what would prove it wrong. |
 
-## Reading order
+## Safety properties
 
-Start with the plan document. The research dossiers are the evidence base
-behind it, not a substitute for it.
+These are structural, not promises:
 
-## Caveats
+- **The bridge cannot trade.** `mt5_bridge.METHODS` holds five read functions.
+  `order_send` is not reachable, and a test asserts it. A logged-in MT5 terminal
+  is itself a trading path for any local process — Argus doesn't widen that, but
+  it can't remove it either.
+- **The AI never touches the broker.** It receives computed numbers and returns
+  prose. No credentials, no filesystem write, no bridge access. News and filing
+  text is wrapped as untrusted and cannot issue instructions.
+- **Local only.** The backend binds 127.0.0.1 on an ephemeral port. No external
+  listener, no telemetry, nothing leaves the machine except your Claude queries.
 
-Prices, regulations and API terms were live-verified on 2026-08-24 and are
-time-sensitive. Anything a researcher marked medium or low confidence is
-flagged in the dossiers and should be re-verified before being relied on.
+## Status
 
-Mockups use real tickers with illustrative data. No filing, price or person
-shown is a record of an actual transaction.
+| Component | State |
+|---|---|
+| COT positioning engine | **Verified live** — gold, silver, 5 FX majors, DXY |
+| FRED macro | **Verified live** — identity-checked to 0.0000 error |
+| Regime detection | **Verified** — live data + synthetic control |
+| Sizing / stops / cost | **Verified** — 42 tests, hand-checked arithmetic |
+| Backend + UI | **Verified** — every endpoint exercised |
+| MT5 bridge | **UNVERIFIED** — needs Windows + a running terminal |
+| Claude analyst | **UNVERIFIED** — needs an API key |
+
+The two unverified pieces are unverifiable without your machine. Expect the
+first MT5 run to need a fix: symbol suffixes, timezone, or the max-bars cap.
+
+## Tests
+
+```
+python tests/test_core.py
+```
+
+## Docs
+
+`docs/plan/` — the full design plan. `docs/research/` — nine research dossiers
+and four adversarial reviews behind it.
