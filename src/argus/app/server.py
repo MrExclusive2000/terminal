@@ -179,6 +179,69 @@ def ep_card(q: dict[str, list[str]]) -> dict[str, Any]:
             "atr": round(a, inst.digits), "source": source, "currency": ccy, "stops": rows}
 
 
+def ep_desk(q: dict[str, list[str]]) -> dict[str, Any]:
+    """The FX and metals desk: session state, what is scheduled, and the bias board.
+
+    Assembled from whatever is actually available. A provider that is down
+    removes its evidence from the board and says so, rather than the board
+    quietly presenting a thinner case as though it were the whole picture.
+    """
+    from datetime import datetime, timezone
+
+    from argus.analysis import bias
+    from argus.analysis import calendar as cal
+    from argus.analysis import sessions as sess
+
+    symbol = (q.get("symbol") or ["XAUUSD"])[0].upper()
+    now = datetime.now(timezone.utc)
+    gold = symbol.startswith("XAU") or symbol.startswith("XAG")
+
+    state = sess.state(now, gold=gold)
+    releases = cal.upcoming(now, days=21, symbols=(symbol,))
+    reads: list[Any] = [bias.from_session(state.liquidity, state.note)]
+
+    if releases:
+        nxt = releases[0]
+        reads.append(bias.from_event(nxt.name, nxt.minutes_from(now), nxt.impact))
+
+    sources: dict[str, str] = {}
+
+    # Positioning. Cached hard - COT moves once a week, so polling it is waste.
+    try:
+        from argus.data.cot import snapshot
+        snap = cached(f"cot:{symbol}", 3600.0, lambda: snapshot(symbol))
+        # cohorts is a dict keyed by cohort name. The speculative cohort is
+        # named differently by report family: commodities report managed money,
+        # financial futures report leveraged funds.
+        reading = (snap.cohorts.get("managed_money")
+                   or snap.cohorts.get("leveraged_funds"))
+        if reading is not None:
+            pct = reading.percentile
+            # USDJPY and friends: the CME contract is JPY/USD, so a crowded long
+            # in the future is a crowded SHORT in the pair as conventionally
+            # written. Flipping the percentile keeps the board in pair terms;
+            # not flipping it points the read at the wrong side of the market.
+            if snap.inverted and pct is not None:
+                pct = 100.0 - pct
+            reads.append(bias.from_positioning(
+                reading.cohort.replace("_", " ").title(), float(reading.net),
+                pct, snap.as_of))
+        sources["positioning"] = snap.staleness + (
+            " [inverted to pair terms]" if snap.inverted else "")
+    except Exception as exc:  # noqa: BLE001
+        sources["positioning"] = f"unavailable ({type(exc).__name__})"
+
+    board = bias.build(symbol, reads, now=now)
+    if any("unavailable" in v for v in sources.values()):
+        board.warnings.append(
+            "Some evidence could not be loaded, so this board is thinner than "
+            "usual. Read the strength accordingly.")
+
+    return {"symbol": symbol, "session": state.as_dict(),
+            "calendar": [r.as_dict(now) for r in releases[:8]],
+            "board": board.as_dict(), "sources": sources}
+
+
 def ep_settings() -> dict[str, Any]:
     """Current settings, secrets excluded by construction."""
     from argus import config
@@ -276,6 +339,7 @@ ROUTES: dict[str, Callable[[dict[str, list[str]]], Any]] = {
     "/api/card": ep_card,
     "/api/insider": ep_insider,
     "/api/settings": lambda q: ep_settings(),
+    "/api/desk": ep_desk,
 }
 
 

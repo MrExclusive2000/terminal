@@ -113,6 +113,71 @@ python3 tests/test_insider.py    # 85 checks, offline, real SEC fixtures
 python3 tests/test_core.py       # the pre-existing suite
 ```
 
+## The FX & metals desk
+
+You trade FX and gold, so this is the half of the plan aimed at that. Three
+engines, all deterministic and all testable offline.
+
+| Module | What it answers |
+|---|---|
+| `analysis/sessions.py` | Which desks are open, how deep the book is, and what changes next. |
+| `analysis/calendar.py` | What is scheduled that could hurt a position. |
+| `analysis/bias.py` | **Long or short here — and what agrees.** |
+
+### Sessions are defined in local exchange time, never fixed UTC offsets
+
+This is the whole reason the module exists. London and New York shift on
+different weekends, Tokyo never shifts, and Sydney moves the other way. Any
+hardcoded UTC window is wrong for several weeks a year — and wrong exactly
+where the London/New York overlap changes length.
+
+Proof, from the test suite: **12:30 UTC** has New York open in August (08:30
+EDT) and closed in January (07:30 EST). **16:30 UTC** has London closed in
+August (17:30 BST) and open in January (16:30 GMT). A fixed window gets one of
+those wrong.
+
+The practical payoff is the **rollover warning**. At 17:00 New York the
+interbank day rolls, liquidity briefly evaporates, and gold spreads can go from
+0.30 to several dollars. Traders get stopped out by a spread spike rather than a
+move, at an entirely predictable minute.
+
+### The calendar is built from rules, not scraped dates
+
+Each source declares three things that are routinely conflated: the
+**publication rule**, the **as-of rule**, and the **expected lag**. The COT is
+the clean case — released Friday 15:30 New York, describing the *Tuesday three
+days earlier*. Stamping it with the release date tells you positioning is
+current when it is already three days old.
+
+Because the rule is expressed in New York time, the COT resolves to 19:30 UTC in
+summer and 20:30 UTC in winter, automatically.
+
+**Only genuinely rule-based releases are included.** NFP is the first Friday of
+the month; the CFTC reports follow fixed weekly rules. CPI and FOMC dates are
+*published schedules*, not rules — so they are absent rather than approximated.
+A calendar that quietly guesses the CPI date is worse than one that admits it
+does not know, because you would plan a position around it.
+
+### The bias board answers the original question
+
+It will not break three rules:
+
+- **It is never a signal.** There is no BUY — there is a lean, a strength, and
+  every input that produced them, each of which you can argue with.
+- **Disagreement is surfaced, not netted away.** Two strong opposing reads and
+  two weak aligned ones average identically. They are not the same situation, so
+  conflict is reported separately and caps the strength at *weak*.
+- **Confidence needs evidence, not just agreement.** A single input agrees with
+  itself perfectly and scores ±1.00 — so strength is gated on evidence *mass*
+  too, and the bar is scaled by it. A full-width bar next to the word "weak"
+  is the graphic contradicting the label.
+
+Positioning is deliberately contrarian and weight-capped at 0.25: it marks
+fuel, not timing, and the copy says *crowded*, never *due*. A driver whose
+correlation has broken from its long-run value returns a **warning instead of a
+direction** — gold against real yields is the standing example. USDJPY
+positioning is inverted into pair terms, because the CME contract is JPY/USD.
+
 ## The desktop app
 
 | Piece | What it does |

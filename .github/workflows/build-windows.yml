@@ -31,6 +31,7 @@ jobs:
           python tests/test_insider.py
           python tests/test_core.py
           python tests/test_app.py
+          python tests/test_desk.py
 
   build:
     name: Build Windows exe + installer

@@ -65,6 +65,23 @@ background:var(--p2);letter-spacing:.02em}
 .card p{color:var(--fg2);line-height:1.6;margin:0 0 13px;font-size:12.5px}
 .ok-msg{color:var(--acc)}.err-msg{color:var(--crit)}
 .fld{margin-bottom:13px}
+.grid.desk{grid-template-columns:1fr 380px}
+@media(max-width:1100px){.grid.desk{grid-template-columns:1fr}}
+.lean{display:flex;align-items:baseline;gap:12px;padding:14px 12px;border-bottom:1px solid var(--l)}
+.lean b{font-family:var(--sans);font-size:27px;letter-spacing:.02em;line-height:1}
+.lean .st{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.rd{display:flex;gap:9px;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.05);
+font-family:var(--mono);font-size:11.5px;align-items:baseline}
+.rd .ar{width:11px;font-weight:700}
+.rd .wt{color:var(--fg3);min-width:32px}
+.rd .src{min-width:118px;color:var(--fg2)}
+.rd .cv{color:var(--warn);font-size:10.5px;display:block;margin-top:3px;line-height:1.5}
+.bar{height:5px;background:var(--p2);border-radius:2px;overflow:hidden;position:relative;flex:1;min-width:110px}
+.bar i{position:absolute;top:0;bottom:0;left:50%;background:var(--acc)}
+.bar u{position:absolute;top:0;bottom:0;left:50%;width:1px;background:var(--l2)}
+.ev2{padding:6px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-family:var(--mono);font-size:11px;
+display:flex;gap:9px;align-items:baseline}
+.ev2 .im{font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:0 4px;border:1px solid currentColor;border-radius:2px}
 </style></head><body>
 <div class="top">
   <b>Argus</b>
@@ -72,6 +89,7 @@ background:var(--p2);letter-spacing:.02em}
     <button class="tab on" id="tabTrade">Trade</button>
     <button class="tab" id="tabIns">Insiders</button>
   </div>
+  <button class="tab" id="tabDesk">Desk</button>
   <button class="tab" id="tabSet" style="margin-left:2px">Settings</button>
   <span id="stMt5"><span class="dot wn"></span>MT5 …</span>
   <span id="stCot"><span class="dot wn"></span>COT …</span>
@@ -216,6 +234,41 @@ background:var(--p2);letter-spacing:.02em}
       <div class="m" style="font-size:10.5px;margin-top:10px;font-family:var(--mono)"
            id="setPath"></div>
     </div>
+  </div>
+</div>
+
+
+<div class="grid desk" id="viewDesk" style="display:none">
+  <div class="pane">
+    <div class="hd"><b>Bias board</b>
+      <select id="deskSym" style="width:auto;padding:2px 6px;font-size:11px;margin-left:6px">
+        <option>XAUUSD</option><option>EURUSD</option><option>GBPUSD</option>
+        <option>USDJPY</option><option>AUDUSD</option><option>XAGUSD</option>
+      </select>
+      <span class="r" id="deskAge">—</span></div>
+    <div class="lean" id="deskLean"><b class="m">—</b></div>
+    <div class="bd" id="deskReads" style="padding:0"></div>
+    <div class="hd"><b>How to read this</b></div>
+    <div class="bd" style="flex:0 0 auto;max-height:190px">
+      <div class="fac" style="margin:0">
+        <b>This is not a signal.</b> It is a lean, a strength, and the evidence that
+        produced them — every line argues its own case and you can disagree with any of
+        them.<br><br>
+        <b>Disagreement is shown, not netted away.</b> Two strong opposing reads and two
+        weak aligned ones produce the same average. They are not the same situation, so
+        conflict is reported separately and caps the strength.<br><br>
+        <b>Confidence needs evidence, not just agreement.</b> One input agreeing with
+        itself is not conviction, so a thin board says so.<br><br>
+        <b>Every input carries its own age.</b> Positioning is days old by law. Nothing
+        here blends a stale number into a live one.
+      </div>
+    </div>
+  </div>
+  <div class="pane">
+    <div class="hd"><b>Session</b><span class="r" id="deskLiq">—</span></div>
+    <div class="bd" style="flex:0 0 auto" id="deskSession"><div class="m">—</div></div>
+    <div class="hd"><b>Scheduled</b><span class="r">rule-derived, DST-correct</span></div>
+    <div class="bd" id="deskCal" style="padding:0"><div class="m" style="padding:10px">—</div></div>
   </div>
 </div>
 
@@ -404,15 +457,76 @@ $("setSave").onclick=async()=>{
   }catch(e){ msg.textContent="Could not save: "+e; msg.className="err-msg"; }
 };
 
+function ago(d){return d==null?"live":d+"d old";}
+
+async function desk(){
+  const sym=$("deskSym").value;
+  $("deskAge").textContent="loading";
+  let d;
+  try{ d=await j("/api/desk?symbol="+encodeURIComponent(sym)); }
+  catch(e){ $("deskReads").innerHTML=`<div class="note bad" style="margin:10px">Could not load the desk: ${e}</div>`;
+            $("deskAge").textContent="failed"; return; }
+
+  const b=d.board, lean=b.lean, tint=lean==="long"?"u":(lean==="short"?"d":"m");
+  // Scale the bar by score AND evidence mass. score alone saturates at 1.00 on a
+  // single input, which would paint a full-width bar next to the word "weak" —
+  // the graphic contradicting the label is exactly the dishonesty this board exists
+  // to avoid. Evidence is capped at 1.0 so a well-stocked board still fills.
+  const conf=Math.min(1,b.evidence);
+  const pct=Math.round(Math.abs(b.score)*conf*50);
+  $("deskLean").innerHTML=
+    `<b class="${tint}">${lean.toUpperCase()}</b>
+     <span class="st ${tint}">${b.strength}</span>
+     <div class="bar"><u></u><i style="${b.score<0?`right:50%;left:auto;`:``}width:${pct}%;
+       background:var(--${lean==="long"?"up":lean==="short"?"dn":"l2"})"></i></div>
+     <span class="m" style="font-family:var(--mono);font-size:10.5px">
+       score ${b.score>=0?"+":""}${b.score.toFixed(2)} · conflict ${(b.conflict*100).toFixed(0)}% · evidence ${b.evidence.toFixed(2)}</span>`;
+  $("deskAge").textContent=b.headline;
+
+  $("deskReads").innerHTML = (b.reads||[]).length
+    ? b.reads.map(r=>{
+        const t=r.direction==="long"?"u":r.direction==="short"?"d":"m";
+        const ar=r.direction==="long"?"▲":r.direction==="short"?"▼":"—";
+        return `<div class="rd"><span class="ar ${t}">${ar}</span>
+          <span class="wt">${r.weight.toFixed(2)}</span>
+          <span class="src">${r.source}</span>
+          <span>${r.detail}<span class="m"> [${ago(r.age_days)}]</span>
+          ${r.caveat?`<span class="cv">note — ${r.caveat}</span>`:``}</span></div>`;}).join("")
+      + (b.warnings||[]).map(w=>`<div class="rd"><span class="ar w">!</span><span>${w}</span></div>`).join("")
+    : `<div class="m" style="padding:14px">No evidence available for ${sym}.
+       ${(b.warnings||[]).map(w=>"<br>! "+w).join("")}</div>`;
+
+  const s2=d.session;
+  $("deskLiq").innerHTML=`<span class="${s2.liquidity==="deep"?"a":s2.liquidity==="closed"||s2.liquidity==="very thin"?"c":"w"}">${s2.liquidity}</span>`;
+  $("deskSession").innerHTML=
+    `<div style="font-family:var(--mono);font-size:11.5px;margin-bottom:7px">
+       ${s2.open.length?s2.open.join(" + ")+" open":"<span class='m'>no major session open</span>"}</div>
+     <div class="m" style="font-size:12px;line-height:1.6">${s2.note}</div>
+     <div style="margin-top:9px">${s2.next.map(e=>
+       `<div class="ev2"><span class="m" style="min-width:52px">${e.in_minutes<90?Math.round(e.in_minutes)+"m":(e.in_minutes/60).toFixed(1)+"h"}</span>
+        <span>${e.name}</span></div>`).join("")}</div>`;
+
+  $("deskCal").innerHTML=(d.calendar||[]).map(e=>{
+    const t=e.impact==="high"?"c":e.impact==="medium"?"w":"m";
+    const days=e.in_minutes/1440;
+    return `<div class="ev2"><span class="im ${t}">${e.impact}</span>
+      <span class="m" style="min-width:44px">${days<1?Math.round(e.in_minutes/60)+"h":days.toFixed(1)+"d"}</span>
+      <span>${e.name}${e.lag_days!=null?`<span class="m"> · describes ${e.lag_days}d earlier</span>`:``}</span></div>`;
+  }).join("")||'<div class="m" style="padding:10px">Nothing scheduled in the next 21 days.</div>';
+}
+$("deskSym").onchange=desk;
+
 function view(which){
-  const t = which==="trade";
-  $("viewTrade").style.display = t?"grid":"none";
-  $("viewIns").style.display   = t?"none":"grid";
-  $("tabTrade").classList.toggle("on",t);
-  $("tabIns").classList.toggle("on",!t);
+  const views={trade:"viewTrade",ins:"viewIns",desk:"viewDesk"};
+  const tabs={trade:"tabTrade",ins:"tabIns",desk:"tabDesk"};
+  for(const k in views){
+    $(views[k]).style.display = (k===which)?"grid":"none";
+    $(tabs[k]).classList.toggle("on",k===which);
+  }
 }
 $("tabTrade").onclick=()=>view("trade");
 $("tabIns").onclick=()=>{view("ins"); if(!$("insList").dataset.done){$("insList").dataset.done="1"; insider();}};
+$("tabDesk").onclick=()=>{view("desk"); if(!$("deskReads").dataset.done){$("deskReads").dataset.done="1"; desk();}};
 $("insGo").onclick=insider;
 
 async function boot(){
