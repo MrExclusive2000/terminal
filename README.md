@@ -1,14 +1,23 @@
 # Argus
 
-Design plan for a single-user Windows research terminal — equities and FX,
+Design plan for a single-user Windows research terminal — **FX and XAUUSD**,
 information only, no order execution and no broker connectivity.
 
-**Status: plan only. Nothing is built.**
+**Status: plan only (v0.2). Nothing is built.**
 
-The distinguishing lens is *incentives*: insider transactions, ownership,
-compensation structure and positioning treated as the primary surface rather
-than a bolt-on screener, sitting on a knowledge base that is authored,
-versioned and signed on a schedule.
+The distinguishing lens is *incentives*, translated out of the equity world
+into the markets actually traded: cohort positioning (CFTC COT), producer
+hedging, bullion-bank books, official-sector accumulation, physical stocks and
+flow — sitting on a knowledge base that is authored, versioned and signed on a
+schedule.
+
+Scope confirmed: single user, UK-resident, non-professional subscriber. That
+combination means the exchange-licensing cliff and the EU AI Act both fall out
+of scope, and the positioning and physical layer is free at origin — the only
+recurring cost is the AI layer.
+
+An equity insider module is retained as optional, pointed at gold producers
+(hedge books and insider transactions) as a sentiment channel into gold.
 
 ## Contents
 

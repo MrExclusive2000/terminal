@@ -319,7 +319,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 <div class="wrap">
 <nav class="rail" aria-label="Contents">
   <p class="rail-brand">Argus</p>
-  <p class="rail-sub">design plan · v0.1 · 2026-08-25</p>
+  <p class="rail-sub">design plan · v0.2 · FX + XAUUSD</p>
 
   <p class="rail-h">Case</p>
   <a href="#bet"><code>BET</code><span>The gap</span></a>
@@ -344,128 +344,152 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 <main class="main">
 
 <header class="hero">
-  <p class="eyebrow">Windows trading terminal · information only · plan</p>
-  <h1>Who is buying it, who is dumping it, and who is paid to make the number.</h1>
+  <p class="eyebrow">Windows terminal · FX &amp; gold · information only · plan</p>
+  <h1>Who is positioned, who is hedging their own production, and who is quietly accumulating.</h1>
   <p class="lede">
-    A native Windows research terminal for one person. Equities and FX, no order execution, no broker
-    connection. Its distinguishing lens is <strong>incentives</strong> — insider transactions, ownership,
-    compensation structure and positioning treated as the primary surface rather than a bolt-on screener —
-    sitting on top of a knowledge base that I author, version and sign on a schedule.
+    A native Windows research terminal for one person, built around <strong>FX and XAUUSD</strong>. No order
+    execution, no broker connectivity. Its lens is <strong>incentives</strong> — but translated out of the
+    equity world into the one you actually trade: cohort positioning, producer hedging, official-sector
+    accumulation and physical flow, sitting on a knowledge base I author, version and sign on a schedule.
   </p>
   <div class="hero-meta">
     <span><b>Codename</b> Argus</span>
-    <span><b>Scope</b> single user, read-only</span>
+    <span><b>Scope</b> single user, UK, non-pro</span>
     <span><b>Stack</b> .NET 10 LTS + WPF</span>
-    <span><b>To MVP</b> 55–85 eng-weeks</span>
-    <span><b>Run cost</b> $60–560/mo</span>
+    <span><b>To MVP</b> 30–48 eng-weeks</span>
+    <span><b>Data cost</b> ~$0/mo</span>
     <span><b>Research</b> 9 dossiers · 4 red teams</span>
   </div>
 </header>
 
-<section id="bet">
-  <div class="sec-head"><span class="sec-mn">BET</span><h2>The gap this fills</h2>
-    <span class="sec-note">and the part of the thesis that does not survive</span></div>
-
+<div class="call warn">
+  <p class="call-h">Version 0.2 — I had this pointed the wrong way</p>
   <p>
-    The market is barbelled. Institutional terminals — Bloomberg, LSEG Workspace, FactSet, S&amp;P Capital IQ,
-    AlphaSense — publish no prices and sell annual enterprise seats. The prosumer tier clusters tightly between
-    $25 and $200 a month and is, without exception, a browser app: Koyfin ($39/$79), TIKR ($24.95–$119.95),
-    TradingView ($12.95–$199.95), Finviz Elite ($39.50), BamSEC Pro ($69), ORTEX ($49/$149),
-    Unusual Whales ($50–$120).
+    The previous draft argued FX was the weakest leg of the product and should be demoted to macro context. As
+    an argument about <em>the market</em> that was right — TradingView already owns cheap FX charting. As an
+    argument about <em>your terminal</em> it was wrong, because FX and gold are what you trade. This version
+    restructures around that, and the good news is that it makes the product substantially cheaper and
+    somewhat smaller: <strong>almost every data source the gold and FX lens needs is free at origin.</strong>
   </p>
   <p>
-    The structurally important finding is that <strong>OpenBB — the closest analogue — has abandoned the desktop
-    terminal.</strong> The open-source repo is now an "Open Data Platform", AGPL-3.0-only, reframed as a data
-    layer feeding a cloud workspace. AGPL plus a cloud pivot means you build <em>beside</em> it, borrowing its
-    provider-abstraction pattern, not on top of it.
+    The equity insider engine is not deleted — it is demoted to an optional module with a genuine bridge into
+    gold (miner hedge books and miner insider transactions). See <a href="#feat">FEAT</a> for how much of it I
+    would still build, and the open question at the end.
+  </p>
+</div>
+
+<section id="bet">
+  <div class="sec-head"><span class="sec-mn">BET</span><h2>The gap this fills</h2>
+    <span class="sec-note">for a gold and FX desk specifically</span></div>
+
+  <p>
+    The gold and FX information landscape is the opposite of the equity one. Equities have expensive,
+    well-integrated terminals. <strong>Gold and FX have a dozen free, excellent, completely disconnected
+    dashboards</strong> — CFTC's own Socrata endpoints, LBMA vault data, World Gold Council flows, CME
+    warehouse stocks, Swiss customs, the Bank of England's statistical database — plus TradingView for
+    charting and ForexFactory for a calendar. Nothing joins them.
+  </p>
+  <p>
+    So the gap is not access to data. It is <strong>integration, vintage discipline and interpretation</strong>.
+    Nobody sells a single surface where producer hedging, bullion-bank positioning, ETF flow, official-sector
+    accumulation, physical premia and the real-yield regime sit together, each stamped with its own staleness,
+    with a curated knowledge layer explaining what the configuration has historically meant.
   </p>
 
   <div class="pillars">
-    <div class="pil"><p class="pil-n">LEG 1 · holds</p><h4>Native research desktop</h4>
-      <p>Genuinely vacant. The surviving native platforms — Sierra Chart, NinjaTrader, MultiCharts, AmiBroker —
-         are execution and TA tools. Nobody ships a native multi-monitor <em>research</em> terminal.</p></div>
-    <div class="pil"><p class="pil-n">LEG 2 · holds</p><h4>Incentives as the primary lens</h4>
-      <p>Unowned. Fintel, Quiver, ORTEX, WhaleWisdom, 2iQ and Smart Insider each hold one fragment.
-         The global insider layer is enterprise-only.</p></div>
-    <div class="pil"><p class="pil-n">LEG 3 · holds</p><h4>Versioned, cited knowledge</h4>
-      <p>Novel against the generic RAG chatbots now shipping everywhere. A curated, diffable, signed
-         knowledge base is a different object from a chat box over your documents.</p></div>
-    <div class="pil"><p class="pil-n">LEG 4 · fails</p><h4>FX as a co-equal pillar</h4>
-      <p>This is the weak leg. TradingView already owns cheap FX charting, and FX has no ownership or
-         insider layer — so it dilutes the incentives thesis rather than reinforcing it.</p></div>
+    <div class="pil"><p class="pil-n">LEG 1</p><h4>Integration nobody offers</h4>
+      <p>Ten free sources, ten browser tabs, ten different update cadences and no shared timeline. One desk
+         that joins them is genuinely absent at any price.</p></div>
+    <div class="pil"><p class="pil-n">LEG 2</p><h4>Positioning as the insider lens</h4>
+      <p>Gold has real insiders — producers hedging their own output, bullion banks running the book, central
+         banks accumulating. The equity concept translates cleanly and nobody has built it as a lens.</p></div>
+    <div class="pil"><p class="pil-n">LEG 3</p><h4>Vintage honesty</h4>
+      <p>COT is three days stale by construction, the Bank Participation Report is monthly, central-bank data
+         runs two months behind. Most gold dashboards render these as if they were live.</p></div>
+    <div class="pil"><p class="pil-n">LEG 4</p><h4>Versioned, cited knowledge</h4>
+      <p>A curated, diffable knowledge base — event playbooks, pair dossiers, regime histories — is a
+         different object from a chatbot over your documents.</p></div>
   </div>
 
-  <div class="call warn">
-    <p class="call-h">Recommendation you did not ask for</p>
+  <div class="call dec">
+    <p class="call-h">The single best argument for building this</p>
     <p>
-      You asked for forex and stocks, and the plan keeps both. But I am not going to build you a second-rate
-      TradingView. <strong>FX belongs in this terminal as a macro and positioning surface, not as a charting
-      product</strong> — rate differentials, carry, COT positioning, central-bank reaction functions, session
-      structure. That is the FX work that has no good prosumer home, and it is the FX work that actually
-      rhymes with the incentives pillar: CFTC Commitments of Traders is the closest thing FX has to an
-      insider filing. Screen 04 shows what that looks like. If you want candlestick FX charting too, it is
-      cheap to add — it just should not be what the product is <em>for</em>.
+      <strong>The standard gold model has broken, and most tools have not noticed.</strong> From 2003 to 2022,
+      gold traded inversely to 10-year real yields with a rolling correlation around −0.73 — roughly an 18%
+      fall in the real gold price per 100bp rise in real yields. Since 2024 that has decoupled, because the
+      official sector replaced ETF flows as the marginal buyer. Price has climbed alongside positive real
+      yields.
+    </p>
+    <p>
+      A terminal that plots gold against TIPS and stops is showing you a broken model with a straight face.
+      The design answer is a driver panel that displays the current correlation <em>next to its historical
+      value</em>, so a regime break is the first thing you see rather than something you infer months late.
+      That is a small design decision with a large payoff, and it is the kind of thing this product should be
+      built to catch.
     </p>
   </div>
 </section>
 
 <section id="cnpt">
   <div class="sec-head"><span class="sec-mn">CNPT</span><h2>Concept</h2>
-    <span class="sec-note">three pillars, one invariant</span></div>
+    <span class="sec-note">the incentives lens, translated</span></div>
 
   <p>
-    Argus is named for the hundred-eyed watchman. The product is a surveillance instrument pointed at
-    <em>disclosure</em>: the regulatory paper trail that public companies and large holders are compelled to
-    produce, normalised, scored and put next to the price.
+    You originally asked for insiders and incentives. Gold and FX have no Form 4 and no proxy statement — but
+    the underlying question survives translation intact: <em>who holds the thing, what are they compelled to
+    disclose, and what does their behaviour reveal that their commentary does not?</em>
   </p>
 
-  <h3>The organising insight</h3>
-  <p>
-    Almost all of the incentives pillar is buildable on <strong>free primary regulatory sources</strong>.
-    The moat is not a data licence — it is normalisation, latency discipline and signal construction.
-    SEC EDGAR's <code>data.sec.gov</code> submissions, <code>companyfacts</code>, full-text search and daily
-    index files cost nothing and require only a declared User-Agent and a 10 requests/second ceiling. CFTC
-    Commitments of Traders is a free Socrata endpoint. FINRA's daily short-volume file is free. Cboe's CDN
-    serves a complete option chain with Greeks for nothing, which is a working gamma-exposure engine with no
-    vendor at all.
-  </p>
-  <p>
-    What you pay for is real-time equity prices, a fundamentals spine, and optionally borrow data. Everything
-    that makes this product <em>different</em> is free — and therefore defensible only by building it properly.
-  </p>
-
-  <h3>The three pillars</h3>
   <div class="tw"><table class="d">
-    <thead><tr><th>Pillar</th><th>What it answers</th><th>Primary sources</th><th>Cost</th></tr></thead>
+    <thead><tr><th>Equity concept</th><th>Gold / FX equivalent</th><th>Source</th><th>Cadence</th><th class="n">Cost</th></tr></thead>
     <tbody>
-      <tr><td class="nm">Incentives &amp; insiders</td>
-        <td>Who is buying with their own money, who is selling on a schedule, who is paid to hit which metric,
-            who has pledged their shares to a bank.</td>
-        <td class="mono">EDGAR Forms 3/4/5/144, 13D/G, 13F, DEF 14A Item 402(v), 8-K; UK NSM/RNS; EU MAR Art.19;
-            EDINET; SEDI; HKEX DI</td><td class="mono">$0</td></tr>
-      <tr><td class="nm">Market &amp; macro</td>
-        <td>What the price is doing, what is priced in, where positioning is crowded, what the calendar holds.</td>
-        <td class="mono">Massive (ex-Polygon), IBKR, OANDA, ECB, FRED/ALFRED, CFTC COT, FINRA, Cboe CDN</td>
-        <td class="mono">$0–330/mo</td></tr>
-      <tr><td class="nm">Knowledge layer</td>
-        <td>What any of it means — sector primers, company dossiers, event playbooks, red-flag checklists,
-            filing-reading guides — kept current and cited.</td>
-        <td class="mono">Claude-authored signed packs + RAG over your own filing corpus</td>
-        <td class="mono">$60–250/mo</td></tr>
+      <tr><td class="nm">Insider buying (Form 4)</td><td><strong>Producer / merchant COT</strong> — miners selling forward their own production. They hold the asset and know their cost curve.</td><td class="mono">CFTC disaggregated</td><td class="mono">Tue data, Fri release</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Institutional ownership (13F)</td><td><strong>Managed money COT + ETF holdings</strong> — who is renting the move.</td><td class="mono">CFTC · WGC · issuer files</td><td class="mono">weekly / daily</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Control block / 10% holder</td><td><strong>Central bank reserves</strong> — the official sector, now the marginal buyer.</td><td class="mono">WGC · IMF IFS</td><td class="mono">monthly, ~2m lag</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Dealer positioning / GEX</td><td><strong>Swap dealers + Bank Participation Report</strong>, split US vs non-US banks.</td><td class="mono">CFTC BPR</td><td class="mono">monthly</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Float / shares outstanding</td><td><strong>COMEX registered vs eligible, LBMA vault holdings</strong> — how much metal is actually deliverable.</td><td class="mono">CME · LBMA</td><td class="mono">daily / monthly</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Short interest &amp; borrow</td><td><strong>Implied lease rate</strong> and the EFP basis — the cost of borrowing metal.</td><td class="mono">derived from SOFR + forwards</td><td class="mono">daily</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Insider selling into strength</td><td><strong>Swiss customs exports and the Shanghai premium</strong> — where physical is actually moving, and whether a licensed import pipe is straining.</td><td class="mono">Swiss BAZG · SGE</td><td class="mono">monthly / daily</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">"Paid to make the number"</td><td><strong>Central bank reaction function</strong> — rhetoric against balance sheet and OIS-implied path. What they are paid to say versus what they do.</td><td class="mono">BoE · Fed · ECB · OIS</td><td class="mono">continuous</td><td class="n mono">$0</td></tr>
     </tbody>
   </table></div>
 
-  <div class="call dec">
-    <p class="call-h">The invariant everything else hangs from</p>
+  <div class="call">
+    <p class="call-h">Why this is not a stretched analogy</p>
     <p>
-      <strong>Argus must never become a distributor.</strong> One person seeing full-depth Nasdaq TotalView
-      pays $15.00/month as a non-professional subscriber. An external distributor of the identical feed pays
-      a four-figure monthly distribution fee plus per-subscriber charges. That is not a pricing tier, it is a
-      category change, and the trigger is a second human seeing the screen. (The $15.00 non-professional rate
-      is confirmed against Nasdaq's published price list; cite the distribution figure to a specific line of
-      the distributor list before leaning on it.) The architecture treats this as a tested invariant — no
-      network listener, no export of raw licensed ticks, no hosted view, no screenshot bot — not as a policy
-      note in a README.
+      Producer hedging is the strongest case. A gold miner selling forward is doing something structurally
+      identical to a CFO selling stock: disposing of an asset they produce, with better information about its
+      economics than anyone else, under a disclosure regime. <strong>The same caveat applies too</strong> —
+      just as most Form 4 selling is mechanical tax withholding rather than a view, much producer hedging is
+      driven by project-finance covenants rather than a price call. The decoder logic is the same shape:
+      separate the mechanical from the discretionary, and only score the discretionary.
+    </p>
+    <p>
+      That is the bridge back to equities. <strong>Miner hedge-book disclosures and miner insider transactions
+      are gold sentiment data</strong> — filed by companies, readable with the Form 4 and filings engine from
+      v0.1. So the equity work is not wasted; it is repointed at roughly forty names that matter to gold
+      rather than at the whole market.
+    </p>
+  </div>
+
+  <h3>FX, for a UK trader</h3>
+  <p>
+    The same discipline applies with different plumbing. FX has no consolidated tape either, so every quote is
+    labelled with its venue. The positioning lens is CFTC's financial-futures COT (leveraged funds, asset
+    managers, dealers); the driver stack is rate differentials, OIS-implied policy paths and carry computed
+    from free central-bank curves; and for sterling specifically the <strong>Bank of England's Interactive
+    Statistical Database</strong> serves Bank Rate, SONIA, gilt yields and the effective exchange rate index
+    over a plain CSV endpoint at no cost.
+  </p>
+
+  <div class="call dec">
+    <p class="call-h">The invariant still holds, and now it costs you nothing</p>
+    <p>
+      <strong>Argus must never become a distributor.</strong> That mattered enormously in v0.1 because
+      real-time US equity depth carried exchange fees. In a gold and FX build it barely binds, because the
+      positioning and physical layer is public regulatory data and your price feed is your own broker's. The
+      invariant stays architectural anyway — no network listener, no export of raw licensed ticks, no hosted
+      view — because it costs nothing to keep and everything to retrofit.
     </p>
   </div>
 </section>
@@ -483,6 +507,493 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </p>
 
   <figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">XAUUSD&nbsp; POSN</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">POSN · PHYS · BASIS · DRIV · CB</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>OANDA</span><span><span class="ui-dot ok"></span>CFTC</span>
+      <span><span class="ui-dot warn"></span>COT T+3</span><span class="mut">NON-PRO</span>
+      <span class="mut">$0.00/mo data</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-tabs">
+    <div class="ui-tab on">GOLD DESK</div>
+    <div class="ui-tab">FX SESSION</div>
+    <div class="ui-tab">MACRO</div>
+    <div class="ui-tab">PHYSICAL</div>
+    <div class="ui-tab">JOURNAL</div>
+    <div class="ui-links">LINK
+      <span class="ui-chip" style="background:#E0A44B"></span>
+      <span class="ui-chip" style="background:#35B5A8"></span>
+      <span class="mut">·&nbsp; 14:58 London &nbsp;·&nbsp; <span class="warn">LBMA PM auction in 2m</span></span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:352px 1fr 1fr;height:610px;">
+
+    <!-- PRICE + BASIS -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>WHAT IS "THE PRICE"</b><span class="r">four venues, four numbers</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>VENUE</th><th class="n">LEVEL</th><th class="n">vs OTC</th><th>TYPE</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>Your broker</td><td class="n">3,962.<span class="mut">40</span></td><td class="n mut">—</td><td class="mut">dealer</td></tr>
+            <tr><td>OTC aggregate</td><td class="n">3,962.<span class="mut">15</span></td><td class="n mut">+0.25</td><td class="mut">indicative mid</td></tr>
+            <tr><td>LBMA AM auction</td><td class="n">3,958.<span class="mut">60</span></td><td class="n up">+3.55</td><td class="acc">executable</td></tr>
+            <tr><td>COMEX front (GCZ6)</td><td class="n">3,981.<span class="mut">70</span></td><td class="n dn">−19.55</td><td class="acc">exchange</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="white-space:normal;border-top:1px solid var(--ui-line);padding-top:7px;margin-bottom:9px">
+          Gold is OTC. There is <span class="warn">no consolidated tape and no NBBO</span>. Your broker's XAUUSD is
+          a dealer quote, not a market price. The only <em>executable</em> benchmarks are the two LBMA auctions
+          (10:30 / 15:00 London, ICE Benchmark Administration).
+        </div>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>BASIS &amp; CARRY</b><span class="r">derived</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>EFP <span class="mut">futures − spot</span></td><td class="n">+19.55</td><td class="n mut">49bp</td></tr>
+            <tr><td>Implied lease rate 1m</td><td class="n warn">0.42%</td><td class="mut">derived</td></tr>
+            <tr><td>Implied lease rate 3m</td><td class="n">0.28%</td><td class="mut">derived</td></tr>
+            <tr><td>SOFR 1m</td><td class="n">3.88%</td><td class="mut">NY Fed</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          <span class="warn">GOFO was discontinued in January 2015.</span> Lease rates are not published —
+          they are derived from SOFR less the forward-implied rate. Any product quoting you a "GOFO feed" is
+          quoting a reconstruction. This one shows its working.
+        </div>
+      </div>
+    </div>
+
+    <!-- POSITIONING = the insider lens -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>WHO IS POSITIONED</b><span class="mut">the insider lens, translated</span><span class="r">CFTC · Tue data, Fri release</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>COHORT</th><th class="n">NET</th><th class="n">Δ WK</th><th class="n">%ILE 5Y</th><th>READS AS</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>Producer / merchant</td><td class="n dn">−184.2K</td><td class="n dn">−22.4K</td><td class="n crit">3rd</td><td class="acc">miners hedging hard</td></tr>
+            <tr><td>Swap dealers</td><td class="n dn">−96.1K</td><td class="n dn">−8.8K</td><td class="n">18th</td><td class="mut">bank book</td></tr>
+            <tr><td>Managed money</td><td class="n up">+241.7K</td><td class="n up">+29.1K</td><td class="n crit">97th</td><td class="warn">crowded long</td></tr>
+            <tr><td>Other reportable</td><td class="n up">+38.6K</td><td class="n up">+2.1K</td><td class="n">62nd</td><td class="mut">—</td></tr>
+            <tr><td>Open interest</td><td class="n">612K</td><td class="n up">+3.8%</td><td class="n">88th</td><td class="mut">—</td></tr>
+          </tbody>
+        </table>
+
+        <div class="ui-note" style="margin-bottom:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; <strong>Producers are the closest thing gold has to a
+          corporate insider</strong> — they hold the asset, they know their own cost curve, and hedging is them
+          selling forward their own production. Producer net short at a 5-year extreme <em>against</em>
+          managed money at the 97th percentile is the classic late-move configuration: the people who dig it
+          up are locking in, the people renting momentum are maximally long.
+          <div class="mut" style="margin-top:5px">Caveat: producer hedging is also mechanical — driven by
+            project finance covenants, not always a view. Check the miner hedge-book disclosures before
+            treating it as a signal. <span class="ui-cite">COT 08-18</span> <span class="ui-cite">BPR 08-04</span></div>
+        </div>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>BULLION BANKS</b><span class="r">Bank Participation · monthly</span></div>
+        <table class="ui-t">
+          <thead><tr><th>GROUP</th><th class="n">NET</th><th class="n">Δ MTH</th><th class="n">% OI</th></tr></thead>
+          <tbody>
+            <tr><td>US banks</td><td class="n dn">−58.4K</td><td class="n dn">−6.2K</td><td class="n">9.5%</td></tr>
+            <tr><td>Non-US banks</td><td class="n dn">−41.9K</td><td class="n dn">−3.1K</td><td class="n">6.8%</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          First-Tuesday data, published the first Friday after, 15:30 ET. Monthly and lagged — useful for
+          regime, useless for timing, and the panel says so rather than implying freshness.
+        </div>
+      </div>
+    </div>
+
+    <!-- PHYSICAL + OFFICIAL SECTOR -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>WHERE THE METAL IS</b><span class="mut">float &amp; official sector</span><span class="r">mixed vintages</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>STOCK</th><th class="n">LEVEL</th><th class="n">Δ 30D</th><th>AS OF</th></tr></thead>
+          <tbody>
+            <tr><td>COMEX registered</td><td class="n">14.51M oz</td><td class="n dn">−1.8%</td><td><span class="b b-disc">daily</span></td></tr>
+            <tr><td>COMEX eligible</td><td class="n">22.94M oz</td><td class="n up">+0.6%</td><td><span class="b b-disc">daily</span></td></tr>
+            <tr><td>LBMA vaults <span class="mut">incl. BoE</span></td><td class="n">9,534 t</td><td class="n up">+0.74%</td><td><span class="b b-stale">monthly</span></td></tr>
+            <tr><td>ETF holdings <span class="mut">global</span></td><td class="n">3,418 t</td><td class="n up">+1.9%</td><td><span class="b b-stale">weekly</span></td></tr>
+            <tr><td>GLD alone</td><td class="n">982 t</td><td class="n up">+2.4%</td><td><span class="b b-disc">daily</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>OFFICIAL SECTOR</b><span class="acc">the marginal buyer</span><span class="r">WGC / IMF · ~2m lag</span></div>
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>BUYER</th><th class="n">H1 2026</th><th class="n">12M</th></tr></thead>
+          <tbody>
+            <tr><td>Poland</td><td class="n up">+82 t</td><td class="n up">+139 t</td></tr>
+            <tr><td>Uzbekistan</td><td class="n up">+41 t</td><td class="n up">+58 t</td></tr>
+            <tr><td>China (PBoC)</td><td class="n up">+40 t</td><td class="n up">+74 t</td></tr>
+            <tr><td>Kazakhstan</td><td class="n up">+27 t</td><td class="n up">+44 t</td></tr>
+          </tbody>
+        </table>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>PHYSICAL FLOW</b><span class="r">where it is going</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Shanghai premium</td><td class="n up">+$18.40</td><td class="mut">vs London</td><td><span class="b b-disc">daily</span></td></tr>
+            <tr><td>Swiss exports → China</td><td class="n up">+18%</td><td class="mut">m/m</td><td><span class="b b-stale">monthly</span></td></tr>
+            <tr><td>Swiss exports → India</td><td class="n dn">3.1 t</td><td class="mut">from 11.6 t</td><td><span class="b b-stale">monthly</span></td></tr>
+            <tr><td>Swiss exports → UK</td><td class="n up">high</td><td class="mut">vault rebuild</td><td><span class="b b-stale">monthly</span></td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          A positive Shanghai premium means Chinese demand is pressing against a licensed, rationed import
+          pipe. Metal moving Switzerland → UK is vault rebuild, not consumption. These are different stories
+          and the panel keeps them apart.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- driver regime strip -->
+  <div class="ui-grid" style="grid-template-columns:1fr;border-top:1px solid var(--ui-line)">
+    <div class="ui-panel">
+      <div class="ui-head"><b>DRIVER REGIME</b><span class="crit">the model that stopped working</span><span class="r">rolling 12m correlation</span></div>
+      <div class="ui-body">
+        <table class="ui-t">
+          <thead><tr><th>DRIVER</th><th class="n">LEVEL</th><th class="n">1M Δ</th><th class="n">CORR 12M</th><th class="n">CORR 2003–22</th><th>STATUS</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>10y TIPS real yield</td><td class="n">1.84%</td><td class="n up">+11bp</td><td class="n warn">+0.21</td><td class="n mut">−0.73</td><td><span class="b b-crit">SIGN FLIPPED</span></td></tr>
+            <tr><td>DXY</td><td class="n">97.42</td><td class="n dn">−0.8%</td><td class="n">−0.44</td><td class="n mut">−0.51</td><td><span class="b b-fact">holding</span></td></tr>
+            <tr><td>Central bank net buying</td><td class="n up">+190 t H1</td><td class="n up">—</td><td class="n acc">+0.68</td><td class="n mut">n/a</td><td><span class="b b-disc">DOMINANT</span></td></tr>
+            <tr><td>ETF flows</td><td class="n up">+64 t</td><td class="n up">+1.9%</td><td class="n">+0.39</td><td class="n mut">+0.71</td><td><span class="b b-stale">weakened</span></td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-top:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; The textbook gold model — <em>real yields up, gold down</em>,
+          which held at roughly −0.73 from 2003 to 2022 — <strong>has decoupled</strong>. Since 2024 the
+          official sector has replaced ETF flows as the marginal buyer, and price has risen alongside positive
+          real yields. A terminal that plots gold against TIPS and stops there is showing you a broken model
+          with a straight face. This panel shows the correlation <em>and</em> its historical value, so the
+          regime break is the thing you see first.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>01 · Gold Desk</b> — positioning as the insider lens, physical stocks as the float, the official sector as the control block, and a driver panel that shows when its own model has broken.</span>
+  <span>Sample data for layout; levels are plausible for mid-2026, not live quotes.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">USDJPY Curncy&nbsp; DRIVERS</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">no consolidated tape — every quote carries its venue</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>OANDA v20</span><span><span class="ui-dot ok"></span>ECB ref</span>
+      <span><span class="ui-dot warn"></span>COT T+3</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:300px 1fr 1fr;height:540px;">
+
+    <!-- quote board -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>QUOTE BOARD</b><span class="r">source-labelled</span></div>
+      <div class="ui-body flush">
+        <table class="ui-t">
+          <thead><tr><th>PAIR</th><th class="n">BID</th><th class="n">SPR</th><th>VENUE</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td class="tk">USD/JPY</td><td class="n">154.28<span class="mut">2</span></td><td class="n mut">0.8</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">EUR/USD</td><td class="n">1.0914<span class="mut">6</span></td><td class="n mut">0.4</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">GBP/USD</td><td class="n">1.2733<span class="mut">1</span></td><td class="n mut">0.9</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">AUD/USD</td><td class="n">0.6602<span class="mut">4</span></td><td class="n mut">0.7</td><td class="mut">OANDA</td></tr>
+            <tr><td class="tk">USD/CHF</td><td class="n">0.8841<span class="mut">0</span></td><td class="n mut">1.1</td><td class="mut">OANDA</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:7px 9px;border-top:1px solid var(--ui-line)" class="mut">
+          <div style="margin-bottom:5px"><span class="b b-stale">ECB REF</span> EUR/USD 1.0921 · 14:15 CET</div>
+          <div>Dealable ≠ official. The terminal never merges a dealer stream and a central-bank fixing into one “price”.</div>
+          <div style="margin-top:6px" class="warn">Tick count is not volume. No FX volume is shown.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- drivers -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>DRIVER STACK</b><span class="mut">USD/JPY</span><span class="r">why it is here</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>DRIVER</th><th class="n">LEVEL</th><th class="n">1M Δ</th><th class="n">β</th></tr></thead>
+          <tbody>
+            <tr><td>2y rate diff <span class="mut">US−JP</span></td><td class="n">3.71%</td><td class="n dn">−28bp</td><td class="n acc">0.81</td></tr>
+            <tr><td>10y rate diff</td><td class="n">2.94%</td><td class="n dn">−19bp</td><td class="n">0.64</td></tr>
+            <tr><td>OIS-implied Fed cuts <span class="mut">12m</span></td><td class="n">−71bp</td><td class="n dn">−34bp</td><td class="n">0.58</td></tr>
+            <tr><td>Carry <span class="mut">3m fwd pts</span></td><td class="n up">+3.42%</td><td class="n dn">−0.31</td><td class="n">0.44</td></tr>
+            <tr><td>Nikkei / S&amp;P ratio</td><td class="n">0.912</td><td class="n up">+1.8%</td><td class="n mut">0.21</td></tr>
+            <tr><td>Real yield diff</td><td class="n">1.12%</td><td class="n dn">−22bp</td><td class="n">0.49</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>INTERVENTION WATCH</b><span class="r">MoF monthly</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Last confirmed op</td><td class="n">2024-07</td><td class="mut">¥5.53T</td></tr>
+            <tr><td>Verbal escalation</td><td class="n warn">stage 2 of 3</td><td class="mut">“closely watching”</td></tr>
+            <tr><td>Level vs last op</td><td class="n crit">−2.1%</td><td class="mut">inside prior zone</td></tr>
+            <tr><td>Reported cadence</td><td class="mut" colspan="2">monthly, T+30 — never intraday</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px;white-space:normal">
+          Intervention data is published a month late. This panel shows escalation <em>language</em> and proximity to prior
+          operating zones — it cannot tell you an intervention is happening now, and does not claim to.
+        </div>
+      </div>
+    </div>
+
+    <!-- positioning -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>POSITIONING</b><span class="mut">the FX “insider” proxy</span><span class="r">CFTC COT · Tue data, Fri release</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>COHORT</th><th class="n">NET</th><th class="n">Δ WK</th><th class="n">%ILE 3Y</th></tr></thead>
+          <tbody>
+            <tr><td>Leveraged funds</td><td class="n dn">−82.4K</td><td class="n dn">−11.2K</td><td class="n crit">4th</td></tr>
+            <tr><td>Asset managers</td><td class="n up">+41.9K</td><td class="n up">+3.8K</td><td class="n">71st</td></tr>
+            <tr><td>Dealer/intermediary</td><td class="n up">+38.1K</td><td class="n up">+6.9K</td><td class="n">66th</td></tr>
+            <tr><td>Open interest</td><td class="n">231K</td><td class="n up">+4.1%</td><td class="n">58th</td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-bottom:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; Leveraged short is at a 3-year extreme while the rate differential —
+          the dominant driver at β 0.81 — has moved <em>against</em> the short for a month. That is a crowded position
+          losing its fundamental support.
+          <div class="mut" style="margin-top:5px">Data is Tuesday's, released Friday. <span class="warn">Three days stale by construction.</span></div>
+        </div>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>SESSION</b><span class="r">Sun 17:00 ET week open</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Tokyo</td><td class="mut">closed</td><td class="n mut">0.31% ATR</td></tr>
+            <tr><td>London</td><td class="acc">open</td><td class="n">0.44% ATR</td></tr>
+            <tr><td>NY overlap</td><td class="acc">open · 2h14m left</td><td class="n up">0.58% ATR</td></tr>
+            <tr><td>Rollover</td><td class="warn">17:00 ET · spread widens</td><td class="n mut">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>02 · FX Desk</b> — FX as a macro and positioning surface, not a second charting product. Every quote names its venue; nothing pretends to a consolidated tape.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">?</span><span class="ui-cmd-txt">why are insiders buying CRSP into a 52-week low</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">&gt; command&nbsp; @symbol&nbsp; #screen&nbsp; ?ask</span>
+    </div>
+    <div class="ui-status">
+      <span class="acc">KP v2026.08.24</span><span><span class="ui-dot ok"></span>verified Ed25519</span>
+      <span class="mut">$3.71 today</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:1fr 400px;height:560px;">
+
+    <!-- assistant -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>ANALYST</b><span class="mut">read-only · no write tools</span><span class="r">Opus · 14.2s · 31K cached</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal;line-height:1.6">
+
+        <div style="border-left:2px solid var(--ui-fg3);padding:5px 9px;margin-bottom:10px">
+          <span class="b b-fact">FACT</span>&nbsp;<span class="mut">deterministic pipeline · no model in path</span>
+          <table class="ui-t" style="margin-top:6px">
+            <tbody>
+              <tr><td>Open-market buys, 14d</td><td class="n up">4 filers · $3.07M</td><td><span class="ui-cite">Form 4 ×4</span></td></tr>
+              <tr><td>All discretionary</td><td class="n">aff10b5One = false</td><td><span class="ui-cite">doc flag</span></td></tr>
+              <tr><td>Price vs 52w</td><td class="n dn">−61.2%</td><td><span class="ui-cite">Massive EOD</span></td></tr>
+              <tr><td>Short interest</td><td class="n crit">18.4%</td><td><span class="ui-cite">FINRA 08-15</span></td></tr>
+              <tr><td>Cash runway</td><td class="n warn">6.7 qtrs</td><td><span class="ui-cite">10-Q Q2 XBRL</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui-note" style="margin-bottom:10px">
+          <span class="b b-ai">INFERENCE</span>&nbsp;<span class="mut">model-generated · every number cited or struck</span>
+          <p style="margin:7px 0 0">
+            Three readings fit the facts, and they are not equally likely.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>1. Genuine conviction.</b> Four filers, none on a plan, none of whom bought in August in the prior three
+            years — the <em>opportunistic</em> profile that carries roughly
+            <span class="ui-cite">82bp/month abnormal return</span> in Cohen–Malloy–Pomorski, against ~0 for routine filers.
+            The CFO's purchase is <span class="ui-cite">7.4× base salary</span>, which is not a gesture.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>2. Signalling into a financing.</b> The FY25 10-K <span class="ui-cite">dropped its 24-month capital-sufficiency
+            language</span> and a <span class="ui-cite">lock-up expires 2026-09-18</span>. Insider buying ahead of a raise is a
+            known way to support a price. This is the reading the bull case must survive.
+          </p>
+          <p style="margin:7px 0 0">
+            <b>3. Squeeze positioning.</b> 18.4% short with a 14.2% borrow fee. Cheap to buy, expensive to be short.
+          </p>
+          <p style="margin:9px 0 0" class="mut2">
+            What would separate them: an 8-K or 424B in the next six weeks favours (2). Continued buying
+            <em>after</em> the lock-up date favours (1). I have set a watch on both.
+          </p>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-crit);padding:5px 9px;background:rgba(224,112,126,.07)">
+          <span class="b b-crit">WITHHELD</span>&nbsp;<span class="mut2">2 sentences removed — numeric claims with no retrievable source.
+          <span class="acc" style="border-bottom:1px dotted">show what was cut</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- knowledge pack -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>KNOWLEDGE PACK</b><span class="mut">what your terminal learned</span><span class="r">03:14 ET</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal">
+        <dl class="ui-kv" style="margin-bottom:9px">
+          <dt>Version</dt><dd>2026.08.24 <span class="mut">← 2026.08.17</span></dd>
+          <dt>Signature</dt><dd class="acc">Ed25519 ✓</dd>
+          <dt>Claims changed</dt><dd>34 <span class="up">+21</span> <span class="dn">−6</span> <span class="warn">~7</span></dd>
+          <dt>Approval</dt><dd class="warn">awaiting review</dd>
+        </dl>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>CLAIM DIFF</b><span class="r">every claim cited</span></div>
+
+        <div style="border-left:2px solid var(--ui-up);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-p">ADDED</span> <span class="mut">gene-editing / financing-risk</span>
+          <div style="margin-top:4px">Clinical-stage biotechs with &lt;8 quarters runway historically raise within 2 quarters of dropping capital-sufficiency language.</div>
+          <div class="mut" style="margin-top:4px">conf <b>0.62</b> · decays 2027-02 · <span class="ui-cite">3 sources</span></div>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-warn);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-stale">REVISED</span> <span class="mut">us-regulatory/short-reporting</span>
+          <div style="margin-top:4px">
+            <span class="dn" style="text-decoration:line-through">Form SHO short-position data available from 2026.</span><br>
+            <span class="up">SEC exemption extended to 2 Jan 2028; first filings ~Feb 2028. Do not architect around it.</span>
+          </div>
+          <div class="mut" style="margin-top:4px">conf <b>0.94</b> · <span class="ui-cite">SEC release</span></div>
+        </div>
+
+        <div style="border-left:2px solid var(--ui-crit);padding:4px 8px;margin-bottom:7px">
+          <span class="b b-crit">RETIRED</span> <span class="mut">eu-regulatory/mar-19</span>
+          <div style="margin-top:4px"><span class="dn" style="text-decoration:line-through">PDMR notification threshold is €5,000 across the EU.</span></div>
+          <div class="mut" style="margin-top:4px">DE/FR/IT/DK raised to €50,000 on 2026-01-01 — creates a volume discontinuity in any cross-year comparison.</div>
+        </div>
+
+        <div class="mut" style="border-top:1px solid var(--ui-line);padding-top:7px;margin-top:9px">
+          Packs are authored on a schedule, signed with a key that never ships in the binary, and verified before load.
+          Rejecting a pack rolls back to the previous version; nothing auto-applies without this review.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>03 · Analyst &amp; Knowledge Pack</b> — facts and inference are structurally separate surfaces, not tone differences. Uncited numeric claims are struck before render.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">#</span><span class="ui-cmd-txt">small caps where insiders bought over $1m in 30d and short interest above 15%</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+    </div>
+    <div class="ui-status"><span class="acc">compiled → SQL</span><span class="mut">no model in result path</span><span class="ui-freeze">SAMPLE DATA</span></div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:1fr 420px;height:470px;">
+
+    <div class="ui-panel">
+      <div class="ui-head"><b>COMPILED QUERY</b><span class="mut">editable before it runs</span><span class="r">deterministic · reproducible</span></div>
+      <div class="ui-body" style="overflow:hidden">
+        <pre style="margin:0 0 9px;padding:8px;background:#0A0E10;border:1px solid var(--ui-line);border-radius:2px;color:var(--ui-fg2);font-size:10.5px;line-height:1.6;white-space:pre-wrap;overflow-x:auto"><span class="acc">SELECT</span> t.symbol, t.mcap, i.net_usd, i.n_filers, s.si_pct, s.borrow_bps
+<span class="acc">FROM</span>   universe t
+<span class="acc">JOIN</span>   insider_net_30d i <span class="acc">USING</span>(symbol)
+<span class="acc">JOIN</span>   short_interest  s <span class="acc">USING</span>(symbol)
+<span class="acc">WHERE</span>  t.mcap <span class="acc">&lt;</span> 2e9
+  <span class="acc">AND</span>  i.net_usd <span class="acc">&gt;</span> 1e6
+  <span class="acc">AND</span>  i.code <span class="acc">=</span> <span class="warn">'P'</span>          <span class="mut">-- open-market only, not option exercise</span>
+  <span class="acc">AND</span>  s.si_pct <span class="acc">&gt;</span> 15.0
+<span class="acc">ORDER BY</span> i.n_filers <span class="acc">DESC</span>, i.net_usd <span class="acc">DESC</span>;</pre>
+        <div class="mut" style="white-space:normal;margin-bottom:9px">
+          The model writes the query; the query produces the rows. Results are never generated by the model, so the
+          same screen run twice returns the same answer and can be diffed over time.
+        </div>
+        <table class="ui-t">
+          <thead><tr><th>SYM</th><th class="n">MCAP</th><th class="n">$ NET</th><th class="n">FILERS</th><th class="n">SI%</th><th class="n">BORROW</th><th class="n">CONV</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td class="tk">CRSP</td><td class="n">$3.7B</td><td class="n up">+$3.07M</td><td class="n">4</td><td class="n warn">18.4</td><td class="n warn">1420bp</td><td class="n acc">94</td></tr>
+            <tr><td class="tk">TXG</td><td class="n">$1.4B</td><td class="n up">+$4.11M</td><td class="n">3</td><td class="n warn">24.1</td><td class="n crit">2870bp</td><td class="n acc">81</td></tr>
+            <tr><td class="tk">HIMS</td><td class="n">$1.9B</td><td class="n up">+$710K</td><td class="n">3</td><td class="n crit">31.7</td><td class="n crit">4110bp</td><td class="n">67</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px;white-space:normal">
+          <span class="warn">CRSP mcap $3.7B exceeds the $2B filter.</span> It is shown because “small cap” was interpreted as
+          a label, not a bound — <span class="acc" style="border-bottom:1px dotted">tighten to the literal filter</span>.
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-panel">
+      <div class="ui-head"><b>ALERTS</b><span class="mut">3 armed</span><span class="r">audit trail kept</span></div>
+      <div class="ui-body" style="overflow:hidden;white-space:normal">
+        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:7px">
+          <div><span class="b b-disc">ARMED</span> <b class="tk">Form 4 · watchlist</b></div>
+          <div class="mut" style="margin-top:4px">code = P <span class="acc">AND</span> value &gt; $250K <span class="acc">AND</span> aff10b5One = false</div>
+          <div class="mut" style="margin-top:4px">→ toast + sound · <span class="warn">fires 16:00–22:00 ET</span> when the Section 16 window is open</div>
+        </div>
+        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:7px">
+          <div><span class="b b-disc">ARMED</span> <b class="tk">CRSP · financing tell</b></div>
+          <div class="mut" style="margin-top:4px">new 8-K <span class="acc">OR</span> 424B <span class="acc">OR</span> S-3 within 45d</div>
+          <div class="mut" style="margin-top:4px">→ set by the analyst thread, 2026-08-24 16:52</div>
+        </div>
+        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:9px">
+          <div><span class="b b-stale">THROTTLED</span> <b class="tk">USDJPY · vol</b></div>
+          <div class="mut" style="margin-top:4px">1m range &gt; 2× ATR20 — <span class="warn">fired 14× today, muted 30m</span></div>
+        </div>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>DEGRADED STATE</b><span class="r">what failure looks like</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td><span class="ui-dot bad"></span>ORTEX</td><td class="crit">auth failed</td><td class="mut">borrow shows last-good + age</td></tr>
+            <tr><td><span class="ui-dot warn"></span>Massive WS</td><td class="warn">reconnect 2/5</td><td class="mut">REST backfill on resume</td></tr>
+            <tr><td><span class="ui-dot ok"></span>EDGAR</td><td class="acc">nominal</td><td class="mut">—</td></tr>
+            <tr><td><span class="ui-dot ok"></span>Local cache</td><td class="acc">14.2 GB</td><td class="mut">reads offline</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:8px">
+          A dead provider greys its panel and stamps the age of the last good value. It never renders a stale
+          number as though it were live, and never silently substitutes another provider without saying so.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>04 · Screener &amp; Alerts</b> — natural language compiles to SQL you can read and edit; the model never produces the rows. Degraded state is a designed screen, not an afterthought.</span>
+  <span>Sample data for layout.</span>
+</figcaption>
+</figure>
+
+<figure class="fig">
 <div class="screen-scroll"><div class="screen"><div class="screen-inner">
 
   <!-- ============ SHELL CHROME ============ -->
@@ -633,7 +1144,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </div>
 </div></div></div>
 <figcaption class="screen-cap">
-  <span><b>01 · Insider Radar</b> — the flagship surface. Form 4 tape, cluster ranking, conviction decomposition, filing forensics.</span>
+  <span><b>05 · Insider Radar</b> <span class="mut">— optional equities module</span> — the flagship surface. Form 4 tape, cluster ranking, conviction decomposition, filing forensics.</span>
   <span>Sample data for layout. 2560×1440; panels reflow to 2 columns below 1600px.</span>
 </figcaption>
 </figure>
@@ -748,312 +1259,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </div>
 </div></div></div>
 <figcaption class="screen-cap">
-  <span><b>02 · Company Dossier → Incentives</b> — compensation decoded into behaviour, ownership with per-row vintage, filing redline ranked by materiality.</span>
-  <span>Sample data for layout.</span>
-</figcaption>
-</figure>
-
-<figure class="fig">
-<div class="screen-scroll"><div class="screen"><div class="screen-inner">
-  <div class="ui-top">
-    <div class="ui-cmd">
-      <span class="ui-cmd-sig">?</span><span class="ui-cmd-txt">why are insiders buying CRSP into a 52-week low</span><span class="ui-caret"></span>
-      <span class="ui-go">GO</span>
-      <span class="ui-cmd-ghost" style="margin-left:auto">&gt; command&nbsp; @symbol&nbsp; #screen&nbsp; ?ask</span>
-    </div>
-    <div class="ui-status">
-      <span class="acc">KP v2026.08.24</span><span><span class="ui-dot ok"></span>verified Ed25519</span>
-      <span class="mut">$3.71 today</span><span class="ui-freeze">SAMPLE DATA</span>
-    </div>
-  </div>
-
-  <div class="ui-grid" style="grid-template-columns:1fr 400px;height:560px;">
-
-    <!-- assistant -->
-    <div class="ui-panel">
-      <div class="ui-head"><b>ANALYST</b><span class="mut">read-only · no write tools</span><span class="r">Opus · 14.2s · 31K cached</span></div>
-      <div class="ui-body" style="overflow:hidden;white-space:normal;line-height:1.6">
-
-        <div style="border-left:2px solid var(--ui-fg3);padding:5px 9px;margin-bottom:10px">
-          <span class="b b-fact">FACT</span>&nbsp;<span class="mut">deterministic pipeline · no model in path</span>
-          <table class="ui-t" style="margin-top:6px">
-            <tbody>
-              <tr><td>Open-market buys, 14d</td><td class="n up">4 filers · $3.07M</td><td><span class="ui-cite">Form 4 ×4</span></td></tr>
-              <tr><td>All discretionary</td><td class="n">aff10b5One = false</td><td><span class="ui-cite">doc flag</span></td></tr>
-              <tr><td>Price vs 52w</td><td class="n dn">−61.2%</td><td><span class="ui-cite">Massive EOD</span></td></tr>
-              <tr><td>Short interest</td><td class="n crit">18.4%</td><td><span class="ui-cite">FINRA 08-15</span></td></tr>
-              <tr><td>Cash runway</td><td class="n warn">6.7 qtrs</td><td><span class="ui-cite">10-Q Q2 XBRL</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="ui-note" style="margin-bottom:10px">
-          <span class="b b-ai">INFERENCE</span>&nbsp;<span class="mut">model-generated · every number cited or struck</span>
-          <p style="margin:7px 0 0">
-            Three readings fit the facts, and they are not equally likely.
-          </p>
-          <p style="margin:7px 0 0">
-            <b>1. Genuine conviction.</b> Four filers, none on a plan, none of whom bought in August in the prior three
-            years — the <em>opportunistic</em> profile that carries roughly
-            <span class="ui-cite">82bp/month abnormal return</span> in Cohen–Malloy–Pomorski, against ~0 for routine filers.
-            The CFO's purchase is <span class="ui-cite">7.4× base salary</span>, which is not a gesture.
-          </p>
-          <p style="margin:7px 0 0">
-            <b>2. Signalling into a financing.</b> The FY25 10-K <span class="ui-cite">dropped its 24-month capital-sufficiency
-            language</span> and a <span class="ui-cite">lock-up expires 2026-09-18</span>. Insider buying ahead of a raise is a
-            known way to support a price. This is the reading the bull case must survive.
-          </p>
-          <p style="margin:7px 0 0">
-            <b>3. Squeeze positioning.</b> 18.4% short with a 14.2% borrow fee. Cheap to buy, expensive to be short.
-          </p>
-          <p style="margin:9px 0 0" class="mut2">
-            What would separate them: an 8-K or 424B in the next six weeks favours (2). Continued buying
-            <em>after</em> the lock-up date favours (1). I have set a watch on both.
-          </p>
-        </div>
-
-        <div style="border-left:2px solid var(--ui-crit);padding:5px 9px;background:rgba(224,112,126,.07)">
-          <span class="b b-crit">WITHHELD</span>&nbsp;<span class="mut2">2 sentences removed — numeric claims with no retrievable source.
-          <span class="acc" style="border-bottom:1px dotted">show what was cut</span></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- knowledge pack -->
-    <div class="ui-panel">
-      <div class="ui-head"><b>KNOWLEDGE PACK</b><span class="mut">what your terminal learned</span><span class="r">03:14 ET</span></div>
-      <div class="ui-body" style="overflow:hidden;white-space:normal">
-        <dl class="ui-kv" style="margin-bottom:9px">
-          <dt>Version</dt><dd>2026.08.24 <span class="mut">← 2026.08.17</span></dd>
-          <dt>Signature</dt><dd class="acc">Ed25519 ✓</dd>
-          <dt>Claims changed</dt><dd>34 <span class="up">+21</span> <span class="dn">−6</span> <span class="warn">~7</span></dd>
-          <dt>Approval</dt><dd class="warn">awaiting review</dd>
-        </dl>
-
-        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>CLAIM DIFF</b><span class="r">every claim cited</span></div>
-
-        <div style="border-left:2px solid var(--ui-up);padding:4px 8px;margin-bottom:7px">
-          <span class="b b-p">ADDED</span> <span class="mut">gene-editing / financing-risk</span>
-          <div style="margin-top:4px">Clinical-stage biotechs with &lt;8 quarters runway historically raise within 2 quarters of dropping capital-sufficiency language.</div>
-          <div class="mut" style="margin-top:4px">conf <b>0.62</b> · decays 2027-02 · <span class="ui-cite">3 sources</span></div>
-        </div>
-
-        <div style="border-left:2px solid var(--ui-warn);padding:4px 8px;margin-bottom:7px">
-          <span class="b b-stale">REVISED</span> <span class="mut">us-regulatory/short-reporting</span>
-          <div style="margin-top:4px">
-            <span class="dn" style="text-decoration:line-through">Form SHO short-position data available from 2026.</span><br>
-            <span class="up">SEC exemption extended to 2 Jan 2028; first filings ~Feb 2028. Do not architect around it.</span>
-          </div>
-          <div class="mut" style="margin-top:4px">conf <b>0.94</b> · <span class="ui-cite">SEC release</span></div>
-        </div>
-
-        <div style="border-left:2px solid var(--ui-crit);padding:4px 8px;margin-bottom:7px">
-          <span class="b b-crit">RETIRED</span> <span class="mut">eu-regulatory/mar-19</span>
-          <div style="margin-top:4px"><span class="dn" style="text-decoration:line-through">PDMR notification threshold is €5,000 across the EU.</span></div>
-          <div class="mut" style="margin-top:4px">DE/FR/IT/DK raised to €50,000 on 2026-01-01 — creates a volume discontinuity in any cross-year comparison.</div>
-        </div>
-
-        <div class="mut" style="border-top:1px solid var(--ui-line);padding-top:7px;margin-top:9px">
-          Packs are authored on a schedule, signed with a key that never ships in the binary, and verified before load.
-          Rejecting a pack rolls back to the previous version; nothing auto-applies without this review.
-        </div>
-      </div>
-    </div>
-  </div>
-</div></div></div>
-<figcaption class="screen-cap">
-  <span><b>03 · Analyst &amp; Knowledge Pack</b> — facts and inference are structurally separate surfaces, not tone differences. Uncited numeric claims are struck before render.</span>
-  <span>Sample data for layout.</span>
-</figcaption>
-</figure>
-
-<figure class="fig">
-<div class="screen-scroll"><div class="screen"><div class="screen-inner">
-  <div class="ui-top">
-    <div class="ui-cmd">
-      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">USDJPY Curncy&nbsp; DRIVERS</span><span class="ui-caret"></span>
-      <span class="ui-go">GO</span>
-      <span class="ui-cmd-ghost" style="margin-left:auto">no consolidated tape — every quote carries its venue</span>
-    </div>
-    <div class="ui-status">
-      <span><span class="ui-dot ok"></span>OANDA v20</span><span><span class="ui-dot ok"></span>ECB ref</span>
-      <span><span class="ui-dot warn"></span>COT T+3</span><span class="ui-freeze">SAMPLE DATA</span>
-    </div>
-  </div>
-
-  <div class="ui-grid" style="grid-template-columns:300px 1fr 1fr;height:540px;">
-
-    <!-- quote board -->
-    <div class="ui-panel">
-      <div class="ui-head"><b>QUOTE BOARD</b><span class="r">source-labelled</span></div>
-      <div class="ui-body flush">
-        <table class="ui-t">
-          <thead><tr><th>PAIR</th><th class="n">BID</th><th class="n">SPR</th><th>VENUE</th></tr></thead>
-          <tbody>
-            <tr class="sel"><td class="tk">USD/JPY</td><td class="n">154.28<span class="mut">2</span></td><td class="n mut">0.8</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">EUR/USD</td><td class="n">1.0914<span class="mut">6</span></td><td class="n mut">0.4</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">GBP/USD</td><td class="n">1.2733<span class="mut">1</span></td><td class="n mut">0.9</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">AUD/USD</td><td class="n">0.6602<span class="mut">4</span></td><td class="n mut">0.7</td><td class="mut">OANDA</td></tr>
-            <tr><td class="tk">USD/CHF</td><td class="n">0.8841<span class="mut">0</span></td><td class="n mut">1.1</td><td class="mut">OANDA</td></tr>
-          </tbody>
-        </table>
-        <div style="padding:7px 9px;border-top:1px solid var(--ui-line)" class="mut">
-          <div style="margin-bottom:5px"><span class="b b-stale">ECB REF</span> EUR/USD 1.0921 · 14:15 CET</div>
-          <div>Dealable ≠ official. The terminal never merges a dealer stream and a central-bank fixing into one “price”.</div>
-          <div style="margin-top:6px" class="warn">Tick count is not volume. No FX volume is shown.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- drivers -->
-    <div class="ui-panel">
-      <div class="ui-head"><b>DRIVER STACK</b><span class="mut">USD/JPY</span><span class="r">why it is here</span></div>
-      <div class="ui-body">
-        <table class="ui-t" style="margin-bottom:9px">
-          <thead><tr><th>DRIVER</th><th class="n">LEVEL</th><th class="n">1M Δ</th><th class="n">β</th></tr></thead>
-          <tbody>
-            <tr><td>2y rate diff <span class="mut">US−JP</span></td><td class="n">3.71%</td><td class="n dn">−28bp</td><td class="n acc">0.81</td></tr>
-            <tr><td>10y rate diff</td><td class="n">2.94%</td><td class="n dn">−19bp</td><td class="n">0.64</td></tr>
-            <tr><td>OIS-implied Fed cuts <span class="mut">12m</span></td><td class="n">−71bp</td><td class="n dn">−34bp</td><td class="n">0.58</td></tr>
-            <tr><td>Carry <span class="mut">3m fwd pts</span></td><td class="n up">+3.42%</td><td class="n dn">−0.31</td><td class="n">0.44</td></tr>
-            <tr><td>Nikkei / S&amp;P ratio</td><td class="n">0.912</td><td class="n up">+1.8%</td><td class="n mut">0.21</td></tr>
-            <tr><td>Real yield diff</td><td class="n">1.12%</td><td class="n dn">−22bp</td><td class="n">0.49</td></tr>
-          </tbody>
-        </table>
-        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>INTERVENTION WATCH</b><span class="r">MoF monthly</span></div>
-        <table class="ui-t">
-          <tbody>
-            <tr><td>Last confirmed op</td><td class="n">2024-07</td><td class="mut">¥5.53T</td></tr>
-            <tr><td>Verbal escalation</td><td class="n warn">stage 2 of 3</td><td class="mut">“closely watching”</td></tr>
-            <tr><td>Level vs last op</td><td class="n crit">−2.1%</td><td class="mut">inside prior zone</td></tr>
-            <tr><td>Reported cadence</td><td class="mut" colspan="2">monthly, T+30 — never intraday</td></tr>
-          </tbody>
-        </table>
-        <div class="mut" style="margin-top:8px;white-space:normal">
-          Intervention data is published a month late. This panel shows escalation <em>language</em> and proximity to prior
-          operating zones — it cannot tell you an intervention is happening now, and does not claim to.
-        </div>
-      </div>
-    </div>
-
-    <!-- positioning -->
-    <div class="ui-panel">
-      <div class="ui-head"><b>POSITIONING</b><span class="mut">the FX “insider” proxy</span><span class="r">CFTC COT · Tue data, Fri release</span></div>
-      <div class="ui-body">
-        <table class="ui-t" style="margin-bottom:9px">
-          <thead><tr><th>COHORT</th><th class="n">NET</th><th class="n">Δ WK</th><th class="n">%ILE 3Y</th></tr></thead>
-          <tbody>
-            <tr><td>Leveraged funds</td><td class="n dn">−82.4K</td><td class="n dn">−11.2K</td><td class="n crit">4th</td></tr>
-            <tr><td>Asset managers</td><td class="n up">+41.9K</td><td class="n up">+3.8K</td><td class="n">71st</td></tr>
-            <tr><td>Dealer/intermediary</td><td class="n up">+38.1K</td><td class="n up">+6.9K</td><td class="n">66th</td></tr>
-            <tr><td>Open interest</td><td class="n">231K</td><td class="n up">+4.1%</td><td class="n">58th</td></tr>
-          </tbody>
-        </table>
-        <div class="ui-note" style="margin-bottom:9px">
-          <span class="b b-ai">INFERENCE</span>&nbsp; Leveraged short is at a 3-year extreme while the rate differential —
-          the dominant driver at β 0.81 — has moved <em>against</em> the short for a month. That is a crowded position
-          losing its fundamental support.
-          <div class="mut" style="margin-top:5px">Data is Tuesday's, released Friday. <span class="warn">Three days stale by construction.</span></div>
-        </div>
-        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>SESSION</b><span class="r">Sun 17:00 ET week open</span></div>
-        <table class="ui-t">
-          <tbody>
-            <tr><td>Tokyo</td><td class="mut">closed</td><td class="n mut">0.31% ATR</td></tr>
-            <tr><td>London</td><td class="acc">open</td><td class="n">0.44% ATR</td></tr>
-            <tr><td>NY overlap</td><td class="acc">open · 2h14m left</td><td class="n up">0.58% ATR</td></tr>
-            <tr><td>Rollover</td><td class="warn">17:00 ET · spread widens</td><td class="n mut">—</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div></div></div>
-<figcaption class="screen-cap">
-  <span><b>04 · FX Desk</b> — FX as a macro and positioning surface, not a second charting product. Every quote names its venue; nothing pretends to a consolidated tape.</span>
-  <span>Sample data for layout.</span>
-</figcaption>
-</figure>
-
-<figure class="fig">
-<div class="screen-scroll"><div class="screen"><div class="screen-inner">
-  <div class="ui-top">
-    <div class="ui-cmd">
-      <span class="ui-cmd-sig">#</span><span class="ui-cmd-txt">small caps where insiders bought over $1m in 30d and short interest above 15%</span><span class="ui-caret"></span>
-      <span class="ui-go">GO</span>
-    </div>
-    <div class="ui-status"><span class="acc">compiled → SQL</span><span class="mut">no model in result path</span><span class="ui-freeze">SAMPLE DATA</span></div>
-  </div>
-
-  <div class="ui-grid" style="grid-template-columns:1fr 420px;height:470px;">
-
-    <div class="ui-panel">
-      <div class="ui-head"><b>COMPILED QUERY</b><span class="mut">editable before it runs</span><span class="r">deterministic · reproducible</span></div>
-      <div class="ui-body" style="overflow:hidden">
-        <pre style="margin:0 0 9px;padding:8px;background:#0A0E10;border:1px solid var(--ui-line);border-radius:2px;color:var(--ui-fg2);font-size:10.5px;line-height:1.6;white-space:pre-wrap;overflow-x:auto"><span class="acc">SELECT</span> t.symbol, t.mcap, i.net_usd, i.n_filers, s.si_pct, s.borrow_bps
-<span class="acc">FROM</span>   universe t
-<span class="acc">JOIN</span>   insider_net_30d i <span class="acc">USING</span>(symbol)
-<span class="acc">JOIN</span>   short_interest  s <span class="acc">USING</span>(symbol)
-<span class="acc">WHERE</span>  t.mcap <span class="acc">&lt;</span> 2e9
-  <span class="acc">AND</span>  i.net_usd <span class="acc">&gt;</span> 1e6
-  <span class="acc">AND</span>  i.code <span class="acc">=</span> <span class="warn">'P'</span>          <span class="mut">-- open-market only, not option exercise</span>
-  <span class="acc">AND</span>  s.si_pct <span class="acc">&gt;</span> 15.0
-<span class="acc">ORDER BY</span> i.n_filers <span class="acc">DESC</span>, i.net_usd <span class="acc">DESC</span>;</pre>
-        <div class="mut" style="white-space:normal;margin-bottom:9px">
-          The model writes the query; the query produces the rows. Results are never generated by the model, so the
-          same screen run twice returns the same answer and can be diffed over time.
-        </div>
-        <table class="ui-t">
-          <thead><tr><th>SYM</th><th class="n">MCAP</th><th class="n">$ NET</th><th class="n">FILERS</th><th class="n">SI%</th><th class="n">BORROW</th><th class="n">CONV</th></tr></thead>
-          <tbody>
-            <tr class="sel"><td class="tk">CRSP</td><td class="n">$3.7B</td><td class="n up">+$3.07M</td><td class="n">4</td><td class="n warn">18.4</td><td class="n warn">1420bp</td><td class="n acc">94</td></tr>
-            <tr><td class="tk">TXG</td><td class="n">$1.4B</td><td class="n up">+$4.11M</td><td class="n">3</td><td class="n warn">24.1</td><td class="n crit">2870bp</td><td class="n acc">81</td></tr>
-            <tr><td class="tk">HIMS</td><td class="n">$1.9B</td><td class="n up">+$710K</td><td class="n">3</td><td class="n crit">31.7</td><td class="n crit">4110bp</td><td class="n">67</td></tr>
-          </tbody>
-        </table>
-        <div class="mut" style="margin-top:8px;white-space:normal">
-          <span class="warn">CRSP mcap $3.7B exceeds the $2B filter.</span> It is shown because “small cap” was interpreted as
-          a label, not a bound — <span class="acc" style="border-bottom:1px dotted">tighten to the literal filter</span>.
-        </div>
-      </div>
-    </div>
-
-    <div class="ui-panel">
-      <div class="ui-head"><b>ALERTS</b><span class="mut">3 armed</span><span class="r">audit trail kept</span></div>
-      <div class="ui-body" style="overflow:hidden;white-space:normal">
-        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:7px">
-          <div><span class="b b-disc">ARMED</span> <b class="tk">Form 4 · watchlist</b></div>
-          <div class="mut" style="margin-top:4px">code = P <span class="acc">AND</span> value &gt; $250K <span class="acc">AND</span> aff10b5One = false</div>
-          <div class="mut" style="margin-top:4px">→ toast + sound · <span class="warn">fires 16:00–22:00 ET</span> when the Section 16 window is open</div>
-        </div>
-        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:7px">
-          <div><span class="b b-disc">ARMED</span> <b class="tk">CRSP · financing tell</b></div>
-          <div class="mut" style="margin-top:4px">new 8-K <span class="acc">OR</span> 424B <span class="acc">OR</span> S-3 within 45d</div>
-          <div class="mut" style="margin-top:4px">→ set by the analyst thread, 2026-08-24 16:52</div>
-        </div>
-        <div style="border:1px solid var(--ui-line);border-radius:2px;padding:7px 8px;margin-bottom:9px">
-          <div><span class="b b-stale">THROTTLED</span> <b class="tk">USDJPY · vol</b></div>
-          <div class="mut" style="margin-top:4px">1m range &gt; 2× ATR20 — <span class="warn">fired 14× today, muted 30m</span></div>
-        </div>
-
-        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>DEGRADED STATE</b><span class="r">what failure looks like</span></div>
-        <table class="ui-t">
-          <tbody>
-            <tr><td><span class="ui-dot bad"></span>ORTEX</td><td class="crit">auth failed</td><td class="mut">borrow shows last-good + age</td></tr>
-            <tr><td><span class="ui-dot warn"></span>Massive WS</td><td class="warn">reconnect 2/5</td><td class="mut">REST backfill on resume</td></tr>
-            <tr><td><span class="ui-dot ok"></span>EDGAR</td><td class="acc">nominal</td><td class="mut">—</td></tr>
-            <tr><td><span class="ui-dot ok"></span>Local cache</td><td class="acc">14.2 GB</td><td class="mut">reads offline</td></tr>
-          </tbody>
-        </table>
-        <div class="mut" style="margin-top:8px">
-          A dead provider greys its panel and stamps the age of the last good value. It never renders a stale
-          number as though it were live, and never silently substitutes another provider without saying so.
-        </div>
-      </div>
-    </div>
-  </div>
-</div></div></div>
-<figcaption class="screen-cap">
-  <span><b>05 · Screener &amp; Alerts</b> — natural language compiles to SQL you can read and edit; the model never produces the rows. Degraded state is a designed screen, not an afterthought.</span>
+  <span><b>06 · Company Dossier</b> <span class="mut">— optional equities module</span> — compensation decoded into behaviour, ownership with per-row vintage, filing redline ranked by materiality.</span>
   <span>Sample data for layout.</span>
 </figcaption>
 </figure>
@@ -1088,7 +1294,56 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     absence make the terminal not worth opening?</em> Everything else moved down.
   </p>
 
-  <h3>Module 1 · Insiders &amp; incentives <span class="p0">FLAGSHIP</span></h3>
+  <h3>Module 1 · Gold desk <span class="p0">FLAGSHIP</span></h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
+    <tbody>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Cohort Positioning Board</td><td>Disaggregated COT by producer/merchant, swap dealer, managed money and other reportable, with 5-year percentile bands and week-on-week deltas. The core insider lens.</td><td class="mono">CFTC Socrata · $0</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Producer Hedge Decoder</td><td>Separates <em>mechanical</em> producer hedging (project-finance covenants, scheduled programmes) from <em>discretionary</em> hedging, cross-checked against miner hedge-book disclosures. Directly analogous to the Form 4 code decoder — and the same insight: only score the discretionary part.</td><td class="mono">CFTC + miner filings</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Four-Venue Price Panel</td><td>Broker quote, OTC aggregate mid, both LBMA auction fixes, COMEX front month — plus the EFP basis between them. Gold is OTC; there is no single price, and the panel refuses to pretend there is.</td><td class="mono">broker + LBMA + CME</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Driver Regime Panel</td><td>Rolling correlation of gold to real yields, DXY, central-bank flow and ETF flow — each shown <strong>beside its long-run historical value</strong>, so a regime break is visible immediately rather than inferred late.</td><td class="mono">FRED + WGC</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Physical Stock Board</td><td>COMEX registered vs eligible, LBMA vault holdings (including Bank of England), global ETF tonnes, GLD daily. The "float" of the gold market.</td><td class="mono">CME · LBMA · WGC · $0</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Official Sector Tracker</td><td>Central-bank buying and selling by country, with the ~2-month reporting lag stamped. Since 2024 this is the marginal buyer and therefore the dominant driver.</td><td class="mono">WGC · IMF IFS · $0</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Bullion Bank Monitor</td><td>Bank Participation Report, US vs non-US banks, monthly. Regime information, not timing information — and labelled as such.</td><td class="mono">CFTC BPR · $0</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Implied Lease Rate</td><td>Derived from SOFR less the forward-implied rate, with the working shown. <strong>GOFO was discontinued in January 2015</strong> — anything quoting a live GOFO feed is quoting a reconstruction.</td><td class="mono">derived · $0</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Physical Flow Tracker</td><td>Shanghai premium/discount to London, Swiss customs exports by destination, Indian import demand. Distinguishes consumption from vault rebuild.</td><td class="mono">SGE · Swiss BAZG · $0</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Delivery &amp; Auction Calendar</td><td>COMEX first notice and delivery windows, both daily LBMA auctions, month-end and quarter-end fixing pressure.</td><td class="mono">CME · LBMA · $0</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Miner Hedge Book Reader</td><td>Hedge positions from producer filings — the bridge into the equity engine, pointed at ~40 names that matter to gold.</td><td class="mono">filings · $0</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Silver &amp; Ratio Desk</td><td>The same board for silver, plus the gold/silver ratio with regime percentiles.</td><td class="mono">as above · $0</td><td class="n mono">S</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Module 2 · FX desk</h3>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
+    <tbody>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Driver Stack</td><td>Per pair: 2y and 10y rate differentials, OIS-implied policy paths, real-yield spreads, carry from forward points, with rolling betas.</td><td class="mono">FRED · BoE · ECB · $0</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">FX Positioning Console</td><td>CFTC financial-futures COT: leveraged funds, asset managers, dealers, with percentile bands. The FX insider proxy.</td><td class="mono">CFTC · $0</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Session &amp; Convention Engine</td><td>Sunday 17:00 ET week open, Tokyo/London/NY overlaps with per-session ATR, rollover timing and spread widening, pip/pipette rendering, JPY 2-dp handling.</td><td class="mono">internal</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Sterling Rates Panel</td><td>Bank Rate, SONIA, gilt curve and the effective exchange rate index over the BoE's CSV endpoint — the UK-specific spine the plan previously lacked.</td><td class="mono">BoE database · $0</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p0">P0</span></td><td class="nm">Venue-Labelled Quotes</td><td>Every FX quote carries its source. No consolidated tape exists, and <strong>retail "volume" is tick count</strong> — the UI refuses to render it as volume.</td><td class="mono">broker + ECB ref</td><td class="n mono">S</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Central Bank Reaction Tracker</td><td>Speech and meeting calendar, market-implied hike/cut odds from OIS, rhetoric-versus-balance-sheet divergence, intervention watch with its reporting lag made explicit.</td><td class="mono">central banks · $0</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p1">P1</span></td><td class="nm">Correlation &amp; Regime Matrix</td><td>Rolling correlations across pairs, DXY, gold, oil, US10Y — each against its historical norm, same pattern as the gold driver panel.</td><td class="mono">derived</td><td class="n mono">M</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">Vol Surface &amp; Risk Reversals</td><td>ATM vol, 25-delta risk reversals and butterflies where obtainable — flagged as the one genuinely awkward free-data gap in FX.</td><td class="mono">vendor</td><td class="n mono">L</td></tr>
+      <tr><td><span class="p2">P2</span></td><td class="nm">REER / Fair Value</td><td>BIS real effective exchange rate deviation from long-run average.</td><td class="mono">BIS · $0</td><td class="n mono">S</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Module 3 · Equities &amp; insiders <span class="p2">OPTIONAL</span></h3>
+  <p>
+    This was the flagship in v0.1. Given FX and gold are what you trade, it is now optional — but it is not
+    wasted, and I would still build a reduced version for two reasons. First, <strong>gold miners are a real
+    sentiment channel</strong>: hedge books and insider transactions at forty producers tell you what the
+    people closest to the metal are doing. Second, the filings engine is the same machinery either way.
+  </p>
+  <p>
+    <strong>My recommendation:</strong> build the Form 4 decoder, conviction score and cluster radar, but point
+    them at a gold-miner universe rather than the whole market — roughly a third of the original effort for
+    most of the value <em>to you</em>. The full equity module below stays in the plan for reference and can be
+    switched on later; nothing about it is thrown away.
+  </p>
+
+  <h4>The full equity insider module, for reference</h4>
   <div class="tw"><table class="d">
     <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
     <tbody>
@@ -1111,7 +1366,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </tbody>
   </table></div>
 
-  <h3>Module 2 · Ownership &amp; flows</h3>
+  <h4>Equity ownership &amp; flows</h4>
   <div class="tw"><table class="d">
     <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
     <tbody>
@@ -1125,7 +1380,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </tbody>
   </table></div>
 
-  <h3>Module 3 · Company research</h3>
+  <h4>Equity company research</h4>
   <div class="tw"><table class="d">
     <thead><tr><th>Pri</th><th>Feature</th><th>What it does</th><th>Source</th><th class="n">Eff</th></tr></thead>
     <tbody>
@@ -1141,7 +1396,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
     </tbody>
   </table></div>
 
-  <h3>Modules 4–20 · condensed</h3>
+  <h3>Supporting modules · condensed</h3>
   <div class="tw"><table class="d">
     <thead><tr><th>#</th><th>Module</th><th>P0 core</th><th>Deferred</th></tr></thead>
     <tbody>
@@ -1300,10 +1555,33 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </table></div>
   <p><strong>Year-one licence total: roughly $1,020.</strong></p>
 
-  <h3>The Form 4 pipeline, with a latency budget</h3>
+  <h3>Two ingest shapes, not one</h3>
   <p>
-    This is the path that has to be fast, because it is the product's reason to exist. Target is
-    <strong>filing visible on screen within 60 seconds</strong> of hitting EDGAR.
+    The gold and FX build inverts v0.1's assumption. Almost nothing in the positioning and physical layer is
+    latency-sensitive: COT is three days stale, the Bank Participation Report is monthly, vault data is
+    monthly. <strong>What matters is not speed but scheduling, vintage tracking and change detection</strong> —
+    knowing precisely when Friday 15:30 ET has passed, fetching once, diffing against last week, and stamping
+    every value with the date it describes rather than the date it arrived.
+  </p>
+  <div class="tw"><table class="d">
+    <thead><tr><th>Shape</th><th>Examples</th><th>Requirement</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Streaming</td><td class="mono">Broker FX/XAUUSD quotes</td><td>Conflated to frame rate, bar builder with correct session boundaries, reconnect with gap backfill. The only genuinely real-time path.</td></tr>
+      <tr><td class="nm">Scheduled release</td><td class="mono">COT (Fri 15:30 ET), BPR (1st Fri), LBMA vaults (monthly), WGC (weekly), Swiss customs (monthly)</td><td>A release calendar, not a poller. Fetch on schedule, detect change, diff against prior vintage, alert on percentile moves. Catch up correctly after the machine has been asleep.</td></tr>
+      <tr><td class="nm">Daily file</td><td class="mono">CME warehouse stocks, GLD holdings, SGE premium, FRED/BoE series</td><td>Idempotent daily pull with backfill, outlier detection, and a cross-source sanity check.</td></tr>
+      <tr><td class="nm">Event-driven</td><td class="mono">Miner filings (the equity bridge)</td><td>The EDGAR pipeline below — retained but now serving ~40 names rather than the whole market.</td></tr>
+    </tbody>
+  </table></div>
+  <p>
+    Because the release calendar <em>is</em> the architecture here, it deserves to be a first-class object:
+    every scheduled source declares its publication rule, its data-as-of rule and its expected lag, and the
+    scheduler derives fetch times from that rather than from hardcoded cron strings that break at DST.
+  </p>
+
+  <h3>The filings pipeline, with a latency budget</h3>
+  <p>
+    Retained from v0.1 for the miner bridge, where a hedge-book disclosure or a producer insider transaction
+    is genuinely time-sensitive. Target is <strong>filing visible within 60 seconds</strong>.
   </p>
 
   <div class="tw"><table class="d">
@@ -1346,77 +1624,84 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 
 <section id="data">
   <div class="sec-head"><span class="sec-mn">DATA</span><h2>Data, licensing &amp; cost</h2>
-    <span class="sec-note">the part that actually decides feasibility</span></div>
+    <span class="sec-note">confirmed: UK, non-professional</span></div>
 
-  <p>
-    Because this is one person, own-use, and non-redistributive, the cost structure collapses. Below are three
-    honest tiers. The column that applies to you depends on a single question addressed underneath.
-  </p>
-
-  <div class="tw"><table class="d">
-    <thead><tr><th>Component</th><th>Free build</th><th>Lean</th><th>Full</th></tr></thead>
-    <tbody>
-      <tr><td class="nm">Equity prices</td><td class="mono">Massive Basic (EOD) $0</td><td class="mono">Massive Developer $79</td><td class="mono">Massive Advanced $199</td></tr>
-      <tr><td class="nm">Depth / microstructure</td><td class="mono">—</td><td class="mono">—</td><td class="mono">Databento usage-based</td></tr>
-      <tr><td class="nm">Cross-check feed</td><td class="mono">—</td><td class="mono">IBKR non-pro ~$31</td><td class="mono">IBKR non-pro ~$31</td></tr>
-      <tr><td class="nm">Nasdaq TotalView (non-pro)</td><td class="mono">—</td><td class="mono">—</td><td class="mono">$15</td></tr>
-      <tr><td class="nm">FX</td><td class="mono">OANDA + ECB $0</td><td class="mono">OANDA + ECB $0</td><td class="mono">OANDA + ECB $0</td></tr>
-      <tr><td class="nm">Filings / insiders</td><td class="mono">EDGAR $0</td><td class="mono">EDGAR $0</td><td class="mono">EDGAR $0 + sec-api convenience</td></tr>
-      <tr><td class="nm">Borrow / short</td><td class="mono">FINRA $0</td><td class="mono">FINRA $0</td><td class="mono">ORTEX $49–149</td></tr>
-      <tr><td class="nm">Options / GEX</td><td class="mono">Cboe CDN $0</td><td class="mono">Cboe CDN $0</td><td class="mono">Cboe CDN $0</td></tr>
-      <tr><td class="nm">Macro</td><td class="mono">FRED/ALFRED, ECB, CFTC $0</td><td class="mono">$0</td><td class="mono">$0</td></tr>
-      <tr><td class="nm">Consensus estimates</td><td class="mono">absent</td><td class="mono">absent</td><td class="mono">vendor ~$50–100</td></tr>
-      <tr><td class="nm">AI</td><td class="mono">~$60</td><td class="mono">~$110</td><td class="mono">~$250</td></tr>
-      <tr><td><strong>Monthly</strong></td><td class="mono"><strong>~$60</strong></td><td class="mono"><strong>~$220</strong></td><td class="mono"><strong>~$560</strong></td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="call crit">
-    <p class="call-h">The one question that changes your bill by 10–50×</p>
+  <div class="call dec">
+    <p class="call-h">Both open questions are now closed, and both closed favourably</p>
     <p>
-      Exchanges classify you <strong>professional</strong> or <strong>non-professional</strong>, and it has
-      nothing to do with skill. The incoming <strong>CT Plan</strong> — approved by the SEC in July 2026,
-      replacing the CTA/CQ/UTP plans, launch expected early 2027 — makes the test <em>use-based</em> rather
-      than status-based. Its language captures any use "by or on behalf of any entity… limited liability
-      company…".
+      <strong>Non-professional</strong> means the exchange-fee cliff that dominated v0.1 largely evaporates —
+      and in a gold and FX build you barely touch exchange-licensed data anyway. <strong>UK-resident</strong>
+      means the EU AI Act does not apply to you at all, so the transparency-duty question raised in the
+      previous version is closed. What remains is UK data protection, which does still apply and is addressed
+      under <a href="#sec">SEC</a>.
     </p>
     <p>
-      In plain terms: <strong>if you trade your own money in your own name, you are non-professional</strong> —
-      roughly $2.70/month of tape fees and $15/month for full Nasdaq depth. <strong>If you route through a
-      company or LLC, you are professional</strong> — roughly $73/month in tape fees plus per-device charges,
-      before vendor markups. Same software, same screen.
-    </p>
-    <p>
-      <strong>But the LLC question is not the whole test, and this is where the plan's first draft was too
-      narrow.</strong> Employment by a financial firm in a covered role, registration with any regulator or
-      exchange, and use of the data for <em>any</em> business purpose each independently make you professional
-      regardless of whose money you trade. Given the Rothschild background, if that is current rather than
-      past, you are likely professional already, whatever the account structure.
-    </p>
-    <p class="mono" style="font-size:var(--t-xs);color:var(--text-3)">
-      Verification status: the $15.00 non-professional and $80.50–$84.00 professional TotalView rates are
-      confirmed against Nasdaq's published 2025–2027 price list. The CT Plan's July 2026 approval and its
-      use-based professional definition are <strong>reported but not confirmed against the primary Federal
-      Register order</strong> — read it before treating the entitlement design as settled, because the whole
-      pro/non-pro console rests on that wording.
+      Keep the entitlement console anyway, as a setting rather than an assumption: non-professional status is
+      forfeited by employment in a covered role, regulatory registration, or using the data for a business
+      purpose — none of which are permanent facts about a person.
     </p>
   </div>
 
-  <h3>Time-sensitive facts that would sink a naive plan</h3>
+  <h3>What this actually costs</h3>
+  <p>
+    This is the headline change from v0.1. The gold and FX incentives layer is <strong>almost entirely free at
+    origin</strong>, because it is public regulatory and official-sector data rather than licensed exchange
+    feeds. Your price feed is your own broker's, which you already have.
+  </p>
+
+  <div class="tw"><table class="d">
+    <thead><tr><th>Component</th><th>Source</th><th>Cadence</th><th class="n">Cost</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">FX + XAUUSD quotes</td><td class="mono">Your broker's API (OANDA v20 or equivalent)</td><td class="mono">streaming</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Official FX reference</td><td class="mono">ECB Data Portal</td><td class="mono">daily fix</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Gold benchmarks</td><td class="mono">LBMA auction prices</td><td class="mono">2× daily</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Positioning</td><td class="mono">CFTC COT + Bank Participation (Socrata)</td><td class="mono">weekly / monthly</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Physical stocks</td><td class="mono">CME warehouse reports, LBMA vault data</td><td class="mono">daily / monthly</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">ETF &amp; official sector</td><td class="mono">World Gold Council, IMF IFS, issuer files</td><td class="mono">daily / weekly / monthly</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Physical flow</td><td class="mono">Swiss customs (SwissImpex), Shanghai Gold Exchange</td><td class="mono">monthly / daily</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Rates &amp; macro</td><td class="mono">FRED/ALFRED, Bank of England database, ECB, BIS</td><td class="mono">daily</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">COMEX futures</td><td class="mono">CME settlements (delayed)</td><td class="mono">daily</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">Filings (miner bridge)</td><td class="mono">SEC EDGAR + SEDAR+</td><td class="mono">continuous</td><td class="n mono">$0</td></tr>
+      <tr><td class="nm">FX vol surface</td><td class="mono">vendor — the one awkward gap</td><td class="mono">daily</td><td class="n mono">$0–150</td></tr>
+      <tr><td class="nm">AI layer</td><td class="mono">Claude API, batched overnight</td><td class="mono">nightly + interactive</td><td class="n mono">$60–250</td></tr>
+      <tr><td><strong>Realistic monthly</strong></td><td class="mono">everything above</td><td class="mono">—</td><td class="n mono"><strong>$60–250</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <p>
+    Effectively <strong>the entire data cost of this product is the AI layer</strong>. That is a much better
+    place to be than v0.1, where real-time equity depth and consensus estimates dominated the bill. It also
+    means you can build and run the full positioning and physical stack for nothing while you decide whether
+    the AI spend is worth it.
+  </p>
+
+  <h3>Time-sensitive facts a naive gold or FX plan gets wrong</h3>
   <ul>
-    <li><strong>Polygon.io is now Massive.com</strong> (effective 30 Oct 2025). <code>polygon.io/pricing</code>
-        301-redirects. Keys still work and <code>api.polygon.io</code> runs in parallel, but every doc link and
-        invoice reference changes. Several third-party comparison sites date this wrongly — cite vendors directly.</li>
-    <li><strong>Form SHO short-position reporting is not live.</strong> The SEC exemption from Rule 13f-2 now
-        runs to <strong>2 January 2028</strong>, first filings around February 2028. Do not architect around it.</li>
-    <li><strong>Securities-lending reporting (Rule 10c-1a) slipped</strong> to September 2028 for reporting and
-        March 2029 for dissemination.</li>
-    <li><strong>The 2023 daily buyback-disclosure rule was vacated</strong> by the Fifth Circuit. Item 703
-        monthly-in-quarterly is still the law.</li>
-    <li><strong>FINRA has a pending proposal to move short interest to weekly</strong> with T+1 turnaround.
-        Build the ingest so cadence is configuration, not an assumption.</li>
-    <li><strong>EU MAR Art.19 PDMR thresholds rose to €50,000</strong> in Germany, France, Italy and Denmark on
-        1 Jan 2026 — a volume discontinuity that will corrupt any naive cross-year comparison.</li>
+    <li><strong>There is no consolidated tape for gold or FX.</strong> The XAUUSD number on a retail platform
+        is a dealer quote or an indicative aggregated mid, not a market price. The only executable gold
+        benchmarks are the two daily LBMA auctions, administered by ICE Benchmark Administration at 10:30 and
+        15:00 London.</li>
+    <li><strong>GOFO was discontinued in January 2015.</strong> Gold lease rates are no longer published and
+        must be derived from SOFR less the forward-implied rate. Any source offering a live GOFO feed is
+        offering a reconstruction — which is fine, provided it says so.</li>
+    <li><strong>COT is three days stale by construction</strong> — Tuesday's positions, released Friday at
+        15:30 ET. The Bank Participation Report is monthly (first-Tuesday data, first-Friday release).
+        Central-bank reserve data runs roughly two months behind. None of these are timing tools and a
+        terminal that renders them as current is lying by omission.</li>
+    <li><strong>The gold–real yield relationship has broken.</strong> Roughly −0.73 from 2003 to 2022;
+        decoupled since 2024 as the official sector displaced ETFs as marginal buyer. Any model, dashboard or
+        knowledge pack still asserting the old relationship as a rule is wrong right now.</li>
+    <li><strong>Retail FX volume is tick count, not volume.</strong> Displaying it as volume is a lie the UI
+        should refuse to tell.</li>
+    <li><strong>Swiss export data distinguishes consumption from vault rebuild.</strong> Metal moving to
+        China or India is demand; metal moving to the UK is London vault replenishment. Aggregating them
+        destroys the signal.</li>
+    <li><strong>China's import pipe is licensed and rationed</strong>, so the Shanghai premium measures
+        demand pressing against fixed-width supply rather than demand alone — and metal generally cannot flow
+        back out.</li>
+    <li><strong>FX week boundary is Sunday 17:00 ET</strong>, with DST transitions on both sides of a pair and
+        spread widening at rollover. Gold trades nearly around the clock but has its own session rhythm keyed
+        to the London auctions and COMEX pit hours.</li>
   </ul>
 </section>
 
@@ -1634,13 +1919,11 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
           edge. Concretely: keep a register of every table holding identified persons, set a retention policy,
           and do not extend the graph to inferred personal attributes. There is also a <em>sui generis
           database right</em> question over the archive itself.</li>
-      <li><strong>Jurisdiction is unfixed, and it changes the answer.</strong> The EU AI Act's transparency
-          duties attach to a <em>provider</em>, and "putting into service" expressly includes supply for your
-          own use — so building this for yourself can make you the provider. The personal/non-professional
-          exemption is read restrictively and regular economic benefit reads as professional activity. Net: if
-          you are EU-resident, some Art. 50 duties may attach at one user; if UK-resident, the AI Act does not
-          apply to you at all. <strong>Tell me which and I will resolve this properly</strong> — the plan
-          currently assumes UK.</li>
+      <li><strong>EU AI Act: resolved, does not apply.</strong> You are UK-resident, so the Act's
+          transparency duties are out of scope. Worth recording why the question was asked: those duties
+          attach to a <em>provider</em>, and "putting into service" includes supply for your own use, so an
+          EU-resident building this for himself could have been caught at a single user. Revisit only if you
+          relocate.</li>
     </ul>
   </div>
 </section>
@@ -1800,30 +2083,37 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   <div class="tw"><table class="d">
     <thead><tr><th>Phase</th><th>Ships</th><th class="n">Eng-wks</th><th>Proves</th></tr></thead>
     <tbody>
-      <tr><td class="nm">0 · Walking skeleton</td><td>WPF shell, docking, one workspace, one live quote panel, SQLite/DuckDB store, provider abstraction with one adapter.</td><td class="n mono">6</td><td>The stack holds together.</td></tr>
-      <tr><td class="nm">1 · The pillar</td><td>Full EDGAR pipeline: Form 3/4/5/144 ingest, code decoder, footnote resolver, conviction score, cluster radar, insider tape, alerts. <strong>The Insider Radar screen.</strong></td><td class="n mono">14</td><td>The reason the product exists. Ship this before charting.</td></tr>
-      <tr><td class="nm">2 · MVP</td><td>Company dossier, XBRL point-in-time model, ownership map, short console, charting with the incentives ribbon, watchlists, screener.</td><td class="n mono">14</td><td>Daily-usable. <strong>~34 weeks to here.</strong></td></tr>
-      <tr><td class="nm">3 · Knowledge layer</td><td>Pack schema, authoring Routine, signing and distribution, hot-load, claim diff, evidence-locked answers, golden-set gate.</td><td class="n mono">12</td><td>The differentiator that is hardest to copy.</td></tr>
-      <tr><td class="nm">4 · v1</td><td>FX desk, macro, events, journal and thesis cards, GEX, alerts maturity, diagnostics, accessibility pass.</td><td class="n mono">20</td><td>Complete product. <strong>~66 weeks total.</strong></td></tr>
-      <tr><td class="nm">5 · v2</td><td>Global insider desk (6 regimes), entity graph, segment workbench, replay, microstructure.</td><td class="n mono">25+</td><td>Depth no competitor has.</td></tr>
+      <tr><td class="nm">0 · Walking skeleton</td><td>WPF shell, docking, one workspace, broker FX/XAUUSD stream, DuckDB/SQLite store, provider abstraction, release-calendar scheduler.</td><td class="n mono">6</td><td>The stack holds together.</td></tr>
+      <tr><td class="nm">1 · The pillar</td><td>Full positioning and physical layer: COT cohorts with percentiles, producer hedge decoder, Bank Participation, COMEX and LBMA stocks, ETF and official-sector tracking, physical flow, four-venue price panel, driver regime panel. <strong>The Gold Desk.</strong></td><td class="n mono">12</td><td>The reason the product exists — and it costs $0 in data to run.</td></tr>
+      <tr><td class="nm">2 · MVP</td><td>FX desk: driver stack, FX positioning, session engine, sterling rates panel, correlation matrix. Charting, watchlists, alerts on release and percentile conditions.</td><td class="n mono">12</td><td>Daily-usable across both markets. <strong>~30 weeks to here.</strong></td></tr>
+      <tr><td class="nm">3 · Knowledge layer</td><td>Pack schema, authoring job, signing and distribution, hot-load, claim diff, evidence-locked answers, golden-set gate. Packs: pair dossiers, gold regime histories, event playbooks, central-bank reaction functions.</td><td class="n mono">12</td><td>The differentiator that is hardest to copy.</td></tr>
+      <tr><td class="nm">4 · v1</td><td>Macro and calendar, journal and thesis cards, The Book, backup and escrow, diagnostics, accessibility pass, miner bridge (Form 4 decoder over ~40 producers).</td><td class="n mono">16</td><td>Complete product. <strong>~58 weeks total.</strong></td></tr>
+      <tr><td class="nm">5 · v2</td><td>Silver and ratio desk, vol surface, full equity insider module if wanted, entity graph, replay.</td><td class="n mono">20+</td><td>Optional depth.</td></tr>
     </tbody>
   </table></div>
 
   <div class="call warn">
     <p class="call-h">Where this estimate will be wrong</p>
     <p>
-      I first put v1 at ~66 engineer-weeks against the research's 80–125. The feasibility critic went at a
-      fuller version of this scope and returned <strong>380–520 engineer-weeks</strong> — arguing that at a
-      realistic solo throughput of about 0.65 productive weeks per calendar week, that is over a decade.
+      Refocusing on gold and FX cut real scope, not just presentation: no XBRL financial model, no equity
+      symbology and corporate-actions layer, no consensus estimates, no market-wide universe. Those were four
+      of the five things most likely to overrun. The v1 figure drops from ~66 to ~58 irreducible weeks, and
+      the risky portion of it shrinks considerably.
+    </p>
+    <p>
+      The feasibility critic went at a fuller version of the old scope and returned <strong>380–520
+      engineer-weeks</strong>, arguing that at a realistic solo throughput of about 0.65 productive weeks per
+      calendar week that is over a decade.
     </p>
     <p>
       That number is for a considerably larger feature set than the one above, so I do not accept it directly.
       But the direction is right and I was too optimistic. <strong>Treat the table as ~66 weeks of
       <em>irreducible</em> work and assume a 1.6–2.5× multiplier until you have measured your own</strong> —
-      so roughly <strong>105–165 weeks to v1</strong>, with the MVP at 34 weeks becoming 55–85. The modules
-      that habitually run 3–5× over are, in order: <strong>symbology and corporate actions</strong> (endless
-      edge cases, no glory), <strong>charting</strong> (the last 10% of interaction polish is half the work),
-      <strong>real-time infrastructure</strong>, and <strong>entitlements</strong>.
+      so roughly <strong>93–145 weeks to v1</strong>, with the MVP at 30 weeks becoming 48–75. The modules
+      that habitually run 3–5× over are, in order: <strong>charting</strong> (the last 10% of interaction
+      polish is half the work), <strong>real-time infrastructure</strong> (reconnect, gap-fill, backpressure),
+      and <strong>the release-calendar scheduler</strong>, which looks trivial and is not — DST, holidays,
+      delayed publications and revised vintages all land here.
     </p>
     <p>
       Three cheap mechanisms make this self-correcting rather than a guess: an <strong>effort ledger</strong>
@@ -1837,10 +2127,15 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 
   <h3>What I would cut first</h3>
   <p>
-    If this has to be smaller: drop microstructure and depth entirely (Module 6), drop chart replay, drop the
-    segment workbench, and defer the global insider desk to v2. The minimum slice that still delivers the
-    differentiating value is <strong>Phase 0 + Phase 1 + the dossier half of Phase 2</strong> — about 26 weeks —
-    because insider forensics plus a company dossier is already a product no one sells you.
+    If this has to be smaller: drop the equity module entirely, drop silver, drop the vol surface, drop chart
+    replay. The minimum slice that still delivers the differentiating value is <strong>Phase 0 plus Phase
+    1</strong> — about 18 weeks — because an integrated positioning, physical and regime desk for gold is
+    already something nobody sells, and it runs on free data.
+  </p>
+  <p>
+    That is a meaningfully better position than v0.1 offered. The old minimum slice was 26 weeks and carried a
+    real monthly data bill before it showed you anything. This one is shorter, cheaper, and the thing it
+    proves first is the thing you would actually use every day.
   </p>
 </section>
 
@@ -1867,22 +2162,24 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
   </table></div>
 
   <h3>Open questions for you</h3>
+  <p>
+    The three that mattered most are now answered — <strong>non-professional, UK, FX and XAUUSD</strong> —
+    and each closed favourably. What is left is narrower.
+  </p>
   <ol>
-    <li><strong>Professional or non-professional?</strong> Own name, or through an entity? This is the single
-        highest-leverage answer and it changes the data architecture, not just the bill.</li>
-    <li><strong>Which markets beyond the US actually matter to you?</strong> The global insider desk is XL
-        effort spread across six regulatory regimes. If it is really just US and UK, that is a much smaller
-        job and it moves up the roadmap.</li>
-    <li><strong>How much does intraday matter versus multi-day research?</strong> The day-trader and the
-        Buffett-school analyst want different defaults. The plan currently leans research-first, with intraday
-        tooling present but not dominant.</li>
-    <li><strong>Do you want the FX charting after all?</strong> I have argued for FX as macro/positioning
-        context. Say the word and I will add the charting surface — I just will not pretend it is a
-        differentiator.</li>
-    <li><strong>Where are you resident?</strong> The plan assumes UK. If you are EU-resident, some EU AI Act
-        transparency duties may attach even at one user, because building software for your own use can make
-        you its provider. If UK, that regime does not apply to you at all. It is a small change to the plan
-        and a large change to the answer.</li>
+    <li><strong>How much of the equity insider engine do you actually want?</strong> My recommendation is the
+        reduced version: Form 4 decoder, conviction score and cluster radar pointed at a gold-miner universe,
+        as a sentiment channel into gold. That is roughly a third of the effort. Say if you want the full
+        market version instead — it is a real fork in the roadmap, not a setting.</li>
+    <li><strong>Which pairs, and how many?</strong> A sterling-centric book (GBP crosses plus EURUSD, USDJPY,
+        XAUUSD) is a materially smaller build than global coverage, mainly because each pair's driver stack
+        needs its own curve sources and its own dossier.</li>
+    <li><strong>Who is your broker?</strong> It determines the quote feed, the API shape, the session and
+        rollover conventions, and how XAUUSD is actually priced for you. It is the one integration the plan
+        cannot specify generically.</li>
+    <li><strong>Intraday or swing?</strong> The positioning and physical layer is inherently multi-day — COT
+        is weekly, vault data monthly. If you are trading XAUUSD intraday, that layer is context rather than
+        signal, and the balance of the workspaces should shift toward session structure and the driver panel.</li>
   </ol>
 
   <h3>What the adversarial review changed</h3>
@@ -1905,6 +2202,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
       <tr><td>Crawl EDGAR for Form 4 history.</td><td>SEC DERA publishes it flattened back to 2006. Minutes, not weeks.</td></tr>
       <tr><td>~66 engineer-weeks to v1.</td><td>105–165, pending your own measured multiplier.</td></tr>
       <tr><td>Token and API constraints stated as fact.</td><td>Downgraded to unverified. Baseline empirically before budgeting.</td></tr>
+      <tr><td>FX is the weak leg; demote it to macro context.</td><td>Right about the market, wrong about you. FX and XAUUSD are now the product, and the incentives lens translates into them cleanly.</td></tr>
     </tbody>
   </table></div>
 
@@ -1921,7 +2219,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 </section>
 
 <p class="foot">
-  Argus · design plan v0.1 · 2026-08-25 · plan only, nothing built.<br>
+  Argus · design plan v0.2 · FX &amp; XAUUSD · 2026-08-25 · plan only, nothing built.<br>
   Sources: 9 domain research dossiers (201 findings, live-verified 2026-08-24) plus four adversarial review
   passes (121 gaps, 42 corrections). Prices, regulations and API terms are time-sensitive and were current at
   that date. Claims the review could not corroborate against a primary source are marked as such in the text —

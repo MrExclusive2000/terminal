@@ -1,0 +1,181 @@
+<figure class="fig">
+<div class="screen-scroll"><div class="screen"><div class="screen-inner">
+  <div class="ui-top">
+    <div class="ui-cmd">
+      <span class="ui-cmd-sig">&gt;</span><span class="ui-cmd-txt">XAUUSD&nbsp; POSN</span><span class="ui-caret"></span>
+      <span class="ui-go">GO</span>
+      <span class="ui-cmd-ghost" style="margin-left:auto">POSN · PHYS · BASIS · DRIV · CB</span>
+    </div>
+    <div class="ui-status">
+      <span><span class="ui-dot ok"></span>OANDA</span><span><span class="ui-dot ok"></span>CFTC</span>
+      <span><span class="ui-dot warn"></span>COT T+3</span><span class="mut">NON-PRO</span>
+      <span class="mut">$0.00/mo data</span><span class="ui-freeze">SAMPLE DATA</span>
+    </div>
+  </div>
+
+  <div class="ui-tabs">
+    <div class="ui-tab on">GOLD DESK</div>
+    <div class="ui-tab">FX SESSION</div>
+    <div class="ui-tab">MACRO</div>
+    <div class="ui-tab">PHYSICAL</div>
+    <div class="ui-tab">JOURNAL</div>
+    <div class="ui-links">LINK
+      <span class="ui-chip" style="background:#E0A44B"></span>
+      <span class="ui-chip" style="background:#35B5A8"></span>
+      <span class="mut">·&nbsp; 14:58 London &nbsp;·&nbsp; <span class="warn">LBMA PM auction in 2m</span></span>
+    </div>
+  </div>
+
+  <div class="ui-grid" style="grid-template-columns:352px 1fr 1fr;height:610px;">
+
+    <!-- PRICE + BASIS -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>WHAT IS "THE PRICE"</b><span class="r">four venues, four numbers</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>VENUE</th><th class="n">LEVEL</th><th class="n">vs OTC</th><th>TYPE</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>Your broker</td><td class="n">3,962.<span class="mut">40</span></td><td class="n mut">—</td><td class="mut">dealer</td></tr>
+            <tr><td>OTC aggregate</td><td class="n">3,962.<span class="mut">15</span></td><td class="n mut">+0.25</td><td class="mut">indicative mid</td></tr>
+            <tr><td>LBMA AM auction</td><td class="n">3,958.<span class="mut">60</span></td><td class="n up">+3.55</td><td class="acc">executable</td></tr>
+            <tr><td>COMEX front (GCZ6)</td><td class="n">3,981.<span class="mut">70</span></td><td class="n dn">−19.55</td><td class="acc">exchange</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="white-space:normal;border-top:1px solid var(--ui-line);padding-top:7px;margin-bottom:9px">
+          Gold is OTC. There is <span class="warn">no consolidated tape and no NBBO</span>. Your broker's XAUUSD is
+          a dealer quote, not a market price. The only <em>executable</em> benchmarks are the two LBMA auctions
+          (10:30 / 15:00 London, ICE Benchmark Administration).
+        </div>
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>BASIS &amp; CARRY</b><span class="r">derived</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>EFP <span class="mut">futures − spot</span></td><td class="n">+19.55</td><td class="n mut">49bp</td></tr>
+            <tr><td>Implied lease rate 1m</td><td class="n warn">0.42%</td><td class="mut">derived</td></tr>
+            <tr><td>Implied lease rate 3m</td><td class="n">0.28%</td><td class="mut">derived</td></tr>
+            <tr><td>SOFR 1m</td><td class="n">3.88%</td><td class="mut">NY Fed</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          <span class="warn">GOFO was discontinued in January 2015.</span> Lease rates are not published —
+          they are derived from SOFR less the forward-implied rate. Any product quoting you a "GOFO feed" is
+          quoting a reconstruction. This one shows its working.
+        </div>
+      </div>
+    </div>
+
+    <!-- POSITIONING = the insider lens -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>WHO IS POSITIONED</b><span class="mut">the insider lens, translated</span><span class="r">CFTC · Tue data, Fri release</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>COHORT</th><th class="n">NET</th><th class="n">Δ WK</th><th class="n">%ILE 5Y</th><th>READS AS</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>Producer / merchant</td><td class="n dn">−184.2K</td><td class="n dn">−22.4K</td><td class="n crit">3rd</td><td class="acc">miners hedging hard</td></tr>
+            <tr><td>Swap dealers</td><td class="n dn">−96.1K</td><td class="n dn">−8.8K</td><td class="n">18th</td><td class="mut">bank book</td></tr>
+            <tr><td>Managed money</td><td class="n up">+241.7K</td><td class="n up">+29.1K</td><td class="n crit">97th</td><td class="warn">crowded long</td></tr>
+            <tr><td>Other reportable</td><td class="n up">+38.6K</td><td class="n up">+2.1K</td><td class="n">62nd</td><td class="mut">—</td></tr>
+            <tr><td>Open interest</td><td class="n">612K</td><td class="n up">+3.8%</td><td class="n">88th</td><td class="mut">—</td></tr>
+          </tbody>
+        </table>
+
+        <div class="ui-note" style="margin-bottom:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; <strong>Producers are the closest thing gold has to a
+          corporate insider</strong> — they hold the asset, they know their own cost curve, and hedging is them
+          selling forward their own production. Producer net short at a 5-year extreme <em>against</em>
+          managed money at the 97th percentile is the classic late-move configuration: the people who dig it
+          up are locking in, the people renting momentum are maximally long.
+          <div class="mut" style="margin-top:5px">Caveat: producer hedging is also mechanical — driven by
+            project finance covenants, not always a view. Check the miner hedge-book disclosures before
+            treating it as a signal. <span class="ui-cite">COT 08-18</span> <span class="ui-cite">BPR 08-04</span></div>
+        </div>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>BULLION BANKS</b><span class="r">Bank Participation · monthly</span></div>
+        <table class="ui-t">
+          <thead><tr><th>GROUP</th><th class="n">NET</th><th class="n">Δ MTH</th><th class="n">% OI</th></tr></thead>
+          <tbody>
+            <tr><td>US banks</td><td class="n dn">−58.4K</td><td class="n dn">−6.2K</td><td class="n">9.5%</td></tr>
+            <tr><td>Non-US banks</td><td class="n dn">−41.9K</td><td class="n dn">−3.1K</td><td class="n">6.8%</td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          First-Tuesday data, published the first Friday after, 15:30 ET. Monthly and lagged — useful for
+          regime, useless for timing, and the panel says so rather than implying freshness.
+        </div>
+      </div>
+    </div>
+
+    <!-- PHYSICAL + OFFICIAL SECTOR -->
+    <div class="ui-panel">
+      <div class="ui-head"><b>WHERE THE METAL IS</b><span class="mut">float &amp; official sector</span><span class="r">mixed vintages</span></div>
+      <div class="ui-body">
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>STOCK</th><th class="n">LEVEL</th><th class="n">Δ 30D</th><th>AS OF</th></tr></thead>
+          <tbody>
+            <tr><td>COMEX registered</td><td class="n">14.51M oz</td><td class="n dn">−1.8%</td><td><span class="b b-disc">daily</span></td></tr>
+            <tr><td>COMEX eligible</td><td class="n">22.94M oz</td><td class="n up">+0.6%</td><td><span class="b b-disc">daily</span></td></tr>
+            <tr><td>LBMA vaults <span class="mut">incl. BoE</span></td><td class="n">9,534 t</td><td class="n up">+0.74%</td><td><span class="b b-stale">monthly</span></td></tr>
+            <tr><td>ETF holdings <span class="mut">global</span></td><td class="n">3,418 t</td><td class="n up">+1.9%</td><td><span class="b b-stale">weekly</span></td></tr>
+            <tr><td>GLD alone</td><td class="n">982 t</td><td class="n up">+2.4%</td><td><span class="b b-disc">daily</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>OFFICIAL SECTOR</b><span class="acc">the marginal buyer</span><span class="r">WGC / IMF · ~2m lag</span></div>
+        <table class="ui-t" style="margin-bottom:9px">
+          <thead><tr><th>BUYER</th><th class="n">H1 2026</th><th class="n">12M</th></tr></thead>
+          <tbody>
+            <tr><td>Poland</td><td class="n up">+82 t</td><td class="n up">+139 t</td></tr>
+            <tr><td>Uzbekistan</td><td class="n up">+41 t</td><td class="n up">+58 t</td></tr>
+            <tr><td>China (PBoC)</td><td class="n up">+40 t</td><td class="n up">+74 t</td></tr>
+            <tr><td>Kazakhstan</td><td class="n up">+27 t</td><td class="n up">+44 t</td></tr>
+          </tbody>
+        </table>
+
+        <div class="ui-head" style="margin:0 -9px 7px;border-top:1px solid var(--ui-line)"><b>PHYSICAL FLOW</b><span class="r">where it is going</span></div>
+        <table class="ui-t">
+          <tbody>
+            <tr><td>Shanghai premium</td><td class="n up">+$18.40</td><td class="mut">vs London</td><td><span class="b b-disc">daily</span></td></tr>
+            <tr><td>Swiss exports → China</td><td class="n up">+18%</td><td class="mut">m/m</td><td><span class="b b-stale">monthly</span></td></tr>
+            <tr><td>Swiss exports → India</td><td class="n dn">3.1 t</td><td class="mut">from 11.6 t</td><td><span class="b b-stale">monthly</span></td></tr>
+            <tr><td>Swiss exports → UK</td><td class="n up">high</td><td class="mut">vault rebuild</td><td><span class="b b-stale">monthly</span></td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="margin-top:7px;white-space:normal">
+          A positive Shanghai premium means Chinese demand is pressing against a licensed, rationed import
+          pipe. Metal moving Switzerland → UK is vault rebuild, not consumption. These are different stories
+          and the panel keeps them apart.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- driver regime strip -->
+  <div class="ui-grid" style="grid-template-columns:1fr;border-top:1px solid var(--ui-line)">
+    <div class="ui-panel">
+      <div class="ui-head"><b>DRIVER REGIME</b><span class="crit">the model that stopped working</span><span class="r">rolling 12m correlation</span></div>
+      <div class="ui-body">
+        <table class="ui-t">
+          <thead><tr><th>DRIVER</th><th class="n">LEVEL</th><th class="n">1M Δ</th><th class="n">CORR 12M</th><th class="n">CORR 2003–22</th><th>STATUS</th></tr></thead>
+          <tbody>
+            <tr class="sel"><td>10y TIPS real yield</td><td class="n">1.84%</td><td class="n up">+11bp</td><td class="n warn">+0.21</td><td class="n mut">−0.73</td><td><span class="b b-crit">SIGN FLIPPED</span></td></tr>
+            <tr><td>DXY</td><td class="n">97.42</td><td class="n dn">−0.8%</td><td class="n">−0.44</td><td class="n mut">−0.51</td><td><span class="b b-fact">holding</span></td></tr>
+            <tr><td>Central bank net buying</td><td class="n up">+190 t H1</td><td class="n up">—</td><td class="n acc">+0.68</td><td class="n mut">n/a</td><td><span class="b b-disc">DOMINANT</span></td></tr>
+            <tr><td>ETF flows</td><td class="n up">+64 t</td><td class="n up">+1.9%</td><td class="n">+0.39</td><td class="n mut">+0.71</td><td><span class="b b-stale">weakened</span></td></tr>
+          </tbody>
+        </table>
+        <div class="ui-note" style="margin-top:9px">
+          <span class="b b-ai">INFERENCE</span>&nbsp; The textbook gold model — <em>real yields up, gold down</em>,
+          which held at roughly −0.73 from 2003 to 2022 — <strong>has decoupled</strong>. Since 2024 the
+          official sector has replaced ETF flows as the marginal buyer, and price has risen alongside positive
+          real yields. A terminal that plots gold against TIPS and stops there is showing you a broken model
+          with a straight face. This panel shows the correlation <em>and</em> its historical value, so the
+          regime break is the thing you see first.
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+<figcaption class="screen-cap">
+  <span><b>01 · Gold Desk</b> — positioning as the insider lens, physical stocks as the float, the official sector as the control block, and a driver panel that shows when its own model has broken.</span>
+  <span>Sample data for layout; levels are plausible for mid-2026, not live quotes.</span>
+</figcaption>
+</figure>
