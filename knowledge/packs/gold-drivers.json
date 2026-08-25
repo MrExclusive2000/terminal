@@ -1,0 +1,58 @@
+{
+  "id": "gold-drivers",
+  "version": "2026.08.25",
+  "title": "XAUUSD — what actually moves it",
+  "authored_by": "Claude (Opus 5)",
+  "authored_at": "2026-08-25",
+  "review_cadence_days": 7,
+  "claims": [
+    {
+      "id": "gold.realyield.decoupled",
+      "confidence": 0.85,
+      "decays": "2026-12-31",
+      "body": "The textbook inverse relationship between gold and 10y real yields held at roughly -0.73 rolling correlation from 2003 to 2022, where a 100bp rise in real yields implied about an 18% fall in the real gold price. Since 2024 it has decoupled: gold has risen alongside positive and rising real yields.",
+      "why_it_matters": "Any setup justified by 'real yields are falling so gold goes up' is running a model that stopped working. Check the current correlation against its long-run value before leaning on it.",
+      "sources": ["FRED DFII10", "rolling correlation computed locally"]
+    },
+    {
+      "id": "gold.marginal.buyer.official",
+      "confidence": 0.9,
+      "decays": "2026-11-30",
+      "body": "Central banks displaced ETFs as the marginal buyer of gold from 2024. Q2 2026 official-sector purchases were a record 288.9t, up 62% year-on-year, and occurred during gold's steepest quarterly decline since 2013. A WGC survey of 76 central banks found 45% intend to increase reserves over the next 12 months.",
+      "why_it_matters": "This is the structural floor under the bull case. It is price-insensitive and slow, which is why dips have been bought. If the buying pace falls sharply, the whole thesis weakens and gold becomes a momentum trade.",
+      "sources": ["World Gold Council", "IMF IFS"]
+    },
+    {
+      "id": "gold.producer.hedging.is.insider.signal",
+      "confidence": 0.6,
+      "decays": "2027-02-28",
+      "body": "Producer/merchant COT positioning is the closest gold analogue to corporate insider selling: miners selling forward production they own and whose cost base they know. But much producer hedging is mandated by project-finance covenants rather than a price view.",
+      "why_it_matters": "Separate mechanical from discretionary before scoring it, exactly as you would separate a CFO's open-market purchase from tax withholding on a Form 4. Only the discretionary part is signal.",
+      "sources": ["CFTC disaggregated COT", "Cohen/Malloy/Pomorski on routine vs opportunistic insiders"]
+    },
+    {
+      "id": "gold.no.consolidated.tape",
+      "confidence": 0.95,
+      "decays": null,
+      "body": "Gold is OTC. There is no consolidated tape and no NBBO. A broker's XAUUSD is a dealer quote; on IC Markets it is a CFD at 100oz per lot with their spread on top. The only executable benchmarks are the two daily LBMA auctions at 10:30 and 15:00 London, administered by ICE Benchmark Administration.",
+      "why_it_matters": "Your fill is your broker's price, not 'the' gold price. Basis to COMEX and the LBMA fix is worth watching before sizing up.",
+      "sources": ["LBMA", "IC Markets contract specs"]
+    },
+    {
+      "id": "gold.lease.rate.derived",
+      "confidence": 0.9,
+      "decays": null,
+      "body": "GOFO was discontinued on 30 January 2015. Gold lease rates are no longer published and must be derived as USD funding (SOFR) less the forward-implied rate.",
+      "why_it_matters": "Any source offering a live GOFO feed is offering a reconstruction. Fine — but it should say so, and you should know the inputs.",
+      "sources": ["LBMA"]
+    },
+    {
+      "id": "gold.cot.staleness",
+      "confidence": 0.95,
+      "decays": null,
+      "body": "COT describes the Tuesday of its report week and is released the following Friday at 15:30 ET. It is three days stale on release and up to ten by the following week.",
+      "why_it_matters": "It is a regime tool, never a timing tool. Positioning extremes tell you the crowd is stretched, not that the turn is today.",
+      "sources": ["CFTC"]
+    }
+  ]
+}

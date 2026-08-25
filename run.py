@@ -2,10 +2,13 @@
 """
 Argus - launcher.
 
+Named run.py, not argus.py, deliberately: a module named argus.py in the repo
+root shadows the argus package under src/ for anything that imports it.
+
 Starts the local backend and opens it in a native window. Falls back to the
 default browser if pywebview is not installed, so it always runs.
 
-    python argus.py
+    python run.py
 """
 from __future__ import annotations
 

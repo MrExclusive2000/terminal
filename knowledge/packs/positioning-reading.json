@@ -1,0 +1,50 @@
+{
+  "id": "positioning-reading",
+  "version": "2026.08.25",
+  "title": "How to read cohort positioning",
+  "authored_by": "Claude (Opus 5)",
+  "authored_at": "2026-08-25",
+  "review_cadence_days": 30,
+  "claims": [
+    {
+      "id": "pos.percentile.beats.level",
+      "confidence": 0.85,
+      "decays": null,
+      "body": "A raw net position is close to meaningless without its historical distribution. Managed money 'net long 141,648' says nothing; 'net long at the 76th percentile of five years' says it is elevated but not extreme.",
+      "why_it_matters": "Always read the percentile, not the headline number. Most retail commentary quotes the level.",
+      "sources": ["CFTC"]
+    },
+    {
+      "id": "pos.cohorts.are.counterparties",
+      "confidence": 0.9,
+      "decays": null,
+      "body": "The cohorts sum to roughly zero by construction. Swap dealers at an extreme short are usually the other side of managed money at an extreme long — not an independent bearish vote.",
+      "why_it_matters": "Do not count both as separate evidence. Two cohorts at opposite extremes is one observation about crowding, not two.",
+      "sources": ["CFTC methodology"]
+    },
+    {
+      "id": "pos.extremes.are.fuel.not.trigger",
+      "confidence": 0.7,
+      "decays": null,
+      "body": "Positioning extremes describe the potential energy in a move, not its timing. Crowded positions can stay crowded for months and get more crowded first.",
+      "why_it_matters": "Use it to size down and to avoid chasing, not to fade. Fading an extreme without a price trigger is how you get run over.",
+      "sources": ["general market structure"]
+    },
+    {
+      "id": "pos.fx.cohorts.differ",
+      "confidence": 0.9,
+      "decays": null,
+      "body": "FX uses the TFF report (dealer, asset manager, leveraged funds); metals use the disaggregated report (producer/merchant, swap dealer, managed money). They are not interchangeable. Leveraged funds are the FX speculative cohort; managed money is the metals equivalent.",
+      "why_it_matters": "Comparing 'managed money' across gold and EURUSD is a category error — the field does not exist in the FX report.",
+      "sources": ["CFTC"]
+    },
+    {
+      "id": "pos.usdjpy.sign.trap",
+      "confidence": 0.95,
+      "decays": null,
+      "body": "The CME contract is JPY/USD, so a long JPY futures position is SHORT USDJPY as conventionally quoted.",
+      "why_it_matters": "Get this wrong and every USDJPY positioning read is inverted. Argus flips the sign automatically; other sources often do not.",
+      "sources": ["CME contract specs"]
+    }
+  ]
+}

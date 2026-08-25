@@ -16,7 +16,7 @@ Or manually:
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-python argus.py
+python run.py
 ```
 
 Opens a native window. If `pywebview` isn't installed it falls back to your

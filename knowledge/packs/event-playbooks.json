@@ -1,0 +1,42 @@
+{
+  "id": "event-playbooks",
+  "version": "2026.08.25",
+  "title": "Scheduled events — what to expect",
+  "authored_by": "Claude (Opus 5)",
+  "authored_at": "2026-08-25",
+  "review_cadence_days": 14,
+  "claims": [
+    {
+      "id": "evt.spread.widens",
+      "confidence": 0.9,
+      "decays": null,
+      "body": "Retail CFD spreads widen sharply into and through scheduled releases, and again at the daily rollover. On XAUUSD the widening is a material multiple of the normal spread.",
+      "why_it_matters": "A stop that costs 3% of your risk in normal conditions can cost 25% through a release. Check the live spread before entering, not the average.",
+      "sources": ["broker behaviour, generic to retail CFD venues"]
+    },
+    {
+      "id": "evt.first.print.revises",
+      "confidence": 0.85,
+      "decays": null,
+      "body": "Headline macro prints are frequently revised, and the initial market reaction often reverses within hours once the detail is read.",
+      "why_it_matters": "The first candle after a release is the least informative one of the day. Trading the reaction is a different skill from trading the data.",
+      "sources": ["BLS/BEA revision history"]
+    },
+    {
+      "id": "evt.priced.in.matters.more",
+      "confidence": 0.8,
+      "decays": null,
+      "body": "What matters is the surprise against expectations, not the absolute number. A weak print that is less weak than feared is bullish.",
+      "why_it_matters": "Check OIS-implied pricing before the event to know what is already in the price.",
+      "sources": ["general"]
+    },
+    {
+      "id": "evt.fed.hike.odds.2026",
+      "confidence": 0.5,
+      "decays": "2026-09-30",
+      "body": "As of late August 2026, CME FedWatch pricing implied roughly 40% odds of a September HIKE and 60% unchanged — not a cut. Sources conflicted: some commentary still quoted an 85% cut probability. Treat as contested.",
+      "why_it_matters": "Much gold commentary assumes a cut is coming. If the hawkish pricing is right, the rate leg of the gold bull case points the wrong way. Verify against current FedWatch before relying on it — this claim decays fast.",
+      "sources": ["CME FedWatch, via market commentary 2026-08-25"]
+    }
+  ]
+}
