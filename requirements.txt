@@ -10,8 +10,13 @@ pywebview==5.3.2
 
 # The analyst. Imported lazily at the call site, so PyInstaller cannot see it
 # by static analysis - it is also named in the spec's hiddenimports.
-anthropic==0.69.0
+# 1.x is the current major (built on httpx2). analyst.py is compatible: it uses
+# output_config and adaptive thinking, and passes fallbacks/betas only to the
+# beta endpoint, so none of the 0.x-era shapes are in play.
+anthropic==1.2.0
 
 # Broker bridge, read-only. Windows-only: the marker keeps `pip install -r`
 # working on Linux and macOS for development and CI test runs.
+#
+# Pulls in numpy, which is why numpy must NOT appear in the spec's excludes.
 MetaTrader5==5.0.4874 ; sys_platform == "win32"

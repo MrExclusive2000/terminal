@@ -50,8 +50,15 @@ a = Analysis(                                     # noqa: F821
     hookspath=[],
     runtime_hooks=[],
     # Trim what a research terminal has no use for. Each of these drags in tens
-    # of megabytes and none is imported anywhere in this codebase.
-    excludes=["tkinter", "matplotlib", "numpy", "pandas", "scipy", "PIL",
+    # of megabytes.
+    #
+    # numpy is NOT excluded, and the reason is worth recording: it is not
+    # imported by any first-party module here, but MetaTrader5 depends on it.
+    # Excluding it produced a bundle that carried MetaTrader5 and failed to
+    # import it at runtime with "numpy._core.multiarray failed to import" -
+    # the broker bridge dead in a shipped build. An exclude list must be
+    # reasoned about transitively, not from a grep of your own imports.
+    excludes=["tkinter", "matplotlib", "pandas", "scipy", "PIL",
               "pytest", "setuptools", "pip", "test", "unittest"],
     noarchive=False,
 )

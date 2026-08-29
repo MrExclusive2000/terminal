@@ -79,7 +79,11 @@ def self_check(report_path: str | None = None) -> int:
     # Optional features are imported lazily, which hides them from PyInstaller.
     # Shipping settings for a feature whose package was never bundled is its own
     # kind of broken, so the build proves they are importable.
+    # numpy is listed because MetaTrader5 imports it transitively. A build that
+    # excluded numpy shipped MetaTrader5 that could not import - checking the
+    # top-level package alone would not have said why.
     for mod, why in (("anthropic", "AI analyst"),
+                     ("numpy", "broker bridge (numpy, via MetaTrader5)"),
                      ("MetaTrader5", "broker bridge")):
         try:
             __import__(mod)
@@ -88,7 +92,8 @@ def self_check(report_path: str | None = None) -> int:
             # MetaTrader5 is Windows-only. And a source checkout may legitimately
             # not have the optional extras installed - only the packaged build
             # is required to carry them, because only it promises the feature.
-            optional = ((mod == "MetaTrader5" and sys.platform != "win32")
+            optional = ((mod in ("MetaTrader5", "numpy")
+                         and sys.platform != "win32")
                         or not config.frozen())
             note(f"{why} dependency is bundled ({mod})", optional,
                  "not applicable off Windows" if mod == "MetaTrader5"
