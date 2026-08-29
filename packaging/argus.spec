@@ -12,6 +12,8 @@ Run from the repository root:
 """
 from pathlib import Path
 
+from PyInstaller.utils.hooks import collect_all
+
 ROOT = Path(SPECPATH).parent          # noqa: F821 - SPECPATH is injected
 SRC = ROOT / "src"
 
@@ -25,10 +27,21 @@ packs = ROOT / "knowledge" / "packs"
 if packs.is_dir():
     datas.append((str(packs), "knowledge/packs"))
 
+# numpy has to be collected wholesale, and it took three failed builds to
+# establish why. MetaTrader5 is a compiled .pyd whose `import numpy` happens
+# inside C code, so static analysis never asks for numpy at all. Naming it in
+# hiddenimports fixed that but was still not enough: numpy is a large package
+# of submodules, compiled extensions and data files, and a bare hidden import
+# pulls in the top-level package only - the bundle then failed on
+# "No module named 'numpy._core._exceptions'". collect_all gathers the
+# submodules, binaries and data files together, which is what numpy needs.
+_np_datas, _np_binaries, _np_hidden = collect_all("numpy")
+datas += _np_datas
+
 a = Analysis(                                     # noqa: F821
     [str(ROOT / "run.py")],
     pathex=[str(SRC)],
-    binaries=[],
+    binaries=_np_binaries,
     datas=datas,
     # pywebview resolves its GUI backend at runtime, so PyInstaller's static
     # analysis cannot see these and the frozen app fails with "no GUI backend"
@@ -42,21 +55,13 @@ a = Analysis(                                     # noqa: F821
         # permanently dead in the packaged build - settings for a feature that
         # cannot run.
         "anthropic", "MetaTrader5",
-        # numpy is named explicitly, and the reason is subtle. MetaTrader5
-        # declares numpy>=1.7 so pip installs it, and it is not in `excludes`.
-        # But MetaTrader5 is a compiled .pyd: its `import numpy` happens inside
-        # C code, where PyInstaller's static analysis cannot see it. Nothing in
-        # the graph therefore asked for numpy and it was left out, producing a
-        # bundle that carried MetaTrader5 and died on
-        # "numpy._core.multiarray failed to import". Removing the exclude was
-        # necessary but not sufficient - a binary extension's imports are
-        # invisible and have to be declared by hand.
-        "numpy",
+        # numpy's submodules come from collect_all above, appended after this
+        # list. See the comment beside it for why a bare "numpy" was not enough.
         "argus.insider.pipeline", "argus.data.edgar", "argus.config",
         "argus.update", "argus.secrets", "argus.ai.analyst",
         "argus.bridge.mt5_bridge", "argus.analysis.bias",
         "argus.analysis.sessions", "argus.analysis.calendar",
-    ],
+    ] + _np_hidden,
     hookspath=[],
     runtime_hooks=[],
     # Trim what a research terminal has no use for. Each of these drags in tens
