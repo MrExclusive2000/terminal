@@ -179,10 +179,19 @@ jobs:
             required rather than optional. Nothing else needs configuring.
 
             **This build is not code-signed**, so Windows SmartScreen will warn
-            on first run — choose *More info* then *Run anyway*. The in-app
-            update check is deliberately check-only for the same reason: with no
-            signature to verify against, an auto-updater would be a remote code
-            execution path rather than a feature.
+            on first run — choose *More info* then *Run anyway*.
+
+            ### Updating
+            Argus checks for a new version on startup. In the default `auto`
+            mode it downloads the installer and verifies its SHA-256 against the
+            checksum GitHub publishes for that exact file before anything runs,
+            then offers to install and restart — it never restarts on its own.
+            Change this under Settings → Updates.
+
+            That check defeats a corrupted download or an asset swapped at the
+            storage layer. It does not defeat a compromise of this repository,
+            which only code signing would fix. The manual download carries the
+            same exposure.
 
             ### What is in it
             - **Insiders** — ranked SEC Form 4 feed. Decodes filings rather than
