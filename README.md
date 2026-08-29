@@ -54,8 +54,8 @@ EDGAR. It is the piece the plan argues nobody else sells.
 
 ### Install on Windows
 
-Download the installer from [Releases](https://github.com/MrExclusive2000/terminal/releases)
-and run it. No administrator rights, no Python, no command line. It installs
+Download `Argus-x.y.z-setup.exe` from
+[Releases](https://github.com/MrExclusive2000/terminal/releases) and run it. No administrator rights, no Python, no command line. It installs
 per-user and puts Argus on your desktop and Start menu.
 
 On first launch it asks for one thing: **a name and an email address**. The SEC
@@ -188,7 +188,15 @@ positioning is inverted into pair terms, because the CME contract is JPY/USD.
 | `packaging/argus.spec` | PyInstaller, onedir, no console window. |
 | `packaging/make_icon.py` | Generates the 7-size ICO from `zlib` and `struct` — no image library. |
 | `packaging/argus.iss` | Per-user Inno Setup installer. No admin prompt. |
-| `.github/workflows/build-windows.yml` | Tests on Linux, builds the exe and installer on Windows. |
+| `.github/workflows/build-windows.yml` | Tests on Linux, builds the exe and installer on Windows, publishes the release. |
+
+### Cutting a release
+
+The version in `src/argus/VERSION` **is** the release version. The first CI
+build that finds no tag for it publishes one; every later build finds the tag
+and skips. So bumping `VERSION` and pushing is how a release is cut — no tag
+push required, which matters because tag creation and workflow dispatch need
+credentials CI holds and an interactive session may not.
 
 ### Two deliberate refusals
 

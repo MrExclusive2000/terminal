@@ -77,6 +77,31 @@ jobs:
           $vi = $vi -replace "StringStruct\('ProductVersion',\s*'.*?'\)", "StringStruct('ProductVersion', '$v')"
           Set-Content -Path packaging/version_info.txt -Value $vi
 
+      # Release policy, declarative and idempotent: the version in
+      # src/argus/VERSION is the release version. The first build that sees no
+      # tag for it publishes one; every later build finds the tag and skips.
+      # Bumping VERSION is therefore how a release is cut, which works from a
+      # plain branch push - tag creation and workflow dispatch both need
+      # credentials an interactive session may not hold, and CI does.
+      - name: Decide whether to publish a release
+        id: rel
+        shell: bash
+        run: |
+          base="${{ steps.ver.outputs.base }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.release }}" = "true" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "Manual run requested a release for v$base."
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ startsWith(github.ref, 'refs/tags/v') }}" = "true" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "Tag push - publishing v$base."
+          elif git ls-remote --exit-code --tags origin "refs/tags/v$base" >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "Tag v$base already exists - not re-publishing."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "No tag v$base yet - publishing it from this commit."
+          fi
+
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
@@ -128,7 +153,7 @@ jobs:
       # The second exists because tag creation needs credentials the CI job has
       # and an interactive session may not.
       - name: Publish the release
-        if: startsWith(github.ref, 'refs/tags/v') || inputs.release
+        if: steps.rel.outputs.publish == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.ver.outputs.base }}
