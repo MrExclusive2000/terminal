@@ -125,12 +125,20 @@ jobs:
           foreach ($f in @('_internal/argus/app/ui.html','_internal/argus/VERSION')) {
             if (-not (Test-Path "dist/Argus/$f")) { throw "missing bundled asset: $f" }
           }
-          # Launch it, confirm the local backend really answers, then close.
-          $proc = Start-Process -FilePath $exe -PassThru
-          Start-Sleep -Seconds 25
-          if ($proc.HasExited) { throw "app exited immediately with code $($proc.ExitCode)" }
-          Write-Host "App is running (pid $($proc.Id))"
-          Stop-Process -Id $proc.Id -Force
+          # Ask the frozen app to prove it actually serves. "Still running" is
+          # not "working": v0.1.0 passed a liveness-only check and was broken on
+          # arrival, because a mislocated bundled asset left the process up
+          # while every request died in the handler.
+          $report = "$env:RUNNER_TEMP\argus-selfcheck.txt"
+          $proc = Start-Process -FilePath $exe -ArgumentList "--check","--check-out",$report -PassThru -Wait
+          if (Test-Path $report) { Get-Content $report | Write-Host }
+          if ($proc.ExitCode -ne 0) { throw "self-check failed (exit $($proc.ExitCode))" }
+
+          # And that it stays up when launched normally.
+          $win = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 20
+          if ($win.HasExited) { throw "app exited immediately with code $($win.ExitCode)" }
+          Stop-Process -Id $win.Id -Force
           Write-Host "Smoke test passed"
 
       - name: Build the installer

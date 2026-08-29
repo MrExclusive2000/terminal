@@ -62,18 +62,47 @@ def frozen() -> bool:
     return bool(getattr(sys, "frozen", False))
 
 
-def resource(*parts: str) -> Path:
-    """Locate a bundled read-only asset.
+def bundle_root() -> Path:
+    """Root that bundled data paths are relative to.
 
-    PyInstaller unpacks data files to `sys._MEIPASS` at runtime, so any path
-    built from `__file__` points into the wrong place - or into a directory that
-    does not exist at all in a onefile build. Every asset lookup goes through
-    here so the frozen and source layouts cannot drift apart.
+    Frozen, PyInstaller unpacks data to `sys._MEIPASS` (the `_internal`
+    directory in a onedir build). From source, the equivalent root is the
+    repository, because that is what the spec's destination paths are written
+    against.
     """
     if frozen():
-        base = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
-        return base.joinpath(*parts)
+        return Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
+    return Path(__file__).resolve().parents[2]
+
+
+def resource(*parts: str) -> Path:
+    """Locate an asset that lives *inside the argus package*.
+
+    The spec bundles these to `argus/...` under `_MEIPASS`, mirroring their
+    source location under `src/argus/`, so the package prefix has to be applied
+    in the frozen branch too.
+
+    This is exactly where the first shipped build broke: the frozen branch
+    returned `_MEIPASS/app/ui.html` while the file was at
+    `_MEIPASS/argus/app/ui.html`. VERSION silently fell back to "0.0.0-dev"
+    (visible in the title bar) and the UI raised FileNotFoundError inside the
+    request handler, which killed the thread without sending a response - the
+    browser reported ERR_EMPTY_RESPONSE with nothing to go on. An earlier
+    version of this docstring claimed the two layouts "cannot drift apart".
+    They drifted. `--check` in the launcher now proves they have not.
+    """
+    if frozen():
+        return bundle_root().joinpath("argus", *parts)
     return Path(__file__).resolve().parent.joinpath(*parts)
+
+
+def bundled(*parts: str) -> Path:
+    """Locate an asset bundled at the root of the bundle, outside the package.
+
+    Knowledge packs are the case: the spec places them at `knowledge/packs`,
+    not under `argus/`.
+    """
+    return bundle_root().joinpath(*parts)
 
 
 def version() -> str:

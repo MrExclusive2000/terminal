@@ -17,7 +17,18 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Iterable
 
-PACK_DIR = Path(__file__).resolve().parents[3] / "knowledge" / "packs"
+def _pack_dir() -> Path:
+    """Where the shipped knowledge packs live.
+
+    Resolved through the bundle helper rather than by counting `..` from
+    `__file__`: the frozen layout has a different depth, so the arithmetic that
+    is right from source lands a directory adrift inside the bundle.
+    """
+    from ..config import bundled
+    return bundled("knowledge", "packs")
+
+
+PACK_DIR = _pack_dir()
 
 
 @dataclass(frozen=True)

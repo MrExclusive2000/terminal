@@ -343,6 +343,25 @@ ROUTES: dict[str, Callable[[dict[str, list[str]]], Any]] = {
 }
 
 
+def _startup_error(exc: Exception) -> bytes:
+    """A diagnosable page for the one failure that has no UI to render into."""
+    from argus import config
+    return (f"""<!doctype html><meta charset=utf-8>
+<title>Argus - could not start</title>
+<style>body{{background:#0C1013;color:#DFE6E4;font:14px/1.6 system-ui,sans-serif;
+padding:44px;max-width:760px}}code{{background:#12181A;padding:2px 6px;border-radius:2px;
+font-family:Consolas,monospace}}h1{{font-size:19px}}.m{{color:#8B9996}}</style>
+<h1>Argus could not load its interface</h1>
+<p>The application started, but the bundled interface file is missing from this
+install. This is a packaging fault, not something you have done wrong.</p>
+<p class=m><code>{type(exc).__name__}: {exc}</code></p>
+<p class=m>Looked in: <code>{_ui_path()}</code><br>
+Version: <code>{config.version()}</code> &middot;
+Frozen: <code>{config.frozen()}</code></p>
+<p>Reinstalling from the latest release is the fix. If it persists, this text is
+what to report.</p>""").encode()
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):  # keep the console clean
         pass
@@ -359,7 +378,18 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         u = urlparse(self.path)
         if u.path in ("/", "/index.html"):
-            self._send(200, _ui_path().read_bytes(), "text/html; charset=utf-8"); return
+            # Guarded because an unhandled exception here sends *nothing*: the
+            # handler thread dies mid-request and the browser reports
+            # ERR_EMPTY_RESPONSE, which tells the user nothing at all. The first
+            # shipped build failed exactly this way on a mislocated bundled
+            # asset. A readable error page is the difference between a
+            # five-minute fix and an afternoon.
+            try:
+                body = _ui_path().read_bytes()
+            except OSError as exc:
+                self._send(500, _startup_error(exc), "text/html; charset=utf-8")
+                return
+            self._send(200, body, "text/html; charset=utf-8"); return
         fn = ROUTES.get(u.path)
         if not fn:
             self._send(404, {"error": "no such endpoint"}); return

@@ -135,6 +135,69 @@ def main() -> int:
           (lambda s: (s is not None, s and s.close())[0])(
               launcher._acquire_single_instance()))
 
+    print("\n[packaging] frozen vs source asset layout")
+    # v0.1.0 shipped broken: the frozen branch of resource() dropped the
+    # "argus" prefix, so VERSION fell back to 0.0.0-dev and ui.html raised
+    # inside the request handler, which sent no response at all.
+    import argus.config as cfg
+    real_frozen, real_meipass = getattr(sys, "frozen", None), getattr(sys, "_MEIPASS", None)
+    bundle = Path(tmp) / "bundle"
+    (bundle / "argus" / "app").mkdir(parents=True, exist_ok=True)
+    (bundle / "argus" / "VERSION").write_text("9.9.9", encoding="utf-8")
+    (bundle / "argus" / "app" / "ui.html").write_text("<title>Argus</title>", encoding="utf-8")
+    (bundle / "knowledge" / "packs").mkdir(parents=True, exist_ok=True)
+    sys.frozen = True                       # type: ignore[attr-defined]
+    sys._MEIPASS = str(bundle)              # type: ignore[attr-defined]
+    try:
+        check("frozen() detects the bundle", cfg.frozen() is True)
+        check("frozen resource() keeps the argus/ package prefix",
+              cfg.resource("app", "ui.html") == bundle / "argus" / "app" / "ui.html")
+        check("frozen VERSION resolves inside the package",
+              cfg.resource("VERSION").exists() and cfg.version() == "9.9.9")
+        check("frozen version() is not the 0.0.0-dev fallback",
+              cfg.version() != "0.0.0-dev")
+        check("frozen bundled() stays at the bundle root, outside the package",
+              cfg.bundled("knowledge", "packs") == bundle / "knowledge" / "packs")
+        check("the packs directory resolves when frozen",
+              cfg.bundled("knowledge", "packs").exists())
+        from argus.app.server import _ui_path
+        check("the server resolves the UI from the bundle", _ui_path().exists())
+    finally:
+        if real_frozen is None:
+            del sys.frozen                  # type: ignore[attr-defined]
+        else:
+            sys.frozen = real_frozen        # type: ignore[attr-defined]
+        if real_meipass is None:
+            if hasattr(sys, "_MEIPASS"):
+                del sys._MEIPASS            # type: ignore[attr-defined]
+        else:
+            sys._MEIPASS = real_meipass     # type: ignore[attr-defined]
+    check("source layout still resolves after the frozen test",
+          cfg.resource("app", "ui.html").exists() and cfg.version() != "0.0.0-dev")
+
+    print("\n[packaging] a broken bundle answers, rather than dropping the connection")
+    # ERR_EMPTY_RESPONSE gives the user nothing to report. A 500 with the
+    # looked-in path is the difference between five minutes and an afternoon.
+    err = server._startup_error(FileNotFoundError("no such file"))
+    check("the failure page is real HTML", b"<!doctype html>" in err.lower())
+    check("it names the exception", b"FileNotFoundError" in err)
+    check("it says where it looked", b"Looked in" in err)
+
+    print("\n[packaging] the self-check verifies serving, not just liveness")
+    import run as launcher
+    src = Path("run.py").read_text()
+    check("self_check requests the page over loopback", "urlopen" in src)
+    check("self_check asserts the interface actually rendered",
+          "viewDesk" in src and "<title>Argus</title>" in src)
+    check("self_check catches the 0.0.0-dev fallback", "0.0.0-dev" in src)
+    check("self_check returns a non-zero exit code on failure",
+          "return 0 if ok else 1" in src)
+    check("the launcher exposes --check", "--check" in src)
+    wf2 = Path(".github/workflows/build-windows.yml").read_text()
+    check("CI runs the frozen app's self-check", "--check-out" in wf2)
+    check("CI fails the build when the self-check fails", "self-check failed" in wf2)
+    check("running the self-check from source passes", launcher.self_check() == 0)
+
     print("\n[packaging] the build inputs exist and are well-formed")
     import struct
     ico = Path("packaging/argus.ico")

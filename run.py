@@ -14,10 +14,12 @@ promise.
 """
 from __future__ import annotations
 
+import json
 import os
 import socket
 import sys
 import threading
+import urllib.request
 import webbrowser
 from pathlib import Path
 
@@ -49,6 +51,68 @@ def _acquire_single_instance() -> socket.socket | None:
         return None
 
 
+def self_check(report_path: str | None = None) -> int:
+    """Boot the app and prove it actually serves. Exit 0 only if it does.
+
+    This exists because the first shipped build passed CI and was broken on
+    arrival. The smoke test checked that the bundled files existed and that the
+    process was still alive after launch - both true - but never asked the
+    running app for a page. A mislocated asset therefore sailed through: the
+    process stayed up while every request died in the handler, and the user got
+    ERR_EMPTY_RESPONSE.
+
+    "Still running" is not "working". This makes the request.
+    """
+    checks: list[tuple[str, bool, str]] = []
+
+    def note(name: str, ok: bool, detail: str = "") -> None:
+        checks.append((name, ok, detail))
+
+    note("version resolves", config.version() != "0.0.0-dev",
+         f"version()={config.version()!r}"
+         + (" - VERSION was not found in the bundle" if config.version() == "0.0.0-dev" else ""))
+
+    ui = config.resource("app", "ui.html")
+    note("ui.html is present", ui.exists(), str(ui))
+
+    httpd = None
+    try:
+        httpd, url = serve()
+
+        with urllib.request.urlopen(url, timeout=15) as r:
+            body = r.read().decode("utf-8", "replace")
+            note("GET / returns 200", r.status == 200, f"status={r.status}")
+            note("GET / returns the interface",
+                 "<title>Argus</title>" in body and "viewDesk" in body,
+                 f"{len(body)} bytes")
+
+        with urllib.request.urlopen(url + "api/settings", timeout=15) as r:
+            data = json.loads(r.read())
+            note("settings API responds", isinstance(data, dict), "")
+            note("secrets are not exposed by the API", "api_key" not in data, "")
+    except Exception as exc:  # noqa: BLE001 - any failure here is a failure
+        note("app serves over loopback", False, f"{type(exc).__name__}: {exc}")
+    finally:
+        if httpd is not None:
+            httpd.shutdown()
+
+    ok = all(c[1] for c in checks)
+    lines = [f"Argus self-check - {'PASS' if ok else 'FAIL'}",
+             f"  version : {config.version()}",
+             f"  frozen  : {config.frozen()}", ""]
+    lines += [f"  {'ok  ' if c[1] else 'FAIL'} {c[0]}" + (f"  ({c[2]})" if c[2] else "")
+              for c in checks]
+    report = "\n".join(lines)
+
+    # A windowed build has no console, so the report goes to a file and the
+    # verdict travels in the exit code.
+    if report_path:
+        Path(report_path).write_text(report, encoding="utf-8")
+    else:
+        print(report)
+    return 0 if ok else 1
+
+
 def _geometry() -> tuple[int, int]:
     w = config.load().window
     return (max(900, int(w.get("width", 1500))),
@@ -56,6 +120,12 @@ def _geometry() -> tuple[int, int]:
 
 
 def main() -> int:
+    if "--check" in sys.argv:
+        out = None
+        if "--check-out" in sys.argv:
+            out = sys.argv[sys.argv.index("--check-out") + 1]
+        return self_check(out)
+
     lock = _acquire_single_instance()
     if lock is None:
         print("Argus is already running.", file=sys.stderr)
