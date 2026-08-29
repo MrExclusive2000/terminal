@@ -14,6 +14,11 @@ on:
         description: 'Version to stamp (e.g. 0.1.0)'
         required: false
         default: ''
+      release:
+        description: 'Publish a GitHub Release for this version'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -118,9 +123,41 @@ jobs:
             dist/installer/*.exe
           retention-days: 30
 
-      - name: Attach the installer to the release
-        if: startsWith(github.ref, 'refs/tags/v')
+      # Two routes to a release. A pushed v* tag publishes automatically; a
+      # manual run with release=true creates the tag itself at this commit.
+      # The second exists because tag creation needs credentials the CI job has
+      # and an interactive session may not.
+      - name: Publish the release
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.ver.outputs.base }}
+          name: Argus ${{ steps.ver.outputs.base }}
           files: dist/installer/*.exe
           generate_release_notes: true
+          body: |
+            **Windows installer — no admin rights, no Python, no command line.**
+
+            Download `Argus-${{ steps.ver.outputs.base }}-setup.exe` below and run it.
+
+            On first launch it asks for one thing: a name and an email address.
+            The SEC refuses anonymous traffic to EDGAR outright, so this is
+            required rather than optional. Nothing else needs configuring.
+
+            **This build is not code-signed**, so Windows SmartScreen will warn
+            on first run — choose *More info* then *Run anyway*. The in-app
+            update check is deliberately check-only for the same reason: with no
+            signature to verify against, an auto-updater would be a remote code
+            execution path rather than a feature.
+
+            ### What is in it
+            - **Insiders** — ranked SEC Form 4 feed. Decodes filings rather than
+              listing them; roughly 70-80% of rows are payroll and score zero,
+              with the reason attached. Conviction scoring shows every factor.
+            - **Desk** — bias board for FX and metals. A lean, a strength, and
+              every input behind them, with conflict reported separately.
+              Session state, rollover warnings, and a DST-correct release calendar.
+            - **Trade** — position sizing from your actual stop, spread as a
+              percentage of risk, and whether that stop sits inside normal volatility.
+
+            Information only. There is no order path anywhere in this build.
