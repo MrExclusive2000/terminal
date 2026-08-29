@@ -73,6 +73,13 @@ color:var(--acc);margin:0 0 4px}
 .btn-row{display:flex;gap:7px;align-items:center}
 .btn-row button{width:auto;padding:5px 13px;font-size:11.5px}
 .keyrow{display:flex;gap:7px}.keyrow input{flex:1}
+.upd{display:none;align-items:center;gap:12px;background:rgba(53,181,168,.10);
+border-bottom:1px solid var(--acc);padding:8px 13px;font-family:var(--mono);font-size:12px}
+.upd b{font-family:var(--sans);font-size:13px}
+.upd button{width:auto;padding:4px 12px;font-size:11.5px}
+.upd .x{margin-left:auto;color:var(--fg3);cursor:pointer;padding:0 5px;background:none;border:none;width:auto}
+.upd.busy{background:rgba(224,164,75,.10);border-bottom-color:var(--warn)}
+.upd.bad{background:rgba(224,112,126,.10);border-bottom-color:var(--crit)}
 .grid.desk{grid-template-columns:1fr 380px}
 @media(max-width:1100px){.grid.desk{grid-template-columns:1fr}}
 .lean{display:flex;align-items:baseline;gap:12px;padding:14px 12px;border-bottom:1px solid var(--l)}
@@ -103,6 +110,13 @@ display:flex;gap:9px;align-items:baseline}
   <span id="stCot"><span class="dot wn"></span>COT …</span>
   <span id="stMac"><span class="dot wn"></span>Macro …</span>
   <span class="m" style="margin-left:auto" id="clock">—</span>
+</div>
+
+<div class="upd" id="updBar">
+  <b id="updTitle">Update available</b>
+  <span id="updMsg" class="m"></span>
+  <button id="updGo">INSTALL &amp; RESTART</button>
+  <button class="x" id="updX" title="Dismiss until next launch">&times;</button>
 </div>
 
 <div class="grid" id="viewTrade">
@@ -269,6 +283,26 @@ display:flex;gap:9px;align-items:baseline}
         <div class="btn-row"><button class="ghost" id="setTestAi">TEST KEY</button></div>
         <div class="res m" id="setAiRes"></div>
         <div class="note ai" style="font-size:11.5px" id="setKeyProt"></div>
+      </div>
+
+      <div class="sect">
+        <h3>Updates</h3>
+        <div class="row">
+          <div><label>On startup</label><select id="setUpd"></select></div>
+          <div><label>&nbsp;</label>
+            <button class="ghost" id="setUpdNow" style="padding:6px 12px">CHECK NOW</button></div>
+        </div>
+        <div class="res m" id="setUpdRes"></div>
+        <p class="m" style="font-size:11px">
+          <b>Auto</b> downloads the new version and verifies its SHA-256 against the
+          checksum GitHub publishes for that file, then offers to restart. It never
+          restarts on its own — an app that disappears while you are looking at a
+          position is worse than one that waits.<br><br>
+          That check defeats a corrupted download or a swapped file. It does not
+          defeat a compromise of the repository itself; only code signing does, and
+          this build is unsigned. The manual download carries exactly the same
+          exposure.
+        </p>
       </div>
 
       <div class="sect">
@@ -493,6 +527,7 @@ async function loadSettings(){
   $("setMt5Suffix").value=SET.mt5_suffix||"";
   $("setMt5On").value=String(!!SET.mt5_enabled);
 
+  fill("setUpd",SET.update_modes||[],SET.update_mode);
   fill("setModel",SET.ai_models||[],SET.ai_model);
   fill("setEffort",SET.ai_efforts||[],SET.ai_effort);
   $("setBudget").value=SET.ai_monthly_budget_usd;
@@ -512,14 +547,23 @@ async function loadSettings(){
   return SET;
 }
 
-async function testThing(path,box,render){
+async function testThing(path,box,render,isOk){
   const el=$(box); el.className="res m"; el.textContent="Testing…";
   try{
     const r=await j(path);
-    el.className="res "+(r.ok?"ok-msg":"err-msg");
+    // Not every endpoint reports success as `ok` - the update check reports
+    // `checked`. Callers pass their own predicate rather than having a false
+    // red returned for a perfectly good response.
+    const good = isOk ? isOk(r) : !!r.ok;
+    el.className="res "+(good?"ok-msg":"err-msg");
     el.textContent=render(r);
   }catch(e){ el.className="res err-msg"; el.textContent="Could not run the test: "+e; }
 }
+
+$("setUpdNow").onclick=()=>testThing("/api/update/check?force=1","setUpdRes",r=>
+  r.update_available ? `✓ Version ${r.latest} is available (you have ${r.current}).`
+  : r.checked ? `✓ ${r.message}`
+  : `✗ ${r.message}`, r=>!!r.checked);
 
 $("setTestMt5").onclick=()=>testThing("/api/test/mt5","setMt5Res",r=>{
   if(!r.ok) return "✗ "+r.error+(r.hint?"\n  "+r.hint:"");
@@ -566,7 +610,8 @@ $("setSave").onclick=async()=>{
               ai_enabled:$("setAiOn").value==="true",
               ai_model:$("setModel").value,
               ai_effort:$("setEffort").value,
-              ai_monthly_budget_usd:parseFloat($("setBudget").value)||0};
+              ai_monthly_budget_usd:parseFloat($("setBudget").value)||0,
+              update_mode:$("setUpd").value};
   try{
     const r=await (await fetch("/api/settings",{method:"POST",
       headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})).json();
@@ -640,6 +685,62 @@ async function desk(){
 }
 $("deskSym").onchange=desk;
 
+let UPD=null;
+function showUpd(cls,title,msg,btn){
+  const bar=$("updBar");
+  bar.style.display="flex";
+  bar.className="upd"+(cls?" "+cls:"");
+  $("updTitle").textContent=title;
+  $("updMsg").innerHTML=msg;
+  $("updGo").style.display=btn?"":"none";
+  if(btn) $("updGo").textContent=btn;
+}
+
+async function checkUpdate(){
+  try{ UPD=await j("/api/update/check"); }catch(e){ return; }   // silent on failure
+  if(!UPD || !UPD.update_available) return;
+
+  const size=UPD.size?` · ${(UPD.size/1048576).toFixed(1)} MB`:"";
+  if(UPD.stage_error){
+    showUpd("bad","Update available",
+      `Version ${UPD.latest} is out, but the download could not be verified: `+
+      `${UPD.stage_error} <a href="${UPD.url}" target="_blank">Open the release page</a>.`,null);
+    return;
+  }
+  if(!UPD.can_install){
+    showUpd("","Update available",
+      `Version ${UPD.latest} is out. This build cannot install it automatically — `+
+      `<a href="${UPD.url}" target="_blank">download it here</a>.`,null);
+    return;
+  }
+  const staged=UPD.staged
+    ? "Downloaded and checksum-verified, ready to install."
+    : "Will be downloaded and checksum-verified before anything runs.";
+  showUpd("",`Argus ${UPD.latest} available`,
+    `You are on ${UPD.current}${size}. ${staged}`, "INSTALL & RESTART");
+}
+
+$("updX").onclick=()=>{ $("updBar").style.display="none"; };
+$("updGo").onclick=async()=>{
+  showUpd("busy","Installing…","Verifying the download and launching the installer.",null);
+  try{
+    const r=await (await fetch("/api/update/apply",{method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({version:UPD&&UPD.latest})})).json();
+    if(!r.ok){
+      showUpd("bad","Update failed",
+        `${r.error} <a href="${(UPD&&UPD.url)||"#"}" target="_blank">Install manually</a>.`,null);
+      return;
+    }
+    showUpd("busy","Installing…",
+      "Argus is closing. The installer will reopen it when it finishes.",null);
+  }catch(e){
+    // The server exits mid-request by design, so a dropped connection here is
+    // the expected outcome rather than a failure.
+    showUpd("busy","Installing…","Argus is closing. The installer will reopen it.",null);
+  }
+};
+
 function view(which){
   const views={trade:"viewTrade",ins:"viewIns",desk:"viewDesk"};
   const tabs={trade:"tabTrade",ins:"tabIns",desk:"tabDesk"};
@@ -659,6 +760,7 @@ async function boot(){
     if(!s.onboarded || !s.contact_ok) openSettings(!s.onboarded);
   }catch(e){/* settings must never block the app starting */}
   await status();positioning();macro();quote();card();
+  checkUpdate();          // last, and never allowed to block the app starting
 }
 boot(); setInterval(()=>{status();quote()},15000); setInterval(()=>{positioning();macro()},600000);
 </script></body></html>

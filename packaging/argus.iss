@@ -36,6 +36,12 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 ; Refuse to install over a newer build rather than silently downgrading.
 VersionInfoVersion={#AppVersion}
+; In-app updates run this with /SILENT while Argus is shutting down. Close and
+; restart the app itself rather than telling the user to, and never demand a
+; reboot for what is a per-user file copy.
+CloseApplications=force
+RestartApplications=yes
+AlwaysRestart=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

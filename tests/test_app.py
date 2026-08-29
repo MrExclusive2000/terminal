@@ -221,6 +221,95 @@ def main() -> int:
     check("parse_version returns None on junk",
           update.parse_version("not-a-version") is None)
 
+    print("\n[update] release parsing against real release metadata")
+    from argus import update as upd
+    raw = json.loads((Path("tests/fixtures/release-latest.json")).read_text())
+    rel = upd._parse_release(raw)
+    check("version parsed without the v prefix", rel.version == "0.1.2")
+    check("the installer asset is found", rel.asset.name.endswith(".exe"))
+    check("the size is carried", rel.asset.size == 26907375)
+    check("the sha256 is extracted from the digest field",
+          rel.asset.sha256 == "7f997a52086a1cade97857d636706debb1a8455ef782cbaca332d4bebc4d7fba")
+    check("the asset reports itself verifiable", rel.asset.verifiable)
+    check("a draft release is ignored", upd._parse_release({**raw, "draft": True}) is None)
+    check("a release with no assets still parses",
+          upd._parse_release({**raw, "assets": []}).asset is None)
+    no_digest = {**raw, "assets": [{**raw["assets"][0], "digest": ""}]}
+    check("an asset with no digest is not verifiable",
+          not upd._parse_release(no_digest).asset.verifiable)
+
+    print("\n[update] a download is verified before anything is executed")
+    import functools
+    import hashlib
+    import http.server
+    import threading
+    payload = b"PRETEND INSTALLER " * 4000
+    good = hashlib.sha256(payload).hexdigest()
+    srv_dir = Path(tmp) / "served"
+    srv_dir.mkdir(exist_ok=True)
+    (srv_dir / "setup.exe").write_bytes(payload)
+    class QuietHandler(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *a):      # keep the suite output readable
+            pass
+
+    handler = functools.partial(QuietHandler, directory=str(srv_dir))
+
+    class Quiet(http.server.HTTPServer):
+        def handle_error(self, *a):
+            pass
+    httpd = Quiet(("127.0.0.1", 0), handler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{httpd.server_address[1]}/setup.exe"
+    saved_hosts = upd.ALLOWED_HOSTS
+
+    def attempt(sha, size):
+        a = upd.Asset(name="setup.exe", url=url, size=size, sha256=sha)
+        d = Path(tmp) / f"dl{abs(hash((sha, size)))}"
+        try:
+            return upd.download(a, dest_dir=str(d)), d
+        except upd.UpdateError as exc:
+            return exc, d
+
+    try:
+        upd.ALLOWED_HOSTS = {"127.0.0.1"}
+        ok, d = attempt(good, len(payload))
+        check("a matching download succeeds", isinstance(ok, Path) and ok.is_file())
+        bad, d = attempt("0" * 64, len(payload))
+        check("a checksum mismatch is refused", isinstance(bad, upd.UpdateError))
+        check("and the rejected file is deleted, never left runnable",
+              not any(p.suffix in (".exe", ".part") for p in d.iterdir()))
+        wrong, _ = attempt(good, len(payload) + 1)
+        check("a size mismatch is refused", isinstance(wrong, upd.UpdateError))
+        none, _ = attempt("", len(payload))
+        check("an unverifiable asset is refused outright",
+              isinstance(none, upd.UpdateError) and "SHA-256" in str(none))
+        upd.ALLOWED_HOSTS = {"github.com"}
+        off, _ = attempt(good, len(payload))
+        check("a host off the allow-list is refused",
+              isinstance(off, upd.UpdateError) and "Refusing" in str(off))
+    finally:
+        upd.ALLOWED_HOSTS = saved_hosts
+        httpd.shutdown()
+
+    check("applying is refused off Windows",
+          _raises(lambda: upd.apply(Path(tmp) / "nope.exe")))
+
+    print("\n[update] modes and endpoints")
+    check("auto is the default mode", config.Settings().update_mode == "auto")
+    check("all three modes are offered",
+          set(config.UPDATE_MODES) == {"auto", "notify", "off"})
+    check("an unknown mode is refused",
+          server.ep_settings_save({"update_mode": "yolo"})["ok"] is False)
+    check("a known mode saves",
+          server.ep_settings_save({"update_mode": "notify"})["ok"] is True)
+    config.update(update_mode="off")
+    off_res = server.ep_update_check({})
+    check("mode off short-circuits the check", off_res.get("disabled") is True)
+    check("...and makes no network call", off_res.get("checked") is False)
+    forced = server.ep_update_check({"force": ["1"]})
+    check("but an explicit check still runs", "disabled" not in forced)
+    config.update(update_mode="auto")
+
     print("\n[launcher] single instance")
     sys.path.insert(0, ".")
     import run as launcher

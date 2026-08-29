@@ -39,6 +39,7 @@ _EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 #: list so the UI cannot offer a model id this build has never been run against.
 AI_MODELS = ["claude-opus-5", "claude-sonnet-5", "claude-haiku-4-5"]
 AI_EFFORTS = ["low", "medium", "high", "xhigh", "max"]
+UPDATE_MODES = ["auto", "notify", "off"]
 
 
 def data_dir() -> Path:
@@ -155,7 +156,14 @@ class Settings:
     #: runaway loop cannot quietly spend a fortune.
     ai_monthly_budget_usd: float = 25.0
 
-    update_check: bool = True
+    #: "off"    - never check
+    #: "notify" - check on startup, offer a one-click install
+    #: "auto"   - check on startup, download and verify automatically, then
+    #:            offer to restart. It deliberately does NOT restart on its own:
+    #:            an app that vanishes and reappears while you are looking at a
+    #:            position is worse than one that waits to be told.
+    update_mode: str = "auto"
+    update_check: bool = True          # retained: older settings files set it
     window: dict[str, int] = field(default_factory=dict)
     #: Bumped when a first run has completed, so onboarding shows exactly once.
     onboarded: bool = False
@@ -199,6 +207,7 @@ class Settings:
                             "protection_note": "Secret store unavailable."}
         d["ai_models"] = AI_MODELS
         d["ai_efforts"] = AI_EFFORTS
+        d["update_modes"] = UPDATE_MODES
         return d
 
 

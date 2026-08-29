@@ -207,6 +207,7 @@ Everything is configurable in the app — nothing needs an environment variable.
 | **Data** | SEC contact (name + email). Required; EDGAR refuses anonymous traffic. |
 | **Broker** | MT5 terminal path and symbol suffix, with a **Test connection** button that resolves your instruments and detects the suffix. |
 | **AI** | Claude API key, model, effort, monthly budget, with a **Test key** button that makes one real call. |
+| **Updates** | `auto` (download, verify, offer to restart), `notify`, or `off`, with a Check now button. |
 | **Trading** | Account currency, default risk %, balance, professional status. |
 
 The MT5 suffix deserves its own note: IC Markets serves the same instrument as
@@ -237,10 +238,22 @@ user environment variables live in the registry in plaintext anyway — so it wa
 equally exposed *and* unusable. The environment variable still works and still
 takes precedence.
 
-**The updater does not update.** It checks for a newer release and links to it.
-There is no code signing yet, so nothing could verify a downloaded binary — and
-an updater that cannot verify what it fetched is a remote code execution path,
-not a feature. When signing exists this becomes verify-then-apply.
+**The updater verifies before it runs anything.** On startup Argus checks
+GitHub Releases; in `auto` mode it also downloads the installer and checks its
+SHA-256 against the digest the releases API publishes for that exact asset,
+then offers to restart. It **never restarts on its own** — an app that
+disappears while you are looking at a position is worse than one that waits.
+
+What that check is worth: it defeats a corrupted or truncated download, and an
+asset swapped at the storage layer without a matching API change. It does not
+defeat a compromise of the repository itself — someone who can publish a
+release can publish a matching digest. Only code signing fixes that, and this
+build is unsigned. Worth noting the manual path carries the identical exposure:
+clicking the release link and running the installer trusts the same publisher.
+
+A rejected download is deleted, never left on disk where it could be run, and
+the host is re-checked after redirects, because permitting a URL while ignoring
+where it lands is not a control.
 
 ## Why Python, not WPF
 

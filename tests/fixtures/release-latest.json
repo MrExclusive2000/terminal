@@ -1,0 +1,17 @@
+{
+  "tag_name": "v0.1.2",
+  "name": "Argus 0.1.2",
+  "draft": false,
+  "prerelease": false,
+  "html_url": "https://github.com/MrExclusive2000/terminal/releases/tag/v0.1.2",
+  "body": "Windows installer.",
+  "assets": [
+    {
+      "name": "Argus-0.1.2-setup.exe",
+      "size": 26907375,
+      "content_type": "application/x-msdos-program",
+      "digest": "sha256:7f997a52086a1cade97857d636706debb1a8455ef782cbaca332d4bebc4d7fba",
+      "browser_download_url": "https://github.com/MrExclusive2000/terminal/releases/download/v0.1.2/Argus-0.1.2-setup.exe"
+    }
+  ]
+}

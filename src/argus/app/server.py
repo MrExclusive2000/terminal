@@ -13,6 +13,7 @@ import threading
 import traceback
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import os
 from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
@@ -242,6 +243,82 @@ def ep_desk(q: dict[str, list[str]]) -> dict[str, Any]:
             "board": board.as_dict(), "sources": sources}
 
 
+#: Where a verified installer is parked between download and restart, so the
+#: apply step never has to re-fetch or re-verify.
+_staged: dict[str, str] = {}
+
+
+def ep_update_check(q: dict[str, list[str]]) -> dict[str, Any]:
+    """Check for a newer release, and in "auto" mode stage it as well.
+
+    Cached for an hour: this runs on every app start, and hammering the API
+    from a desktop app is how a project earns a rate limit.
+    """
+    from argus import config, update
+
+    cfg = config.load()
+    if cfg.update_mode == "off" and not q.get("force"):
+        return {"checked": False, "disabled": True, "current": config.version(),
+                "message": "Update checking is switched off in settings."}
+
+    def pull() -> dict[str, Any]:
+        return update.check(config.version())
+
+    res = dict(cached("update:latest", 3600.0, pull))
+    res["mode"] = cfg.update_mode
+
+    if (cfg.update_mode == "auto" and res.get("can_install")
+            and not _staged.get(res.get("latest", ""))):
+        rel = update.latest()
+        if rel and rel.asset:
+            try:
+                path = update.download(rel.asset)
+                _staged[rel.version] = str(path)
+            except Exception as exc:  # noqa: BLE001 - report, never raise
+                res["stage_error"] = str(exc)
+
+    if v := res.get("latest"):
+        res["staged"] = v in _staged
+    return res
+
+
+def ep_update_apply(body: dict[str, Any]) -> dict[str, Any]:
+    """Download if needed, verify, then launch the installer and exit.
+
+    The download is verified against the SHA-256 the releases API publishes for
+    that asset before anything is executed - see argus/update.py for what that
+    does and does not protect against.
+    """
+    import threading
+
+    from argus import config, update
+
+    version = str(body.get("version") or "").strip()
+    staged = _staged.get(version)
+
+    try:
+        if not staged:
+            rel = update.latest()
+            if rel is None or rel.asset is None:
+                return {"ok": False, "error": "No installable release was found."}
+            if not update.is_newer(rel.version, config.version()):
+                return {"ok": False, "error": "Already up to date."}
+            staged = str(update.download(rel.asset))
+            _staged[rel.version] = staged
+
+        update.apply(Path(staged))
+    except update.UpdateError as exc:
+        return {"ok": False, "error": str(exc)}
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+    # Give the response time to reach the browser before the process goes away;
+    # the installer cannot replace a running executable.
+    threading.Timer(1.5, lambda: os._exit(0)).start()
+    return {"ok": True, "installing": True,
+            "message": "Installer verified and launched. Argus will close and reopen."}
+
+
 def ep_settings() -> dict[str, Any]:
     """Current settings, secrets excluded by construction."""
     from argus import config
@@ -369,7 +446,7 @@ def ep_settings_save(body: dict[str, Any]) -> dict[str, Any]:
 
     allowed = {"sec_contact", "professional", "account_currency", "risk_percent",
                "balance", "insider_limit", "update_check", "onboarded", "window",
-               "mt5_path", "mt5_suffix", "mt5_enabled",
+               "mt5_path", "mt5_suffix", "mt5_enabled", "update_mode",
                "ai_enabled", "ai_model", "ai_effort", "ai_monthly_budget_usd"}
     changes = {k: v for k, v in body.items() if k in allowed}
     if not changes:
@@ -381,6 +458,8 @@ def ep_settings_save(body: dict[str, Any]) -> dict[str, Any]:
         return {"ok": False, "error": f"Unknown model {m!r}."}
     if (e := changes.get("ai_effort")) and e not in config.AI_EFFORTS:
         return {"ok": False, "error": f"Unknown effort level {e!r}."}
+    if (m := changes.get("update_mode")) and m not in config.UPDATE_MODES:
+        return {"ok": False, "error": f"Unknown update mode {m!r}."}
 
     s = config.update(**changes)
     # Clear any cached insider pull: the contact may have changed, which changes
@@ -453,6 +532,7 @@ ROUTES: dict[str, Callable[[dict[str, list[str]]], Any]] = {
     "/api/desk": ep_desk,
     "/api/test/ai": lambda q: ep_test_ai(),
     "/api/test/mt5": lambda q: ep_test_mt5(),
+    "/api/update/check": ep_update_check,
 }
 
 
@@ -524,6 +604,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ep_settings_save(body)); return
         if u.path == "/api/secret":
             self._send(200, ep_secret_save(body)); return
+        if u.path == "/api/update/apply":
+            self._send(200, ep_update_apply(body)); return
         self._send(404, {"error": "no such endpoint"})
 
 
