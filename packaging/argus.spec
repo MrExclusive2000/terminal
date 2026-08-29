@@ -42,6 +42,16 @@ a = Analysis(                                     # noqa: F821
         # permanently dead in the packaged build - settings for a feature that
         # cannot run.
         "anthropic", "MetaTrader5",
+        # numpy is named explicitly, and the reason is subtle. MetaTrader5
+        # declares numpy>=1.7 so pip installs it, and it is not in `excludes`.
+        # But MetaTrader5 is a compiled .pyd: its `import numpy` happens inside
+        # C code, where PyInstaller's static analysis cannot see it. Nothing in
+        # the graph therefore asked for numpy and it was left out, producing a
+        # bundle that carried MetaTrader5 and died on
+        # "numpy._core.multiarray failed to import". Removing the exclude was
+        # necessary but not sufficient - a binary extension's imports are
+        # invisible and have to be declared by hand.
+        "numpy",
         "argus.insider.pipeline", "argus.data.edgar", "argus.config",
         "argus.update", "argus.secrets", "argus.ai.analyst",
         "argus.bridge.mt5_bridge", "argus.analysis.bias",
