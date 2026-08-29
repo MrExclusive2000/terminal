@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import socket
 import sys
 import threading
@@ -75,6 +76,26 @@ def self_check(report_path: str | None = None) -> int:
     ui = config.resource("app", "ui.html")
     note("ui.html is present", ui.exists(), str(ui))
 
+    # Optional features are imported lazily, which hides them from PyInstaller.
+    # Shipping settings for a feature whose package was never bundled is its own
+    # kind of broken, so the build proves they are importable.
+    for mod, why in (("anthropic", "AI analyst"),
+                     ("MetaTrader5", "broker bridge")):
+        try:
+            __import__(mod)
+            note(f"{why} dependency is bundled ({mod})", True, "")
+        except ImportError as exc:
+            # MetaTrader5 is Windows-only. And a source checkout may legitimately
+            # not have the optional extras installed - only the packaged build
+            # is required to carry them, because only it promises the feature.
+            optional = ((mod == "MetaTrader5" and sys.platform != "win32")
+                        or not config.frozen())
+            note(f"{why} dependency is bundled ({mod})", optional,
+                 "not applicable off Windows" if mod == "MetaTrader5"
+                 and sys.platform != "win32"
+                 else "not installed (source run - required only in the bundle)"
+                 if optional else str(exc))
+
     httpd = None
     try:
         httpd, url = serve()
@@ -87,9 +108,16 @@ def self_check(report_path: str | None = None) -> int:
                  f"{len(body)} bytes")
 
         with urllib.request.urlopen(url + "api/settings", timeout=15) as r:
-            data = json.loads(r.read())
+            raw = r.read().decode("utf-8", "replace")
+            data = json.loads(raw)
             note("settings API responds", isinstance(data, dict), "")
-            note("secrets are not exposed by the API", "api_key" not in data, "")
+            # A real leak test, not a field-name test. The settings payload
+            # legitimately reports whether a key is set and shows its last four
+            # characters; what it must never carry is a usable secret. Scan the
+            # serialized body for anything key-shaped.
+            leaked = re.findall(r"sk-[A-Za-z0-9_\-]{16,}", raw)
+            note("no usable secret appears in the settings payload",
+                 not leaked, f"found {len(leaked)}" if leaked else "")
     except Exception as exc:  # noqa: BLE001 - any failure here is a failure
         note("app serves over loopback", False, f"{type(exc).__name__}: {exc}")
     finally:

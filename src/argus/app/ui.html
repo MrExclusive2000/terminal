@@ -65,6 +65,14 @@ background:var(--p2);letter-spacing:.02em}
 .card p{color:var(--fg2);line-height:1.6;margin:0 0 13px;font-size:12.5px}
 .ok-msg{color:var(--acc)}.err-msg{color:var(--crit)}
 .fld{margin-bottom:13px}
+.sect{border-top:1px solid var(--l);margin:18px -16px 14px;padding:14px 16px 0}
+.sect:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.sect h3{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+color:var(--acc);margin:0 0 4px}
+.res{font-family:var(--mono);font-size:11px;margin-top:7px;line-height:1.6;white-space:pre-wrap}
+.btn-row{display:flex;gap:7px;align-items:center}
+.btn-row button{width:auto;padding:5px 13px;font-size:11.5px}
+.keyrow{display:flex;gap:7px}.keyrow input{flex:1}
 .grid.desk{grid-template-columns:1fr 380px}
 @media(max-width:1100px){.grid.desk{grid-template-columns:1fr}}
 .lean{display:flex;align-items:baseline;gap:12px;padding:14px 12px;border-bottom:1px solid var(--l)}
@@ -194,38 +202,94 @@ display:flex;gap:9px;align-items:baseline}
   <div class="card">
     <h2 id="setTitle">Settings</h2>
     <div class="bdy">
-      <p id="setIntro">
-        Argus reads public regulatory filings. The SEC requires anyone doing that
-        to say who they are — a name and an email address. It is their fair-access
-        rule, and without it every request is refused outright.
-      </p>
-      <div class="fld">
-        <label>SEC contact — name and email</label>
-        <input id="setContact" placeholder="Jane Doe  jane@example.com">
-        <div class="m" style="font-size:11px;margin-top:4px" id="setContactNote"></div>
+
+      <div class="sect">
+        <h3>Data &mdash; SEC EDGAR</h3>
+        <p id="setIntro">
+          Argus reads public regulatory filings. The SEC requires anyone doing that
+          to say who they are &mdash; a name and an email address. Without it every
+          request is refused outright.
+        </p>
+        <div class="fld">
+          <label>SEC contact &mdash; name and email</label>
+          <input id="setContact" placeholder="Jane Doe  jane@example.com">
+          <div class="m" style="font-size:11px;margin-top:4px" id="setContactNote"></div>
+        </div>
       </div>
-      <div class="row">
-        <div><label>Account currency</label>
-          <select id="setCcy"><option>GBP</option><option>USD</option><option>EUR</option></select></div>
-        <div><label>Default risk %</label><input id="setRisk" type="number" step="any"></div>
+
+      <div class="sect">
+        <h3>Broker &mdash; MetaTrader 5</h3>
+        <p>
+          Read-only. Argus reads prices and symbol metadata; there is no order path
+          in the codebase. Leave the path blank to attach to whichever terminal is
+          already running &mdash; which is the normal case.
+        </p>
+        <div class="fld">
+          <label>Terminal path (blank = attach to a running terminal)</label>
+          <input id="setMt5Path" placeholder="C:\Program Files\MetaTrader 5\terminal64.exe">
+        </div>
+        <div class="row">
+          <div><label>Symbol suffix</label>
+            <input id="setMt5Suffix" placeholder="e.g. .a  .r  (blank for none)"></div>
+          <div><label>Bridge</label>
+            <select id="setMt5On"><option value="true">Enabled</option>
+            <option value="false">Disabled</option></select></div>
+        </div>
+        <p class="m" style="font-size:11px">
+          IC Markets serves the same instrument as <code>XAUUSD</code>,
+          <code>XAUUSD.a</code> or <code>XAUUSD.r</code> depending on account type.
+          The wrong suffix looks like &ldquo;symbol not found&rdquo; rather than a
+          settings problem, so Test detects it for you.
+        </p>
+        <div class="btn-row"><button class="ghost" id="setTestMt5">TEST CONNECTION</button></div>
+        <div class="res m" id="setMt5Res"></div>
       </div>
-      <div class="row">
-        <div><label>Balance</label><input id="setBal" type="number" step="any"></div>
-        <div><label>Market-data status</label>
-          <select id="setPro"><option value="false">Non-professional</option>
-          <option value="true">Professional</option></select></div>
+
+      <div class="sect">
+        <h3>AI &mdash; Claude</h3>
+        <div class="fld">
+          <label>Anthropic API key</label>
+          <div class="keyrow">
+            <input id="setKey" type="password" placeholder="sk-ant-...">
+            <button class="ghost" id="setKeySave" style="width:auto;padding:6px 13px">SAVE KEY</button>
+          </div>
+          <div class="m" style="font-size:11px;margin-top:4px" id="setKeyNote"></div>
+        </div>
+        <div class="row">
+          <div><label>Model</label><select id="setModel"></select></div>
+          <div><label>Effort</label><select id="setEffort"></select></div>
+        </div>
+        <div class="row">
+          <div><label>Monthly budget (USD)</label>
+            <input id="setBudget" type="number" step="any"></div>
+          <div><label>Analyst</label>
+            <select id="setAiOn"><option value="true">Enabled</option>
+            <option value="false">Disabled</option></select></div>
+        </div>
+        <div class="btn-row"><button class="ghost" id="setTestAi">TEST KEY</button></div>
+        <div class="res m" id="setAiRes"></div>
+        <div class="note ai" style="font-size:11.5px" id="setKeyProt"></div>
       </div>
-      <p class="m" style="font-size:11px">
-        Professional status multiplies exchange data fees several-fold. It is asked
-        rather than assumed because it is the largest cost variable in this system.
-      </p>
-      <div class="note ai" style="font-size:12px">
-        <b>Secrets are not stored here.</b> This file is plaintext JSON on your disk.
-        The Claude API key is read from the <code>ANTHROPIC_API_KEY</code> environment
-        variable at the moment it is used and is never written to disk — proper
-        key isolation is a build step that does not exist yet, and pretending
-        otherwise would be worse than saying so.
+
+      <div class="sect">
+        <h3>Trading defaults</h3>
+        <div class="row">
+          <div><label>Account currency</label>
+            <select id="setCcy"><option>GBP</option><option>USD</option><option>EUR</option></select></div>
+          <div><label>Default risk %</label><input id="setRisk" type="number" step="any"></div>
+        </div>
+        <div class="row">
+          <div><label>Balance</label><input id="setBal" type="number" step="any"></div>
+          <div><label>Market-data status</label>
+            <select id="setPro"><option value="false">Non-professional</option>
+            <option value="true">Professional</option></select></div>
+        </div>
+        <p class="m" style="font-size:11px">
+          Professional status multiplies exchange data fees several-fold. It is asked
+          rather than assumed because it is the largest cost variable in this system.
+        </p>
       </div>
+
       <div id="setMsg" class="m" style="margin:12px 0;min-height:17px"></div>
       <div class="row">
         <button id="setSave">SAVE</button>
@@ -414,6 +478,9 @@ async function insider(){
 }
 
 let SET={};
+function fill(sel,opts,val){
+  $(sel).innerHTML=opts.map(o=>`<option${o===val?" selected":""}>${o}</option>`).join("");
+}
 async function loadSettings(){
   SET=await j("/api/settings");
   $("setContact").value=SET.sec_contact||"";
@@ -421,13 +488,63 @@ async function loadSettings(){
   $("setRisk").value=SET.risk_percent;
   $("setBal").value=SET.balance;
   $("setPro").value=String(!!SET.professional);
-  $("setPath").textContent="Settings file: "+SET.data_dir;
+
+  $("setMt5Path").value=SET.mt5_path||"";
+  $("setMt5Suffix").value=SET.mt5_suffix||"";
+  $("setMt5On").value=String(!!SET.mt5_enabled);
+
+  fill("setModel",SET.ai_models||[],SET.ai_model);
+  fill("setEffort",SET.ai_efforts||[],SET.ai_effort);
+  $("setBudget").value=SET.ai_monthly_budget_usd;
+  $("setAiOn").value=String(!!SET.ai_enabled);
+
+  const k=SET.api_key||{};
+  $("setKeyNote").innerHTML = k.from_env
+    ? '<span class="w">Supplied by the ANTHROPIC_API_KEY environment variable, which takes precedence over anything saved here.</span>'
+    : k.present ? `<span class="ok-msg">Key saved (${k.masked}).</span> Leave blank to keep it; clear the box and save to remove it.`
+                : '<span class="err-msg">No key set — the analyst is unavailable.</span>';
+  $("setKeyProt").innerHTML=`<b>Where the key is kept.</b> ${k.protection_note||""}`;
+
   $("setContactNote").innerHTML = SET.contact_from_env
     ? '<span class="w">Currently overridden by the ARGUS_SEC_CONTACT environment variable.</span>'
     : (SET.contact_ok ? '<span class="ok-msg">Configured.</span>'
                       : '<span class="err-msg">Not set — EDGAR will refuse every request.</span>');
   return SET;
 }
+
+async function testThing(path,box,render){
+  const el=$(box); el.className="res m"; el.textContent="Testing…";
+  try{
+    const r=await j(path);
+    el.className="res "+(r.ok?"ok-msg":"err-msg");
+    el.textContent=render(r);
+  }catch(e){ el.className="res err-msg"; el.textContent="Could not run the test: "+e; }
+}
+
+$("setTestMt5").onclick=()=>testThing("/api/test/mt5","setMt5Res",r=>{
+  if(!r.ok) return "✗ "+r.error+(r.hint?"\n  "+r.hint:"");
+  const lines=(r.symbols||[]).map(x=>`  ${x.instrument.padEnd(8)} → ${x.broker_symbol||"not found"}`);
+  const acct=r.account?`Connected to ${r.account.server||"broker"}.`:"Connected.";
+  return "✓ "+acct+"\n"+(r.note||"")+"\n"+lines.join("\n");
+});
+
+$("setTestAi").onclick=()=>testThing("/api/test/ai","setAiRes",r=>
+  r.ok ? `✓ ${r.model} replied "${r.reply}" (${r.tokens? r.tokens.in+" in / "+r.tokens.out+" out tokens":""})`
+       : "✗ "+r.error);
+
+$("setKeySave").onclick=async()=>{
+  const note=$("setKeyNote"); const val=$("setKey").value.trim();
+  note.innerHTML="Saving…";
+  try{
+    const r=await (await fetch("/api/secret",{method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({anthropic_api_key:val})})).json();
+    if(!r.ok){ note.innerHTML=`<span class="err-msg">${r.error}</span>`; return; }
+    $("setKey").value="";
+    await loadSettings();
+    if(r.cleared) $("setKeyNote").innerHTML='<span class="w">Key removed.</span>';
+  }catch(e){ note.innerHTML=`<span class="err-msg">Could not save: ${e}</span>`; }
+};
 function openSettings(firstRun){
   $("setOvl").style.display="flex";
   $("setTitle").textContent = firstRun ? "Welcome to Argus — one thing to set" : "Settings";
@@ -442,7 +559,14 @@ $("setSave").onclick=async()=>{
               account_currency:$("setCcy").value,
               risk_percent:parseFloat($("setRisk").value)||1,
               balance:parseFloat($("setBal").value)||0,
-              professional:$("setPro").value==="true", onboarded:true};
+              professional:$("setPro").value==="true", onboarded:true,
+              mt5_path:$("setMt5Path").value.trim(),
+              mt5_suffix:$("setMt5Suffix").value.trim(),
+              mt5_enabled:$("setMt5On").value==="true",
+              ai_enabled:$("setAiOn").value==="true",
+              ai_model:$("setModel").value,
+              ai_effort:$("setEffort").value,
+              ai_monthly_budget_usd:parseFloat($("setBudget").value)||0};
   try{
     const r=await (await fetch("/api/settings",{method:"POST",
       headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})).json();

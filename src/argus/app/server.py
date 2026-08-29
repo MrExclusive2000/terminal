@@ -248,12 +248,114 @@ def ep_settings() -> dict[str, Any]:
     return config.load().public()
 
 
+def ep_secret_save(body: dict[str, Any]) -> dict[str, Any]:
+    """Store the Claude API key in the protected secret store.
+
+    Kept on its own endpoint, away from the settings whitelist, so a secret can
+    never be written into settings.json by a field-name mistake. The value is
+    never echoed back - only its masked status.
+    """
+    from argus.secrets import set_secret, status
+
+    key = str(body.get("anthropic_api_key", "")).strip()
+    if key and not key.startswith("sk-"):
+        return {"ok": False,
+                "error": "That does not look like an Anthropic API key - they "
+                         "begin with 'sk-'. Nothing was saved."}
+    try:
+        set_secret("anthropic_api_key", key)
+    except OSError as exc:
+        return {"ok": False, "error": f"Could not write the secret store: {exc}"}
+    return {"ok": True, "api_key": status("anthropic_api_key"),
+            "cleared": not key}
+
+
+def ep_test_ai() -> dict[str, Any]:
+    """Prove the key works, with the cheapest call that can fail honestly."""
+    from argus import config
+    from argus.config import load
+
+    key = config.Settings.api_key()
+    if not key:
+        return {"ok": False, "error": "No API key configured."}
+    try:
+        import anthropic
+    except ImportError:
+        return {"ok": False,
+                "error": "The anthropic package is not installed in this build, "
+                         "so AI features are unavailable. The key was saved."}
+    try:
+        client = anthropic.Anthropic(api_key=key)
+        r = client.messages.create(
+            model=load().ai_model, max_tokens=16,
+            messages=[{"role": "user", "content": "Reply with the single word: ready"}])
+        text = "".join(b.text for b in r.content if b.type == "text").strip()
+        return {"ok": True, "model": r.model, "reply": text[:40],
+                "tokens": {"in": r.usage.input_tokens, "out": r.usage.output_tokens}}
+    except Exception as exc:  # noqa: BLE001 - report, never raise into the UI
+        name = type(exc).__name__
+        hint = ("The key was rejected." if "Authentication" in name else
+                "Rate limited - the key works." if "RateLimit" in name else
+                "Could not reach the API." if "Connection" in name else str(exc)[:160])
+        return {"ok": "RateLimit" in name, "error": f"{name}: {hint}"}
+
+
+def ep_test_mt5() -> dict[str, Any]:
+    """Try to attach to the terminal and resolve the user's symbols.
+
+    Reports the resolved broker symbol per instrument, because the suffix is the
+    thing that actually goes wrong: IC Markets serves XAUUSD, XAUUSD.a and
+    XAUUSD.r depending on account type, and the wrong one reads as "symbol not
+    found" rather than as a settings problem.
+    """
+    from argus.config import load
+    from argus.bridge import mt5_bridge
+
+    cfg = load()
+    if not cfg.mt5_enabled:
+        return {"ok": False, "error": "The MT5 bridge is switched off in settings."}
+    try:
+        mt5_bridge._require_mt5()
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc),
+                "hint": "MetaTrader5 is Windows-only and needs the terminal "
+                        "installed. On other platforms this will always fail."}
+    try:
+        kw = {"path": cfg.mt5_path} if cfg.mt5_path else {}
+        info = mt5_bridge.initialize(**kw)
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc),
+                "hint": "Is the MetaTrader 5 terminal running and logged in?"}
+
+    resolved: list[dict[str, Any]] = []
+    for base in ("XAUUSD", "EURUSD", "GBPUSD", "USDJPY"):
+        found = None
+        for cand in ({base + cfg.mt5_suffix} if cfg.mt5_suffix else set()) | {
+                base, base + ".a", base + ".r", base + "m", base + "#"}:
+            try:
+                mt5_bridge.symbol_info(cand)
+                found = cand
+                break
+            except Exception:  # noqa: BLE001 - not this one, try the next
+                continue
+        resolved.append({"instrument": base, "broker_symbol": found})
+    hits = [r for r in resolved if r["broker_symbol"]]
+    suffix = ""
+    if hits:
+        s0 = hits[0]["broker_symbol"]
+        suffix = s0[len(hits[0]["instrument"]):]
+    return {"ok": True, "account": info.get("account"), "symbols": resolved,
+            "detected_suffix": suffix,
+            "note": (f"Detected symbol suffix {suffix!r}." if suffix
+                     else "Symbols resolve with no suffix.")}
+
+
 def ep_settings_save(body: dict[str, Any]) -> dict[str, Any]:
     """Persist settings from the UI.
 
     Only whitelisted fields are writable, and any key that looks like a secret
     is refused rather than silently ignored - a caller trying to POST an API key
-    should be told it is not stored, not left believing it was.
+    to *this* endpoint should be told where it actually goes.
     """
     from argus import config
 
@@ -261,15 +363,24 @@ def ep_settings_save(body: dict[str, Any]) -> dict[str, Any]:
     offered = {k.lower() for k in body}
     if offered & banned:
         return {"ok": False,
-                "error": "Secrets are not stored in settings. Provide the API "
-                         "key via the ANTHROPIC_API_KEY environment variable; "
-                         "it is read at point of use and never written to disk."}
+                "error": "Secrets are not written to settings.json. Post the key "
+                         "to /api/secret instead, where it is stored in the "
+                         "protected secret store."}
 
     allowed = {"sec_contact", "professional", "account_currency", "risk_percent",
-               "balance", "insider_limit", "update_check", "onboarded", "window"}
+               "balance", "insider_limit", "update_check", "onboarded", "window",
+               "mt5_path", "mt5_suffix", "mt5_enabled",
+               "ai_enabled", "ai_model", "ai_effort", "ai_monthly_budget_usd"}
     changes = {k: v for k, v in body.items() if k in allowed}
     if not changes:
         return {"ok": False, "error": "Nothing recognised to save."}
+
+    # Reject values the UI should never have offered, rather than storing a
+    # model id or effort level this build has never been run against.
+    if (m := changes.get("ai_model")) and m not in config.AI_MODELS:
+        return {"ok": False, "error": f"Unknown model {m!r}."}
+    if (e := changes.get("ai_effort")) and e not in config.AI_EFFORTS:
+        return {"ok": False, "error": f"Unknown effort level {e!r}."}
 
     s = config.update(**changes)
     # Clear any cached insider pull: the contact may have changed, which changes
@@ -340,6 +451,8 @@ ROUTES: dict[str, Callable[[dict[str, list[str]]], Any]] = {
     "/api/insider": ep_insider,
     "/api/settings": lambda q: ep_settings(),
     "/api/desk": ep_desk,
+    "/api/test/ai": lambda q: ep_test_ai(),
+    "/api/test/mt5": lambda q: ep_test_mt5(),
 }
 
 
@@ -409,6 +522,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ep_analyse(body)); return
         if u.path == "/api/settings":
             self._send(200, ep_settings_save(body)); return
+        if u.path == "/api/secret":
+            self._send(200, ep_secret_save(body)); return
         self._send(404, {"error": "no such endpoint"})
 
 

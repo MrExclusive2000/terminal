@@ -34,6 +34,12 @@ API_KEY_ENV = "ANTHROPIC_API_KEY"
 
 _EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
+#: Offered in the settings screen. Opus 5 is the default and the right choice
+#: for analysis; Sonnet is the cheaper high-volume option. Kept as an explicit
+#: list so the UI cannot offer a model id this build has never been run against.
+AI_MODELS = ["claude-opus-5", "claude-sonnet-5", "claude-haiku-4-5"]
+AI_EFFORTS = ["low", "medium", "high", "xhigh", "max"]
+
 
 def data_dir() -> Path:
     """Per-user writable directory, correct for the platform.
@@ -125,6 +131,30 @@ class Settings:
     risk_percent: float = 1.0
     balance: float = 25000.0
     insider_limit: int = 40
+
+    # -- broker (MetaTrader 5) -----------------------------------------
+    #: Path to terminal64.exe. Blank means "attach to whatever terminal is
+    #: already running", which is the normal case and needs no configuration.
+    mt5_path: str = ""
+    #: Brokers suffix their symbols by account type - IC Markets uses forms
+    #: like XAUUSD, XAUUSD.a, XAUUSD.r. Getting this wrong reads as "symbol not
+    #: found" rather than as a configuration problem, so it is an explicit
+    #: setting with a discovery button beside it.
+    mt5_suffix: str = ""
+    mt5_enabled: bool = True
+
+    # -- AI ------------------------------------------------------------
+    #: The API key is NOT here. It lives in secrets.py, which encrypts it under
+    #: DPAPI on Windows. See that module for what that is and is not worth.
+    ai_enabled: bool = True
+    ai_model: str = "claude-opus-5"
+    #: Effort trades thoroughness against tokens. "high" is the API default and
+    #: the sensible desk setting; "low" is for a quick read.
+    ai_effort: str = "high"
+    #: A hard monthly ceiling the cost meter checks before each call, so a
+    #: runaway loop cannot quietly spend a fortune.
+    ai_monthly_budget_usd: float = 25.0
+
     update_check: bool = True
     window: dict[str, int] = field(default_factory=dict)
     #: Bumped when a first run has completed, so onboarding shows exactly once.
@@ -143,16 +173,32 @@ class Settings:
 
     @staticmethod
     def api_key() -> str:
-        """Read at point of use. Never stored, never logged, never returned to the UI."""
-        return os.environ.get(API_KEY_ENV, "").strip()
+        """Read at point of use. Never logged, never returned to the UI.
+
+        Delegates to the secret store, which checks the environment first and
+        falls back to the DPAPI-protected file.
+        """
+        try:
+            from .secrets import get
+            return get("anthropic_api_key")
+        except Exception:  # noqa: BLE001
+            return os.environ.get(API_KEY_ENV, "").strip()
 
     def public(self) -> dict[str, Any]:
         """Settings safe to hand to the UI. No secrets pass through here."""
         d = asdict(self)
         d["contact_ok"] = self.contact_ok()
         d["contact_from_env"] = bool(os.environ.get(CONTACT_ENV, "").strip())
-        d["api_key_present"] = bool(self.api_key())
         d["data_dir"] = str(data_dir())
+        d["version"] = version()
+        try:
+            from .secrets import status
+            d["api_key"] = status("anthropic_api_key")
+        except Exception:  # noqa: BLE001 - the settings screen must still open
+            d["api_key"] = {"present": False, "protection": "unknown",
+                            "protection_note": "Secret store unavailable."}
+        d["ai_models"] = AI_MODELS
+        d["ai_efforts"] = AI_EFFORTS
         return d
 
 

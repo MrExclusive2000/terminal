@@ -1,6 +1,17 @@
-# Core app
-pywebview>=5.0          # native Windows window (optional; browser fallback works)
-anthropic>=1.0          # Claude analysis layer
+# Runtime dependencies of the packaged Windows app.
+#
+# Declared here rather than only in the CI workflow so the build and a local
+# source run install the same set. Pinned because an unpinned build is not
+# reproducible, and a desktop app that changes behaviour between two builds of
+# the same tag is not debuggable.
 
-# Windows only - the MT5 bridge. Silently skipped on other platforms.
-MetaTrader5>=5.0.45 ; sys_platform == "win32"
+# Native window host. Pulls in pythonnet/clr_loader and the WebView2 runtime.
+pywebview==5.3.2
+
+# The analyst. Imported lazily at the call site, so PyInstaller cannot see it
+# by static analysis - it is also named in the spec's hiddenimports.
+anthropic==0.69.0
+
+# Broker bridge, read-only. Windows-only: the marker keeps `pip install -r`
+# working on Linux and macOS for development and CI test runs.
+MetaTrader5==5.0.4874 ; sys_platform == "win32"

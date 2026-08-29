@@ -198,15 +198,44 @@ and skips. So bumping `VERSION` and pushing is how a release is cut — no tag
 push required, which matters because tag creation and workflow dispatch need
 credentials CI holds and an interactive session may not.
 
+### Settings
+
+Everything is configurable in the app — nothing needs an environment variable.
+
+| Section | What it sets |
+|---|---|
+| **Data** | SEC contact (name + email). Required; EDGAR refuses anonymous traffic. |
+| **Broker** | MT5 terminal path and symbol suffix, with a **Test connection** button that resolves your instruments and detects the suffix. |
+| **AI** | Claude API key, model, effort, monthly budget, with a **Test key** button that makes one real call. |
+| **Trading** | Account currency, default risk %, balance, professional status. |
+
+The MT5 suffix deserves its own note: IC Markets serves the same instrument as
+`XAUUSD`, `XAUUSD.a` or `XAUUSD.r` depending on account type, and the wrong one
+reads as "symbol not found" rather than as a configuration problem. Test
+resolves each instrument against the likely candidates and tells you which
+suffix your account actually uses.
+
 ### Two deliberate refusals
 
-**Secrets are not stored in settings.** That file is plaintext JSON in a
-user-readable directory. The plan requires OS-level key isolation (CNG/TPM with
-a passphrase) before a key touches disk, and is explicit that DPAPI alone is not
-protection against the realistic adversary. Until that exists, the Claude API
-key is read from `ANTHROPIC_API_KEY` at the moment it is used and never
-persisted. POSTing a key to the settings endpoint is *refused with an
-explanation*, not silently dropped.
+**Secrets are stored apart from settings, and labelled honestly.** The API key
+never enters `settings.json`; it goes to `secrets.dat`, encrypted with Windows
+DPAPI under your user account, owner-only permissions, on its own endpoint.
+POSTing a key to the settings endpoint is *refused with an explanation*.
+
+What DPAPI buys, precisely: the key is not plaintext on disk, so a stray backup,
+a synced folder or a support screenshot does not leak it, and another user
+account on the PC cannot read it. It does **not** stop malware running as you —
+any process with your token can call `CryptUnprotectData`. The plan calls
+"DPAPI alone, *presented as protection*" an anti-pattern; presenting it
+accurately is not, and the settings screen says exactly this. The real control
+is a passphrase-derived key with CNG/TPM isolation, which is still to build.
+
+The first build read the key from `ANTHROPIC_API_KEY` and stored nothing. That
+was defensible on a server and wrong on a desktop: a user who double-clicks an
+installer has no reasonable way to set a persistent environment variable, and
+user environment variables live in the registry in plaintext anyway — so it was
+equally exposed *and* unusable. The environment variable still works and still
+takes precedence.
 
 **The updater does not update.** It checks for a newer release and links to it.
 There is no code signing yet, so nothing could verify a downloaded binary — and

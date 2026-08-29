@@ -36,7 +36,16 @@ a = Analysis(                                     # noqa: F821
     hiddenimports=[
         "webview", "webview.platforms.edgechromium", "webview.platforms.winforms",
         "clr_loader", "pythonnet",
-        "argus.insider.pipeline", "argus.data.edgar", "argus.config", "argus.update",
+        # Imported lazily at their call sites so the app still starts when they
+        # are absent. That laziness also hides them from PyInstaller's static
+        # analysis, so without these names the AI and broker features would be
+        # permanently dead in the packaged build - settings for a feature that
+        # cannot run.
+        "anthropic", "MetaTrader5",
+        "argus.insider.pipeline", "argus.data.edgar", "argus.config",
+        "argus.update", "argus.secrets", "argus.ai.analyst",
+        "argus.bridge.mt5_bridge", "argus.analysis.bias",
+        "argus.analysis.sessions", "argus.analysis.calendar",
     ],
     hookspath=[],
     runtime_hooks=[],

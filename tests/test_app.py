@@ -18,6 +18,15 @@ sys.path.insert(0, "src")
 PASS = FAIL = 0
 
 
+def _raises(fn) -> bool:
+    """True if `fn` raises. Used where refusing is the correct behaviour."""
+    try:
+        fn()
+    except Exception:  # noqa: BLE001
+        return True
+    return False
+
+
 def check(label: str, cond: bool) -> bool:
     global PASS, FAIL
     if cond:
@@ -87,18 +96,107 @@ def main() -> int:
     print("\n[config] secrets never touch the settings file")
     os.environ["ANTHROPIC_API_KEY"] = "sk-test-should-never-persist"
     pub = config.load().public()
-    check("public() reports presence, not the value", pub["api_key_present"] is True)
-    check("public() contains no key field", "api_key" not in pub)
+    check("public() reports presence, not the value",
+          pub["api_key"]["present"] is True)
+    check("public() never carries the key itself",
+          "should-never-persist" not in json.dumps(pub))
     blob = config.settings_path().read_text(encoding="utf-8")
     check("the key is absent from the settings file on disk",
           "sk-test-should-never-persist" not in blob)
     res = server.ep_settings_save({"api_key": "sk-abc"})
-    check("POSTing a secret is refused, not silently dropped", res["ok"] is False)
-    check("the refusal explains where the key should go",
-          "ANTHROPIC_API_KEY" in res["error"])
+    check("POSTing a secret to /api/settings is refused", res["ok"] is False)
+    check("the refusal points at the right endpoint",
+          "/api/secret" in res["error"])
     blob = config.settings_path().read_text(encoding="utf-8")
     check("a refused POST wrote nothing", "sk-abc" not in blob)
     os.environ.pop("ANTHROPIC_API_KEY", None)
+
+    print("\n[secrets] storage and the environment override")
+    from argus import secrets as sec
+    os.environ.pop("ANTHROPIC_API_KEY", None)
+    sec.set_secret("anthropic_api_key", "")
+    check("an unset secret reports absent", sec.get("anthropic_api_key") == "")
+    check("status on an unset secret is clean",
+          sec.status("anthropic_api_key")["present"] is False)
+    sec.set_secret("anthropic_api_key", "sk-ant-api03-ROUNDTRIPVALUE001")
+    check("a stored secret round-trips",
+          sec.get("anthropic_api_key") == "sk-ant-api03-ROUNDTRIPVALUE001")
+    check("status masks to the last four only",
+          sec.status("anthropic_api_key")["masked"] == "...E001")
+    check("status never carries the value",
+          "ROUNDTRIPVALUE" not in json.dumps(sec.status("anthropic_api_key")))
+    check("secrets live outside settings.json",
+          sec.secrets_path() != config.settings_path())
+    check("settings.json never contains the secret",
+          "ROUNDTRIPVALUE" not in config.settings_path().read_text(encoding="utf-8"))
+    if os.name != "nt":
+        check("the secret file is owner-only",
+              oct(sec.secrets_path().stat().st_mode & 0o777) == "0o600")
+    check("an unknown secret name is rejected", _raises(lambda: sec.get("nope")))
+    check("writing an unknown secret is rejected",
+          _raises(lambda: sec.set_secret("nope", "x")))
+    os.environ["ANTHROPIC_API_KEY"] = "sk-env-wins-here-000000"
+    check("the environment overrides the stored value",
+          sec.get("anthropic_api_key") == "sk-env-wins-here-000000")
+    check("and the override is flagged for the UI",
+          sec.status("anthropic_api_key")["from_env"] is True)
+    os.environ.pop("ANTHROPIC_API_KEY", None)
+    check("Settings.api_key() reads through the secret store",
+          config.Settings.api_key() == "sk-ant-api03-ROUNDTRIPVALUE001")
+    check("protection is named honestly",
+          sec.protection() in ("dpapi", "plaintext"))
+    check("the protection note states what it does NOT stop",
+          "malware" in sec.protection_note().lower()
+          or "plaintext" in sec.protection_note().lower())
+    sec.set_secret("anthropic_api_key", "")
+    check("clearing removes it", sec.get("anthropic_api_key") == "")
+
+    print("\n[secrets api] the key never travels through settings")
+    r = server.ep_secret_save({"anthropic_api_key": "not-a-key"})
+    check("a malformed key is refused", r["ok"] is False and "sk-" in r["error"])
+    check("and nothing was written", sec.get("anthropic_api_key") == "")
+    r = server.ep_secret_save({"anthropic_api_key": "sk-ant-api03-VIAENDPOINT123"})
+    check("a well-formed key is stored", r["ok"] is True)
+    check("the response returns status, not the key",
+          "VIAENDPOINT" not in json.dumps(r))
+    check("an empty value clears the key",
+          server.ep_secret_save({"anthropic_api_key": ""})["cleared"] is True)
+
+    print("\n[settings] broker and AI fields")
+    d = config.load()
+    check("mt5 fields exist with safe defaults",
+          d.mt5_path == "" and d.mt5_suffix == "" and d.mt5_enabled is True)
+    check("ai defaults to opus-5 at high effort",
+          d.ai_model == "claude-opus-5" and d.ai_effort == "high")
+    check("a monthly budget is set", d.ai_monthly_budget_usd > 0)
+    ok = server.ep_settings_save({"mt5_suffix": ".a", "mt5_path": "C:/mt5/terminal64.exe",
+                                  "ai_model": "claude-sonnet-5", "ai_effort": "xhigh"})
+    check("broker and AI settings save", ok["ok"] is True)
+    d = config.load()
+    check("the suffix persisted", d.mt5_suffix == ".a")
+    check("the model persisted", d.ai_model == "claude-sonnet-5")
+    check("an unknown model is refused",
+          server.ep_settings_save({"ai_model": "gpt-4"})["ok"] is False)
+    check("an unknown effort is refused",
+          server.ep_settings_save({"ai_effort": "turbo"})["ok"] is False)
+    check("the refused model did not overwrite the stored one",
+          config.load().ai_model == "claude-sonnet-5")
+    pub = config.load().public()
+    check("public() offers only models this build knows",
+          set(pub["ai_models"]) <= {"claude-opus-5", "claude-sonnet-5", "claude-haiku-4-5"})
+    check("public() reports key status without the key",
+          "api_key" in pub and "masked" in pub["api_key"])
+
+    print("\n[connection tests] fail honestly rather than raising")
+    m = server.ep_test_mt5()
+    check("the MT5 test returns a verdict, never an exception",
+          isinstance(m, dict) and "ok" in m)
+    if not m["ok"]:
+        check("a failed MT5 test explains itself", bool(m.get("error")))
+    a = server.ep_test_ai()
+    check("the AI test returns a verdict", isinstance(a, dict) and "ok" in a)
+    check("the AI test never echoes the key", "sk-" not in json.dumps(a))
+    config.update(ai_model="claude-opus-5")
 
     print("\n[settings api] whitelist")
     check("unknown-only payloads are rejected",
@@ -107,8 +205,8 @@ def main() -> int:
     check("a valid field saves", ok["ok"] is True and config.load().balance == 1234.0)
     check("the unknown field alongside it is dropped",
           "evil" not in json.loads(config.settings_path().read_text(encoding="utf-8")))
-    check("saved settings come back without secrets",
-          "api_key" not in ok["settings"])
+    check("saved settings come back without a usable secret",
+          "sk-test-should-never-persist" not in json.dumps(ok["settings"]))
 
     print("\n[update] version comparison refuses to guess")
     for cand, cur, want in (("0.2.0", "0.1.0", True), ("0.1.0", "0.1.0", False),
